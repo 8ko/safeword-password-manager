@@ -7,6 +7,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [passwordList, setPasswordList] = useState([]);
+  //const [passwordList, setPasswordList] = useState([]);
 
   useEffect(() => {
     Axios.get("http://localhost:3001/showpasswords").then((response) => {

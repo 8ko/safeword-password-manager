@@ -16,6 +16,8 @@ const db = mysql.createConnection({
     database: "safeword",
 });
 
+//
+
 app.post("/addpassword", (req, res) => {
     const { password, title } = req.body;
     const hashedPassword = encrypt(password);
