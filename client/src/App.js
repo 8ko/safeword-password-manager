@@ -7,7 +7,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [title, setTitle] = useState("");
   const [passwordList, setPasswordList] = useState([]);
-  //const [passwordList, setPasswordList] = useState([]);
+
 
   useEffect(() => {
     Axios.get("http://localhost:3001/showpasswords").then((response) => {
@@ -32,6 +32,8 @@ function App() {
       confirmButtonText: 'Okay',
       showCloseButton: 'true',
       closeButtonHtml: '&times;',
+    }).then((result) =>{
+      window.location.reload();
     });
     // window.location.reload();
   };
