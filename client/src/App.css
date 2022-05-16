@@ -71,23 +71,38 @@ button {
 }
 
 .Passwords {
-    width: 100%;
-    display: flex;
     flex-direction: column;
-    align-items: center;
     margin-top: 20px;
 }
 
 .password {
-    width: 400px;
-    height: 70px;
-    background-color: #318CE7;
-    border-radius: 7px;
-    color: white;
     display: flex;
+    background-color: #318CE7;
     justify-content: center;
     align-items: center;
-    margin: 10px;
+    margin: 10px 0px 10px 0px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+}
+
+.view {
+    display: flex;
+    background-color: #318CE7;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0px 10px 0px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+}
+
+.del {
+    display: flex;
+    background-color: #318CE7;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0px 10px 0px;
     font-size: 20px;
     font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;

@@ -12,11 +12,9 @@ app.use(express.json());
 const db = mysql.createConnection({
     user: "root",
     host: "localhost",
-    //password: "103198",
+    password: "103198",
     database: "safeword",
 });
-
-//
 
 app.post("/addpassword", (req, res) => {
     const { password, title } = req.body;
@@ -35,6 +33,17 @@ app.post("/addpassword", (req, res) => {
 
 app.get("/showpasswords", (req, res) => {
     db.query("SELECT * FROM passwords;", (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.post("/deletepassword", (req, res) => {
+    const {id, title} = req.body;
+    db.query("DELETE FROM safeword.passwords WHERE (passwords.title='test1' AND passwords.id='1');", (err, result) => {
         if (err) {
             console.log(err);
         } else {
