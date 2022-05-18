@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { useState, useEffect } from 'react';
 
 import Axios from 'axios';
@@ -43,14 +43,11 @@ const Sidebar = (width) => {
             >
                 <Toolbar />
                 <Box sx={{ overflow: 'hidden' }}>
-                <VaultList list={loginList} icon={<LanguageRoundedIcon />} />
-
+                <VaultList title="Logins" type={1} list={loginList} icon={<LanguageRoundedIcon />} />
                 <Divider />
-                <VaultList list={cardList} icon={<CreditCardIcon />} />
-
+                <VaultList title="Cards" type={2} list={cardList} icon={<CreditCardIcon />} />
                 <Divider />
-                <VaultList list={noteList} icon={<ArticleRoundedIcon />} />
-                
+                <VaultList title="Notes" type={3} list={noteList} icon={<ArticleRoundedIcon />} />
                 </Box>
             </Drawer>
         </>

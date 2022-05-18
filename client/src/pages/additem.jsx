@@ -304,9 +304,7 @@ export function AddCard() {
     var cvv = values.cvv;
     var note = values.note;
 
-    if (title === '' || name === '' || number === '' ||
-      year === '' || cvv === '') {
-        console.log(title, name, number, year, cvv);
+    if (title === '' || name === '' || number === '' || year === '' || cvv === '') {
       return Swal.fire({
         title: 'Error!',
         text: 'Please fill out the fields.',

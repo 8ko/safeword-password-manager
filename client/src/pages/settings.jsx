@@ -14,7 +14,7 @@ export default function Settings() {
     };
 
     return (
-        <div>
+        <>
             <Box sx={{ mb: 4 }}>
                 <h2>Settings</h2>
             </Box>
@@ -85,8 +85,6 @@ export default function Settings() {
                     Sample Settings
                 </Typography>
             </Box>
-
-
-        </div>
+        </>
     );
 }
