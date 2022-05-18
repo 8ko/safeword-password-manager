@@ -1,10 +1,7 @@
-import React from "react";
-import { useState, useEffect } from 'react';
+import React from 'react';
 
 import Axios from 'axios';
 import Swal from 'sweetalert2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -19,23 +16,17 @@ import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
-
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
-
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
 export default function AddItem() {
   const [type, setType] = React.useState(1);
-  const [typeName, setTypeName] = React.useState('Login');
 
   const handleTypeChange = (event) => {
     setType(event.target.value);
   };
-  const handleClose = event => {
-    setTypeName(event.target.innerText);
-  }
 
   return (
     <div>
@@ -53,13 +44,12 @@ export default function AddItem() {
             label="Type"
             onChange={handleTypeChange}
           >
-            <MenuItem onClick={handleClose} value={1}>Login</MenuItem>
-            <MenuItem onClick={handleClose} value={2}>Card</MenuItem>
-            <MenuItem onClick={handleClose} value={3}>Secure Note</MenuItem>
+            <MenuItem value={1}>Login</MenuItem>
+            <MenuItem value={2}>Card</MenuItem>
+            <MenuItem value={3}>Secure Note</MenuItem>
           </Select>
         </FormControl>
       </Box>
-
       {
         (type === 1 &&
           <AddLogin />)
@@ -70,17 +60,11 @@ export default function AddItem() {
         ||
         <AddLogin />
       }
-
-      {/* <Button variant="contained" onClick={() => console.log(typeName) }>
-        Add {typeName}
-      </Button> */}
     </div>
-
   );
 };
 
 export function AddLogin() {
-  const [passwordList, setPasswordList] = useState([]);
 
   const [values, setValues] = React.useState({
     title: '',
@@ -96,23 +80,17 @@ export function AddLogin() {
     setValues({ ...values, [props]: event.target.value });
   };
 
+  const [checked, setChecked] = React.useState(false);
+  const handleCheckChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
   const handleClickShowPassword = () => {
     setValues({
       ...values,
       showPassword: !values.showPassword,
     });
   };
-
-  const [checked, setChecked] = React.useState(false);
-  const handleCheckChange = (event) => {
-    setChecked(event.target.checked);
-  };
-
-  useEffect(() => {
-    Axios.get("http://localhost:3001/showpasswords").then((response) => {
-      setPasswordList(response.data);
-    });
-  }, []);
 
   const addLogin = () => {
     var title = values.title;
@@ -121,7 +99,7 @@ export function AddLogin() {
     var website = values.website;
     var note = values.note;
 
-    if (title === '' || password == '') {
+    if (title === '' || password === '') {
       return Swal.fire({
         title: 'Error!',
         text: 'Please fill out the fields.',
@@ -129,7 +107,7 @@ export function AddLogin() {
         showConfirmButton: false,
         showCloseButton: true,
         closeButtonHtml: '&times;',
-        timer: 1500
+        timer: 1500,
       });
     }
 
@@ -154,44 +132,6 @@ export function AddLogin() {
       }).then((result) => {
         window.location.reload();
       });
-    });
-  };
-
-  const deleteLogin = (id) => {
-    Axios.delete(`http://localhost:3001/deletelogin/${id}`)
-      .then(() => {
-        Swal.fire({
-          title: 'Success!',
-          text: 'Password has been removed from your vault.',
-          icon: 'success',
-          confirmButtonColor: '#318ce7',
-          confirmButtonText: 'Okay',
-          showCloseButton: 'true',
-          closeButtonHtml: '&times;',
-          timer: 5000
-        }).then((result) => {
-          window.location.reload();
-        });
-      });
-  };
-
-  const decryptPassword = (encryption) => {
-    Axios.post("http://localhost:3001/decryptpassword", {
-      password: encryption.password,
-      iv: encryption.iv,
-    }).then((response) => {
-      setPasswordList(
-        passwordList.map((val) => {
-          return val.id === encryption.id
-            ? {
-              id: val.id,
-              password: val.password,
-              title: response.data,
-              iv: val.iv,
-            }
-            : val;
-        })
-      );
     });
   };
 
@@ -325,51 +265,15 @@ export function AddLogin() {
       <Button variant="contained" onClick={addLogin}>
         Add Login
       </Button>
-
-      {/* <div className="Passwords w-50 d-flex">
-        {passwordList.map((val, key) => {
-          return (
-            <div key={val.id} className="container-fluid">
-              <div className="row text-white ">
-                <div className="col-8 px-0">
-                  <div
-                    className="password h-75 rounded"
-                    onClick={() => {
-                      decryptPassword({
-                        password: val.password,
-                        iv: val.iv,
-                        id: val.id,
-                      });
-                    }}
-                  >
-                    <h3>{val.title}</h3>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="view h-75 rounded">
-                    <FontAwesomeIcon icon={faEye}></FontAwesomeIcon>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="del h-75 rounded" onClick={() => deletePassword(val.id)}>
-                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div> */}
     </>
   );
 
 };
 
 export function AddCard() {
-  const [passwordList, setPasswordList] = useState([]);
-
+  
   const [values, setValues] = React.useState({
-    brand: '',
+    title: '',
     name: '',
     number: '',
     expyr: '',
@@ -393,16 +297,16 @@ export function AddCard() {
   };
 
   const addCard = () => {
-    var brand = values.brand;
+    var title = values.title;
     var name = values.name;
     var number = values.number;
     var year = values.year;
     var cvv = values.cvv;
     var note = values.note;
 
-    if (brand === '' || name === '' || number === '' ||
+    if (title === '' || name === '' || number === '' ||
       year === '' || cvv === '') {
-        console.log(brand, name, number, year, cvv);
+        console.log(title, name, number, year, cvv);
       return Swal.fire({
         title: 'Error!',
         text: 'Please fill out the fields.',
@@ -415,7 +319,7 @@ export function AddCard() {
     }
 
     Axios.post("http://localhost:3001/addcard", {
-      brand: brand,
+      title: title,
       name: name,
       number: number,
       month: month,
@@ -453,8 +357,8 @@ export function AddCard() {
           id="outlined-brand"
           label="Brand"
           placeholder="eg: Visa, MasterCard"
-          value={values.brand}
-          onChange={handleChange('brand')}
+          value={values.title}
+          onChange={handleChange('title')}
         />
       </Box>
 
@@ -525,6 +429,7 @@ export function AddCard() {
               id="outlined-year"
               label="Year"
               type="number"
+              inputProps={{ min: 0, max: 99 }}
               value={values.year}
               onChange={handleChange('year')}
               startAdornment={
@@ -544,6 +449,7 @@ export function AddCard() {
           id="outlined-ccv"
           label="CCV/CVC"
           type="number"
+          inputProps={{ min: 0, max: 9999 }}
           value={values.ccv}
           onChange={handleChange('cvv')}
           endAdornment={

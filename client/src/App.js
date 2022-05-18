@@ -1,6 +1,5 @@
 import * as React from 'react';
 import "./App.css";
-import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Box from '@mui/material/Box';
