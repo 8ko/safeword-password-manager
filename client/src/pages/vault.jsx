@@ -1,12 +1,23 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom";
+import React, { useRef, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Axios from 'axios';
 
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import UpdateRoundedIcon from '@mui/icons-material/UpdateRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+
+import SafeLogin from '../components/forms/safelogin';
+import SafeCard from '../components/forms/safecard';
+import SafeNote from '../components/forms/safenote';
 
 const Vault = (props) => {
+
+    const navigate = useNavigate();
+
+    const child = useRef();
 
     const location = useLocation();
     const state = location.state || {};
@@ -39,13 +50,45 @@ const Vault = (props) => {
                 });
             }
         });
-    }, []);
+    }, [state.data]);
+
+    const safeForm = () => {
+
+        var data = [];
+        var type = 0;
+
+        if (state.data) {
+            data = state.data;
+            type = state.type;
+        } else {
+            data = defaultItem;
+            type = defaultType;
+        }
+
+        if (type === 1)
+            return <SafeLogin ref={child} prop1={data} />
+        else if (type === 2)
+            return <SafeCard ref={child} prop1={data} />
+        else if (type === 3)
+            return <SafeNote ref={child} prop1={data} />
+        else
+            return navigate('/emptyvault');
+    }
 
     return (
         <>
             <Box sx={{ mb: 4 }}>
                 <h2>Vault</h2>
             </Box>
+            {safeForm()}
+            <Stack direction="row" spacing={2}>
+                <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
+                    Update
+                </Button>
+                <Button variant="outlined" color="error" onClick={() => child.current.deleteItem()} endIcon={<DeleteRoundedIcon />}>
+                    Delete
+                </Button>
+            </Stack>
         </>
     );
 }

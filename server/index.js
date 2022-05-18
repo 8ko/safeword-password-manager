@@ -16,11 +16,41 @@ const db = mysql.createConnection({
     database: "safeword",
 });
 
+app.get("/showlogins", (req, res) => {
+    db.query("SELECT * FROM logins;", (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.get("/showcards", (req, res) => {
+    db.query("SELECT * FROM cards;", (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.get("/shownotes", (req, res) => {
+    db.query("SELECT * FROM notes;", (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
 app.post("/addlogin", (req, res) => {
-    const { title, username, password, website, note, prompt } = req.body;
+    const { title, username, password, website, note, prompt, iv } = req.body;
     const hashedPassword = encrypt(password);
     db.query(
-        "INSERT INTO logins (title, username, password, website, note, prompt, iv) VALUES (?,?,?,?,?,?)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv],
+        "INSERT INTO logins (title, username, password, website, note, prompt, iv) VALUES (?,?,?,?,?,?,?)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv],
         (err, result) => {
             if (err) {
                 console.log(err);
@@ -60,39 +90,77 @@ app.post("/addnote", (req, res) => {
     );
 });
 
-app.get("/showlogins", (req, res) => {
-    db.query("SELECT * FROM logins;", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
+app.post("/updatelogin/:id", (req, res) => {
+    const id = req.params.id;
+    const { title, username, password, website, note, prompt } = req.body;
+    const hashedPassword = encrypt(password);
+    db.query(
+        "UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=? WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send("Success");
+            }
         }
-    });
+    );
 });
 
-app.get("/showcards", (req, res) => {
-    db.query("SELECT * FROM cards;", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
+app.post("/updatecard/:id", (req, res) => {
+    const id = req.params.id;
+    const { title, name, number, month, year, cvv, note, prompt } = req.body;
+    db.query(
+        "UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=? WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send("Success");
+            }
         }
-    });
+    );
 });
 
-app.get("/shownotes", (req, res) => {
-    db.query("SELECT * FROM notes;", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
+app.post("/updatenote/:id", (req, res) => {
+    const id = req.params.id;
+    const { title, note, prompt } = req.body;
+    db.query(
+        "UPDATE notes SET title=?, note=?, prompt=? WHERE id=?", [title, note, prompt, id],
+        (err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.send("Success");
+            }
         }
-    });
+    );
 });
 
 app.delete("/deletelogin/:id", (req, res) => {
     const id = req.params.id;
     db.query("DELETE FROM logins WHERE id=?", id, (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.delete("/deletecard/:id", (req, res) => {
+    const id = req.params.id;
+    db.query("DELETE FROM cards WHERE id=?", id, (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+app.delete("/deletenote/:id", (req, res) => {
+    const id = req.params.id;
+    db.query("DELETE FROM notes WHERE id=?", id, (err, result) => {
         if (err) {
             console.log(err);
         } else {

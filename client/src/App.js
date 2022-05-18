@@ -9,6 +9,7 @@ import Vault from "./pages/vault";
 import AddItem from "./pages/additem";
 import Generator from "./pages/generator";
 import Settings from "./pages/settings";
+import EmptyVault from "./pages/emptyvault";
 
 import BottomNav from "./components/bottomnav";
 import Appbar from "./components/appbar";
@@ -34,6 +35,7 @@ function App() {
               <Route path="/additem" element={<AddItem />} />
               <Route path="/generator" element={<Generator />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/emptyvault" element={<EmptyVault />} />
             </Routes>
           </Box>
         </Box>

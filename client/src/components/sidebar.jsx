@@ -29,7 +29,7 @@ const Sidebar = (width) => {
         Axios.get("http://localhost:3001/shownotes").then((res) => {
             setNoteList(res.data);
         });
-      }, []);
+    }, []);
 
     return (
         <>
