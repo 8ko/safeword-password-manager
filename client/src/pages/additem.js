@@ -36,7 +36,7 @@ export default function AddItem() {
   const handleClose = event => {
     setTypeName(event.target.innerText);
   }
-  
+
   return (
     <div>
       <Box sx={{ mb: 4 }}>
@@ -396,12 +396,13 @@ export function AddCard() {
     var brand = values.brand;
     var name = values.name;
     var number = values.number;
-    var expyr = values.expyr;
+    var year = values.year;
     var cvv = values.cvv;
     var note = values.note;
 
     if (brand === '' || name === '' || number === '' ||
-        expyr === '' || cvv === '') {
+      year === '' || cvv === '') {
+        console.log(brand, name, number, year, cvv);
       return Swal.fire({
         title: 'Error!',
         text: 'Please fill out the fields.',
@@ -417,7 +418,8 @@ export function AddCard() {
       brand: brand,
       name: name,
       number: number,
-      expyr: expyr,
+      month: month,
+      year: year,
       cvv: cvv,
       note: note,
       prompt: checked
@@ -523,8 +525,8 @@ export function AddCard() {
               id="outlined-year"
               label="Year"
               type="number"
-              value={values.expyr}
-              onChange={handleChange('expyr')}
+              value={values.year}
+              onChange={handleChange('year')}
               startAdornment={
                 <InputAdornment position="start">
                   <Typography variant="body1">20</Typography>
@@ -537,13 +539,13 @@ export function AddCard() {
 
       <FormControl fullWidth sx={{ mb: 1.5 }}
         variant="outlined">
-        <InputLabel htmlFor="outlined-adornment-ccv">CCV/CVC</InputLabel>
+        <InputLabel htmlFor="outlined-adornment-ccv">CVV/CVC</InputLabel>
         <OutlinedInput
           id="outlined-ccv"
           label="CCV/CVC"
           type="number"
           value={values.ccv}
-          onChange={handleChange('ccv')}
+          onChange={handleChange('cvv')}
           endAdornment={
             <InputAdornment position="end">
               <IconButton
@@ -567,7 +569,8 @@ export function AddCard() {
           multiline
           rows={3}
           style={{ minWidth: '25%', width: '100%' }}
-
+          value={values.note}
+          onChange={handleChange('note')}
         />
       </Box>
 
@@ -611,7 +614,7 @@ export function AddNote() {
   const handleCheckChange = (event) => {
     setChecked(event.target.checked);
   };
-  
+
   const addNote = () => {
     var title = values.title;
     var note = values.note;

@@ -33,8 +33,9 @@ app.post("/addlogin", (req, res) => {
 
 app.post("/addcard", (req, res) => {
     const { brand, name, number, month, year, cvv, note, prompt } = req.body;
+    console.log(req.body);
     db.query(
-        "INSERT INTO notes (brand, name, number, month, year, cvv, note, prompt) VALUES (?,?,?,?,?,?,?,?)", [brand, name, number, month, year, cvv, note, prompt],
+        "INSERT INTO cards (brand, name, number, month, year, cvv, note, prompt) VALUES (?,?,?,?,?,?,?,?)", [brand, name, number, month, year, cvv, note, prompt],
         (err, result) => {
             if (err) {
                 console.log(err);
