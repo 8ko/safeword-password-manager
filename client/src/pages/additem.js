@@ -20,8 +20,88 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
 
-const AddItem = () => {
+import Checkbox from '@mui/material/Checkbox';
+import Grid from '@mui/material/Grid';
 
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
+export default function AddItem() {
+  const [type, setType] = React.useState(1);
+  const [typeName, setTypeName] = React.useState('Login');
+
+  const handleTypeChange = (event) => {
+    setType(event.target.value);
+  };
+  const handleClose = event => {
+    setTypeName(event.target.innerText);
+  }
+
+  const [checked, setChecked] = React.useState(false);
+  const handleCheckChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
+  return (
+    <div>
+      <Box sx={{ mb: 4 }}>
+        <h2>Add Item to Vault</h2>
+      </Box>
+      <Box sx={{ mb: 1.5 }}>
+        <FormControl fullWidth>
+          <InputLabel id="select-type-label">Type</InputLabel>
+          <Select
+            name="addtype"
+            labelId="select-type-label"
+            id="select-type"
+            value={type}
+            label="Type"
+            onChange={handleTypeChange}
+          >
+            <MenuItem onClick={handleClose} value={1}>Login</MenuItem>
+            <MenuItem onClick={handleClose} value={2}>Card</MenuItem>
+            <MenuItem onClick={handleClose} value={3}>Secure Note</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+
+      {
+        (type === 1 &&
+          <AddLogin />)
+        || (type === 2 &&
+          <AddCard />)
+        || (type === 3 &&
+          <AddNote />)
+        ||
+        <AddLogin />
+      }
+
+      <Box sx={{ width: '100%', mb: 3 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs>
+            <Typography id="masterpassword-re">
+              Master Password Re-prompt?
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Checkbox
+              checked={checked}
+              onChange={handleCheckChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Button variant="contained" onClick={() => { console.log(typeName) }}>
+        Add {typeName}
+      </Button>
+    </div>
+
+  );
+};
+
+export function AddLogin() {
   const [passwordList, setPasswordList] = useState([]);
 
   const [values, setValues] = React.useState({
@@ -54,15 +134,18 @@ const AddItem = () => {
   const addPassword = () => {
     var title = values.title;
     var password = values.password;
+    var username = values.username;
+    var website = values.website;
+    var note = values.note;
     if (title !== '' || password !== '') {
-      console.log("hello");
       Axios.post("http://localhost:3001/addpassword", {
-        password: password,
+        type: 1,
         title: title,
+        password: password,
+        username: username,
+        website: website,
+        note: note,
       });
-      console.log("Password added");
-      // title = '';
-      // password = '';
 
       Swal.fire({
         title: 'Success!',
@@ -79,7 +162,6 @@ const AddItem = () => {
       });
 
     } else {
-      console.log('empty');
       Swal.fire({
         title: 'Error!',
         text: 'Please fill out the fields.',
@@ -90,28 +172,24 @@ const AddItem = () => {
         timer: 1500
       });
     }
-
   };
 
-  const deletePassword = () => {
-    Axios.delete()
-    // Axios.post("http://localhost:3001/deletepassword", {
-    //   password: password,
-    //   title: title,
-    // });
-    console.log("Password deleted");
-
-    // Swal.fire({
-    //   title: 'Success!',
-    //   text: 'Password has been removed from your vault.',
-    //   icon: 'success',
-    //   confirmButtonColor: '#318ce7',
-    //   confirmButtonText: 'Okay',
-    //   showCloseButton: 'true',
-    //   closeButtonHtml: '&times;',
-    // }).then((result) =>{
-    //   window.location.reload();
-    // });
+  const deletePassword = (id) => {
+    Axios.delete(`http://localhost:3001/deletepassword/${id}`)
+      .then(() => {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Password has been removed from your vault.',
+          icon: 'success',
+          confirmButtonColor: '#318ce7',
+          confirmButtonText: 'Okay',
+          showCloseButton: 'true',
+          closeButtonHtml: '&times;',
+          timer: 5000
+        }).then((result) => {
+          window.location.reload();
+        });
+      });
   };
 
   const decryptPassword = (encryption) => {
@@ -136,7 +214,6 @@ const AddItem = () => {
 
   return (
     <>
-      <h2>Add Item</h2>
       <Box
         component="form"
         noValidate
@@ -144,11 +221,11 @@ const AddItem = () => {
         sx={{ mb: 1.5 }}
       >
         <TextField
-          id="outlined-helperText"
-          label="Name"
+          id="outlined-title"
+          label="Title"
           value={values.title}
           onChange={handleChange('title')}
-          style ={{minWidth: '25%', width: '95%'}} />
+          style={{ minWidth: '25%', width: '100%' }} />
       </Box>
 
       <Box>
@@ -171,11 +248,11 @@ const AddItem = () => {
               </IconButton>
             </InputAdornment>,
           }}
-          style ={{minWidth: '25%', width: '95%'}} />
+          style={{ minWidth: '25%', width: '100%' }} />
       </Box>
 
       <FormControl sx={{ mb: 1.5 }}
-      style ={{minWidth: '25%', width: '95%'}} variant="outlined">
+        style={{ minWidth: '25%', width: '100%' }} variant="outlined">
         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
         <OutlinedInput
           id="outlined-adornment-password"
@@ -188,11 +265,16 @@ const AddItem = () => {
                 aria-label="toggle password visibility"
                 onClick={handleClickShowPassword}
                 edge="end"
-                sx={{ pr: 1.5 }}
               >
                 {values.showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
-              <CheckCircleOutlineRoundedIcon />
+              <IconButton
+                aria-label="copy input"
+                onClick={() => navigator.clipboard.writeText(values.password)}
+                edge="end"
+              >
+                <CheckCircleOutlineRoundedIcon />
+              </IconButton>
               <IconButton
                 aria-label="copy input"
                 onClick={() => navigator.clipboard.writeText(values.password)}
@@ -206,10 +288,10 @@ const AddItem = () => {
       </FormControl>
 
       <FormControl sx={{ mb: 1.5 }}
-      style ={{minWidth: '25%', width: '95%'}} variant="outlined">
+        style={{ minWidth: '25%', width: '100%' }} variant="outlined">
         <InputLabel htmlFor="outlined-adornment-password">Website</InputLabel>
         <OutlinedInput
-          id="outlined-helperText"
+          id="outlined-website"
           label="Website"
           value={values.website}
           onChange={handleChange('website')}
@@ -224,34 +306,34 @@ const AddItem = () => {
               </IconButton>
             </InputAdornment>
           }
-          />
+        />
       </FormControl>
 
-      <Box>
-        <TextField
+      <FormControl sx={{ mb: 1.5 }}
+        style={{ minWidth: '25%', width: '100%' }} variant="outlined">
+        <InputLabel htmlFor="outlined-adornment-password">Note</InputLabel>
+        <OutlinedInput
+          id="outlined-note"
           label="Note"
-          id="outlined-end-adornment"
-          position="end"
-          placeholder="Note"
           multiline
           rows={3}
-          style={{minWidth: '25%', width: '95%'}}
-          sx= {{ mb: 1.5 }}
+          value={values.note}
+          onChange={handleChange('note')}
         />
-      </Box>
+      </FormControl>
 
       <Button variant="contained" onClick={addPassword}>
-        Add Item
+        Add true
       </Button>
 
       <div className="Passwords w-50 d-flex">
         {passwordList.map((val, key) => {
           return (
-            <div className="container-fluid">
+            <div key={val.id} className="container-fluid">
               <div className="row text-white ">
                 <div className="col-8 px-0">
                   <div
-                    className="password w-100 h-75 rounded"
+                    className="password h-75 rounded"
                     onClick={() => {
                       decryptPassword({
                         password: val.password,
@@ -259,19 +341,18 @@ const AddItem = () => {
                         id: val.id,
                       });
                     }}
-                    key={key}
                   >
                     <h3>{val.title}</h3>
                   </div>
                 </div>
-                <div className="col w-100">
+                <div className="col">
                   <div className="view h-75 rounded">
                     <FontAwesomeIcon icon={faEye}></FontAwesomeIcon>
                   </div>
                 </div>
-                <div className="col w-100">
-                  <div className="del h-75 rounded">
-                    <FontAwesomeIcon onClick={deletePassword} icon={faTrash}></FontAwesomeIcon>
+                <div className="col">
+                  <div className="del h-75 rounded" onClick={() => deletePassword(val.id)}>
+                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
                   </div>
                 </div>
               </div>
@@ -281,6 +362,215 @@ const AddItem = () => {
       </div>
     </>
   );
+
 };
 
-export default AddItem;
+export function AddCard() {
+  const [passwordList, setPasswordList] = useState([]);
+
+  const [values, setValues] = React.useState({
+    brand: '',
+    cardname: '',
+    number: '',
+    expyr: '',
+    cvv: '',
+    note: '',
+  });
+
+  const handleChange = (props) => (event) => {
+    event.preventDefault();
+    setValues({ ...values, [props]: event.target.value });
+  };
+
+  const [month, setMonth] = React.useState(1);
+  const handleMonthChange = (event) => {
+    setMonth(event.target.value);
+  };
+
+  return (
+    <>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="on"
+        sx={{ mb: 1.5 }}
+      >
+        <TextField
+          fullWidth
+          id="outlined-brand"
+          label="Brand"
+          placeholder="eg: Visa, MasterCard"
+          value={values.brand}
+          onChange={handleChange('brand')}
+        />
+      </Box>
+
+      <Box>
+        <TextField
+          fullWidth
+          label="Name of Cardholder"
+          value={values.cardname}
+          onChange={handleChange('cardname')}
+          sx={{ mb: 1.5 }}
+        />
+      </Box>
+
+      <FormControl fullWidth sx={{ mb: 1.5 }}
+        variant="outlined">
+        <InputLabel htmlFor="outlined-adornment-password">Card Number</InputLabel>
+        <OutlinedInput
+          id="outlined-number"
+          label="Card Number"
+          type="number"
+          value={values.number}
+          onChange={handleChange('number')}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="copy input"
+                onClick={() => navigator.clipboard.writeText(values.number)}
+                edge="end"
+              >
+                <ContentCopyRoundedIcon />
+              </IconButton>
+            </InputAdornment>
+          }
+        />
+      </FormControl>
+
+      <Grid container spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+        <Grid item xs={6}>
+          <FormControl fullWidth>
+            <InputLabel id="select-month-label">Month</InputLabel>
+            <Select
+              labelId="select-month-label"
+              id="select-month"
+              value={month}
+              label="Month"
+              onChange={handleMonthChange}
+            >
+              <MenuItem value={1}>Jan</MenuItem>
+              <MenuItem value={2}>Feb</MenuItem>
+              <MenuItem value={3}>Mar</MenuItem>
+              <MenuItem value={4}>Apr</MenuItem>
+              <MenuItem value={5}>May</MenuItem>
+              <MenuItem value={6}>Jun</MenuItem>
+              <MenuItem value={7}>Jul</MenuItem>
+              <MenuItem value={8}>Aug</MenuItem>
+              <MenuItem value={9}>Sep</MenuItem>
+              <MenuItem value={10}>Oct</MenuItem>
+              <MenuItem value={11}>Nov</MenuItem>
+              <MenuItem value={12}>Dec</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={6}>
+          <FormControl fullWidth
+            variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-year">Year</InputLabel>
+            <OutlinedInput
+              id="outlined-year"
+              label="Year"
+              type="number"
+              value={values.expyr}
+              onChange={handleChange('expyr')}
+              startAdornment={
+                <InputAdornment position="start">
+                  <Typography variant="body1">20</Typography>
+                </InputAdornment>
+              }
+            />
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      <FormControl fullWidth sx={{ mb: 1.5 }}
+        variant="outlined">
+        <InputLabel htmlFor="outlined-adornment-ccv">CCV/CVC</InputLabel>
+        <OutlinedInput
+          id="outlined-ccv"
+          label="CCV/CVC"
+          type="number"
+          value={values.ccv}
+          onChange={handleChange('ccv')}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="copy input"
+                onClick={() => navigator.clipboard.writeText(values.ccv)}
+                edge="end"
+              >
+                <ContentCopyRoundedIcon />
+              </IconButton>
+            </InputAdornment>
+          }
+        />
+      </FormControl>
+
+      <Box sx={{ mb: 1.5 }}>
+        <TextField
+          label="Note"
+          id="outlined-end-adornment"
+          position="end"
+          placeholder="Note"
+          multiline
+          rows={3}
+          style={{ minWidth: '25%', width: '100%' }}
+
+        />
+      </Box>
+
+    </>
+  );
+};
+
+export function AddNote() {
+  const [values, setValues] = React.useState({
+    notename: '',
+    note: '',
+  });
+
+  const handleChange = (props) => (event) => {
+    event.preventDefault();
+    setValues({ ...values, [props]: event.target.value });
+  };
+
+  return (
+    <>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="on"
+        sx={{ mb: 1.5 }}
+      >
+        <TextField
+          fullWidth
+          id="outlined-name"
+          label="Name"
+          value={values.notename}
+          onChange={handleChange('notename')}
+        />
+      </Box>
+
+      <Box sx={{ mb: 1.5 }}>
+        <TextField
+          label="Note"
+          id="outlined-end-adornment"
+          position="end"
+          placeholder="Note"
+          multiline
+          rows={3}
+          style={{ minWidth: '25%', width: '100%' }}
+
+        />
+      </Box>
+
+    </>
+  );
+}
+
+
+
+
+
+

@@ -14,6 +14,7 @@ import Settings from "./pages/settings";
 import BottomNav from "./components/bottomnav";
 import Appbar from "./components/appbar";
 import Sidebar from "./components/sidebar";
+import Toolbar from '@mui/material/Toolbar';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Appbar />
           <Sidebar width={drawerWidth} />
           <Box component="main" sx={{ flexGrow: 1, p: 4, mb: bottomNavHeight }}>
+            <Toolbar />
             <Routes>
               <Route path="/" element={<Vault />} />
               <Route path="/additem" element={<AddItem />} />
@@ -36,7 +38,7 @@ function App() {
             </Routes>
           </Box>
         </Box>
-       <BottomNav />
+        <BottomNav />
       </Router>
     </div>
   );

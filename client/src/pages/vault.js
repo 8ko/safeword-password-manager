@@ -1,12 +1,13 @@
 import React from "react";
 
-import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
 
 export default function Vault() {
     return (
         <div>
-            <Toolbar />
-            <h2>Vault</h2>
+            <Box sx={{ mb: 4 }}>
+                <h2>Vault</h2>
+            </Box>
         </div>
     );
 }

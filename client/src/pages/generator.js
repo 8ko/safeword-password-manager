@@ -1,8 +1,5 @@
 import React from "react";
 
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
@@ -14,7 +11,7 @@ import Box from '@mui/material/Box';
 
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Slider, { SliderThumb } from '@mui/material/Slider';
+import Slider from '@mui/material/Slider';
 import MuiInput from '@mui/material/Input';
 import { styled } from '@mui/material/styles';
 
@@ -34,9 +31,7 @@ export default function Generator() {
     };
 
     // slider
-    const Input = styled(MuiInput)`
-    width: 32px;
-  `;
+    const Input = styled(MuiInput)`width: 42px;`;
 
     const [value, setValue] = React.useState(8);
     const handleSliderChange = (event, newValue) => {
@@ -63,13 +58,12 @@ export default function Generator() {
 
     return (
         <div>
-            <Toolbar />
             <Box sx={{ mb: 4 }}>
                 <h2>Password Generator</h2>
             </Box>
 
             <FormControl sx={{ mb: 2.5 }}
-                style={{ minWidth: '25%', width: '95%' }} variant="outlined">
+                style={{ minWidth: '25%', width: '100%' }} variant="outlined">
                 <InputLabel htmlFor="outlined-adornment-password">Generated Password</InputLabel>
                 <OutlinedInput
                     id="outlined-helperText"
@@ -98,7 +92,7 @@ export default function Generator() {
                 />
             </FormControl>
 
-            <Box sx={{ width: '95%', mb: 1}}>
+            <Box sx={{ width: '100%', mb: 1}}>
                 <Grid container spacing={3} justifyContent="center" alignItems="center">
                     <Grid item>
                         <Typography id="input-slider">
@@ -132,10 +126,10 @@ export default function Generator() {
                 </Grid>
             </Box>
 
-            <Box sx={{ width: '95%', mb: 1.5 }}>
+            <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Grid container spacing={1} alignItems="center">
                     <Grid item xs>
-                        <Typography id="checkbox-caps" gutterLeft>
+                        <Typography id="checkbox-caps">
                             A-Z
                         </Typography>
                     </Grid>
@@ -149,10 +143,10 @@ export default function Generator() {
                 </Grid>
             </Box>
 
-            <Box sx={{ width: '95%', mb: 1.5 }}>
+            <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Grid container spacing={1} alignItems="center">
                     <Grid item xs>
-                        <Typography id="checkbox-small" gutterLeft>
+                        <Typography id="checkbox-small">
                             a-z
                         </Typography>
                     </Grid>
@@ -167,10 +161,10 @@ export default function Generator() {
             </Box>
 
 
-            <Box sx={{ width: '95%', mb: 1.5 }}>
+            <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Grid container spacing={1} alignItems="center">
                     <Grid item xs>
-                        <Typography id="checkbox-num" gutterLeft>
+                        <Typography id="checkbox-num">
                             0-9
                         </Typography>
                     </Grid>
@@ -184,10 +178,10 @@ export default function Generator() {
                 </Grid>
             </Box>
 
-            <Box sx={{ width: '95%', mb: 1.5 }}>
+            <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Grid container spacing={1} alignItems="center">
                     <Grid item xs>
-                        <Typography id="checkbox-special" gutterLeft>
+                        <Typography id="checkbox-special">
                             !@#$%
                         </Typography>
                     </Grid>

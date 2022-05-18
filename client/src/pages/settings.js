@@ -1,25 +1,9 @@
 import React from "react";
 
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import IconButton from '@mui/material/IconButton';
-import CachedIcon from '@mui/icons-material/Cached';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
-
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Slider, { SliderThumb } from '@mui/material/Slider';
-import MuiInput from '@mui/material/Input';
-import { styled } from '@mui/material/styles';
-
 import Checkbox from '@mui/material/Checkbox';
-
 import Switch from '@mui/material/Switch';
 
 export default function Settings() {
@@ -31,20 +15,27 @@ export default function Settings() {
 
     return (
         <div>
-            <Toolbar />
             <Box sx={{ mb: 4 }}>
                 <h2>Settings</h2>
             </Box>
 
+            {/* make all of dis into grid */}
+
+            <Box sx={{ width: '95%', mb: 1.5 }}>
+                <Typography id="input-slider">
+                    Enable 2FA
+                </Typography>
+            </Box>
+
             <Box sx={{ width: '95%', mb: 0.5 }}>
-                <Grid container spacing={1} alignItems="center">
+                <Grid container spacing={1} justifyContent="center" alignItems="center">
                     <Grid item xs>
-                        <Typography id="input-slider" gutterLeft>
+                        <Typography id="input-slider">
                             Dark Mode
                         </Typography>
                     </Grid>
                     <Grid item>
-                        <Switch/>
+                        <Switch />
                     </Grid>
                 </Grid>
             </Box>
@@ -52,7 +43,7 @@ export default function Settings() {
             <Box sx={{ width: '95%' }}>
                 <Grid container spacing={1} alignItems="center">
                     <Grid item xs>
-                        <Typography id="checkbox-something" gutterLeft>
+                        <Typography id="checkbox-something">
                             Sample Settings
                         </Typography>
                     </Grid>
@@ -69,7 +60,7 @@ export default function Settings() {
             <Box sx={{ width: '95%', mb: 1 }}>
                 <Grid container spacing={1} alignItems="center">
                     <Grid item xs>
-                        <Typography id="input-slider" gutterLeft>
+                        <Typography id="input-slider">
                             Sample Settings
                         </Typography>
                     </Grid>
@@ -83,24 +74,17 @@ export default function Settings() {
                 </Grid>
             </Box>
 
-            <Box sx={{ width: '95%', mb: 1 }}>
-                <Typography id="input-slider" gutterLeft>
+            <Box sx={{ width: '95%', mb: 1.5 }}>
+                <Typography id="input-slider">
                     Reset Master Password
                 </Typography>
             </Box>
-            
-            <Box sx={{ width: '95%', mb: 1 }}>
-                <Typography id="input-slider" gutterLeft>
+
+            <Box sx={{ width: '95%', mb: 1.5 }}>
+                <Typography id="input-slider">
                     Sample Settings
                 </Typography>
             </Box>
-
-            <Box sx={{ width: '95%', mb: 1 }}>
-                <Typography id="input-slider" gutterLeft>
-                    Enable 2FA
-                </Typography>
-            </Box>
-
 
 
         </div>

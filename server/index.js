@@ -17,10 +17,11 @@ const db = mysql.createConnection({
 });
 
 app.post("/addpassword", (req, res) => {
-    const { password, title } = req.body;
+    const { type, title, password, username, website, note } = req.body;
+    console.log(req.body);
     const hashedPassword = encrypt(password);
     db.query(
-        "INSERT INTO passwords (password, title, iv) VALUES (?,?,?)", [hashedPassword.password, title, hashedPassword.iv],
+        "INSERT INTO passwords (type, title, password, iv, username, website, note) VALUES (?,?,?,?,?,?,?)", [type, title, hashedPassword.password, hashedPassword.iv, username, website, note],
         (err, result) => {
             if (err) {
                 console.log(err);
@@ -41,9 +42,9 @@ app.get("/showpasswords", (req, res) => {
     });
 });
 
-app.post("/deletepassword", (req, res) => {
-    const {id, title} = req.body;
-    db.query("DELETE FROM safeword.passwords WHERE (passwords.title='test1' AND passwords.id='1');", (err, result) => {
+app.delete("/deletepassword/:id", (req, res) => {
+    const id = req.params.id;
+    db.query("DELETE FROM safeword.passwords WHERE passwords.id=?", id, (err, result) => {
         if (err) {
             console.log(err);
         } else {
