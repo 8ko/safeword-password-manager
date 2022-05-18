@@ -36,12 +36,7 @@ export default function AddItem() {
   const handleClose = event => {
     setTypeName(event.target.innerText);
   }
-
-  const [checked, setChecked] = React.useState(false);
-  const handleCheckChange = (event) => {
-    setChecked(event.target.checked);
-  };
-
+  
   return (
     <div>
       <Box sx={{ mb: 4 }}>
@@ -76,26 +71,9 @@ export default function AddItem() {
         <AddLogin />
       }
 
-      <Box sx={{ width: '100%', mb: 3 }}>
-        <Grid container spacing={1} alignItems="center">
-          <Grid item xs>
-            <Typography id="masterpassword-re">
-              Master Password Re-prompt?
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Checkbox
-              checked={checked}
-              onChange={handleCheckChange}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-
-      <Button variant="contained" onClick={() => { console.log(typeName) }}>
+      {/* <Button variant="contained" onClick={() => console.log(typeName) }>
         Add {typeName}
-      </Button>
+      </Button> */}
     </div>
 
   );
@@ -125,28 +103,44 @@ export function AddLogin() {
     });
   };
 
+  const [checked, setChecked] = React.useState(false);
+  const handleCheckChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
   useEffect(() => {
     Axios.get("http://localhost:3001/showpasswords").then((response) => {
       setPasswordList(response.data);
     });
   }, []);
 
-  const addPassword = () => {
+  const addLogin = () => {
     var title = values.title;
-    var password = values.password;
     var username = values.username;
+    var password = values.password;
     var website = values.website;
     var note = values.note;
-    if (title !== '' || password !== '') {
-      Axios.post("http://localhost:3001/addpassword", {
-        type: 1,
-        title: title,
-        password: password,
-        username: username,
-        website: website,
-        note: note,
-      });
 
+    if (title === '' || password == '') {
+      return Swal.fire({
+        title: 'Error!',
+        text: 'Please fill out the fields.',
+        icon: 'error',
+        showConfirmButton: false,
+        showCloseButton: true,
+        closeButtonHtml: '&times;',
+        timer: 1500
+      });
+    }
+
+    Axios.post("http://localhost:3001/addlogin", {
+      title: title,
+      username: username,
+      password: password,
+      website: website,
+      note: note,
+      prompt: checked
+    }).then(res => {
       Swal.fire({
         title: 'Success!',
         text: 'Password has been added to your vault.',
@@ -160,22 +154,11 @@ export function AddLogin() {
       }).then((result) => {
         window.location.reload();
       });
-
-    } else {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please fill out the fields.',
-        icon: 'error',
-        showConfirmButton: false,
-        showCloseButton: true,
-        closeButtonHtml: '&times;',
-        timer: 1500
-      });
-    }
+    });
   };
 
-  const deletePassword = (id) => {
-    Axios.delete(`http://localhost:3001/deletepassword/${id}`)
+  const deleteLogin = (id) => {
+    Axios.delete(`http://localhost:3001/deletelogin/${id}`)
       .then(() => {
         Swal.fire({
           title: 'Success!',
@@ -322,11 +305,28 @@ export function AddLogin() {
         />
       </FormControl>
 
-      <Button variant="contained" onClick={addPassword}>
-        Add true
+      <Box sx={{ width: '100%', mb: 3 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs>
+            <Typography id="masterpassword-re">
+              Master Password Re-prompt?
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Checkbox
+              checked={checked}
+              onChange={handleCheckChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Button variant="contained" onClick={addLogin}>
+        Add Login
       </Button>
 
-      <div className="Passwords w-50 d-flex">
+      {/* <div className="Passwords w-50 d-flex">
         {passwordList.map((val, key) => {
           return (
             <div key={val.id} className="container-fluid">
@@ -359,7 +359,7 @@ export function AddLogin() {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </>
   );
 
@@ -370,7 +370,7 @@ export function AddCard() {
 
   const [values, setValues] = React.useState({
     brand: '',
-    cardname: '',
+    name: '',
     number: '',
     expyr: '',
     cvv: '',
@@ -385,6 +385,57 @@ export function AddCard() {
   const [month, setMonth] = React.useState(1);
   const handleMonthChange = (event) => {
     setMonth(event.target.value);
+  };
+
+  const [checked, setChecked] = React.useState(false);
+  const handleCheckChange = (event) => {
+    setChecked(event.target.checked);
+  };
+
+  const addCard = () => {
+    var brand = values.brand;
+    var name = values.name;
+    var number = values.number;
+    var expyr = values.expyr;
+    var cvv = values.cvv;
+    var note = values.note;
+
+    if (brand === '' || name === '' || number === '' ||
+        expyr === '' || cvv === '') {
+      return Swal.fire({
+        title: 'Error!',
+        text: 'Please fill out the fields.',
+        icon: 'error',
+        showConfirmButton: false,
+        showCloseButton: true,
+        closeButtonHtml: '&times;',
+        timer: 1500
+      });
+    }
+
+    Axios.post("http://localhost:3001/addcard", {
+      brand: brand,
+      name: name,
+      number: number,
+      expyr: expyr,
+      cvv: cvv,
+      note: note,
+      prompt: checked
+    }).then(res => {
+      Swal.fire({
+        title: 'Success!',
+        text: 'Password has been added to your vault.',
+        icon: 'success',
+        // showConfirmButton: false,
+        confirmButtonColor: '#318ce7',
+        confirmButtonText: 'Okay',
+        showCloseButton: true,
+        closeButtonHtml: '&times;',
+        timer: 5000
+      }).then((result) => {
+        window.location.reload();
+      });
+    });
   };
 
   return (
@@ -409,8 +460,8 @@ export function AddCard() {
         <TextField
           fullWidth
           label="Name of Cardholder"
-          value={values.cardname}
-          onChange={handleChange('cardname')}
+          value={values.name}
+          onChange={handleChange('name')}
           sx={{ mb: 1.5 }}
         />
       </Box>
@@ -520,19 +571,82 @@ export function AddCard() {
         />
       </Box>
 
+      <Box sx={{ width: '100%', mb: 3 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs>
+            <Typography id="masterpassword-re">
+              Master Password Re-prompt?
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Checkbox
+              checked={checked}
+              onChange={handleCheckChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Button variant="contained" onClick={addCard}>
+        Add Card
+      </Button>
+
     </>
   );
 };
 
 export function AddNote() {
   const [values, setValues] = React.useState({
-    notename: '',
+    title: '',
     note: '',
   });
 
   const handleChange = (props) => (event) => {
     event.preventDefault();
     setValues({ ...values, [props]: event.target.value });
+  };
+
+  const [checked, setChecked] = React.useState(false);
+  const handleCheckChange = (event) => {
+    setChecked(event.target.checked);
+  };
+  
+  const addNote = () => {
+    var title = values.title;
+    var note = values.note;
+
+    if (title === '' || note === '') {
+      return Swal.fire({
+        title: 'Error!',
+        text: 'Please fill out the fields.',
+        icon: 'error',
+        showConfirmButton: false,
+        showCloseButton: true,
+        closeButtonHtml: '&times;',
+        timer: 1500
+      });
+    }
+
+    Axios.post("http://localhost:3001/addnote", {
+      title: title,
+      note: note,
+      prompt: checked
+    }).then(res => {
+      Swal.fire({
+        title: 'Success!',
+        text: 'Note has been added to your vault.',
+        icon: 'success',
+        // showConfirmButton: false,
+        confirmButtonColor: '#318ce7',
+        confirmButtonText: 'Okay',
+        showCloseButton: true,
+        closeButtonHtml: '&times;',
+        timer: 5000
+      }).then((result) => {
+        window.location.reload();
+      });
+    });
   };
 
   return (
@@ -547,8 +661,8 @@ export function AddNote() {
           fullWidth
           id="outlined-name"
           label="Name"
-          value={values.notename}
-          onChange={handleChange('notename')}
+          value={values.title}
+          onChange={handleChange('title')}
         />
       </Box>
 
@@ -561,16 +675,32 @@ export function AddNote() {
           multiline
           rows={3}
           style={{ minWidth: '25%', width: '100%' }}
-
+          value={values.note}
+          onChange={handleChange('note')}
         />
       </Box>
+
+      <Box sx={{ width: '100%', mb: 3 }}>
+        <Grid container spacing={1} alignItems="center">
+          <Grid item xs>
+            <Typography id="masterpassword-re">
+              Master Password Re-prompt?
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Checkbox
+              checked={checked}
+              onChange={handleCheckChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Button variant="contained" onClick={addNote}>
+        Add Secure Note
+      </Button>
 
     </>
   );
 }
-
-
-
-
-
-
