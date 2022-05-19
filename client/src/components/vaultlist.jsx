@@ -13,7 +13,7 @@ const VaultList = ({title, type, list, icon}) => {
     
     const navigate = useNavigate();
     const handleClick = (data) => {
-        navigate('/', { state: { data, type }});
+        navigate('/', { state: { data }});
     }
 
     return (
@@ -29,7 +29,7 @@ const VaultList = ({title, type, list, icon}) => {
               {list.map((data, key) => (
               <ListItem
                     key={data.id}
-                    onClick={()=>handleClick(data)}
+                    onClick={()=>handleClick({...data, type: type})}
                     disablePadding
                 >
                   <ListItemButton>

@@ -20,6 +20,7 @@ import MenuItem from '@mui/material/MenuItem';
 const SafeCard = forwardRef((props, ref) => {
 
     const [values, setValues] = React.useState({
+        type: 0,
         id: 0,
         title: '',
         name: '',
@@ -43,6 +44,7 @@ const SafeCard = forwardRef((props, ref) => {
     useEffect(() => {
         if (props.prop1) {
             setValues({
+                type: props.prop1.type || 0,
                 id: props.prop1.id || 0,
                 title: props.prop1.title || '',
                 name: props.prop1.name || '',
@@ -126,7 +128,7 @@ const SafeCard = forwardRef((props, ref) => {
                 closeButtonHtml: '&times;',
                 timer: 5000
                 }).then((result) => {
-                    // update props
+                    props.onChange(values);
                 });
             });
         },

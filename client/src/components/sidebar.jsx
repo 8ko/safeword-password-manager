@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 
 import Axios from 'axios';
 
@@ -18,6 +19,7 @@ const Sidebar = (width) => {
     const [loginList, setLoginList] = useState([]);
     const [cardList, setCardList] = useState([]);
     const [noteList, setNoteList] = useState([]);
+    const location = useLocation();
 
     useEffect(() => {
         Axios.get("http://localhost:3001/showlogins").then((res) => {
@@ -29,7 +31,7 @@ const Sidebar = (width) => {
         Axios.get("http://localhost:3001/shownotes").then((res) => {
             setNoteList(res.data);
         });
-    }, []);
+    }, [location]);
 
     return (
         <>

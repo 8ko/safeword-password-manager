@@ -12,6 +12,7 @@ import Grid from '@mui/material/Grid';
 const SafeNote = forwardRef((props, ref) => {
 
     const [values, setValues] = React.useState({
+        type: 0,
         id: 0,
         title: '',
         note: '',
@@ -30,6 +31,7 @@ const SafeNote = forwardRef((props, ref) => {
     useEffect(() => {
         if (props.prop1) {
             setValues({
+                type: props.prop1.type || 0,
                 id: props.prop1.id || 0,
                 title: props.prop1.title || '',
                 note: props.prop1.note || '',
@@ -92,7 +94,7 @@ const SafeNote = forwardRef((props, ref) => {
                 closeButtonHtml: '&times;',
                 timer: 5000
                 }).then((result) => {
-                    // update props
+                    props.onChange(values);
                 });
             });
         },

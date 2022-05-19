@@ -21,6 +21,7 @@ import Grid from '@mui/material/Grid';
 const SafeLogin = forwardRef((props, ref) => {
 
     const [values, setValues] = React.useState({
+        type: 0,
         id: 0,
         title: '',
         username: '',
@@ -51,7 +52,7 @@ const SafeLogin = forwardRef((props, ref) => {
 
     // invoked when selected item from sidebar or props updated
     useEffect(() => {
-        if (props.prop1) {
+        if (props.prop1 && props.prop1.password) {
             // decrypt password upon render
             Axios.post("http://localhost:3001/decryptpassword", {
                 password: props.prop1.password,
@@ -59,6 +60,7 @@ const SafeLogin = forwardRef((props, ref) => {
             }).then((res) => {
                 // update props with decrypted password
                 setValues({
+                    type: props.prop1.type || 0,
                     id: props.prop1.id || 0,
                     title: props.prop1.title || '',
                     username: props.prop1.username || '',
@@ -125,7 +127,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 website: values.website,
                 note: values.note,
                 prompt: values.prompt
-            }).then(() => {
+            }).then(res => {
                 Swal.fire({
                 title: 'Success!',
                 text: 'Card has been updated.',
@@ -136,7 +138,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 closeButtonHtml: '&times;',
                 timer: 5000
                 }).then((result) => {
-                    // update props
+                    props.onChange(values);
                 });
             });
         },

@@ -22,27 +22,24 @@ const Vault = (props) => {
     const location = useLocation();
     const state = location.state || {};
 
-    const [defaultItem, setDefaultItem] = useState([]);
-    const [defaultType, setDefaultType] = useState(0);
+    const [firstItem, setFirstItem] = useState([]);
+    const [lastItem, setLastItem] = useState([]);
 
     useEffect(() => {
         if (state.data) return;
         Axios.get("http://localhost:3001/showlogins").then((res) => {
             if (res.data.length > 0) {
-                setDefaultType(1);
-                setDefaultItem(res.data[0]);
+                setFirstItem({...res.data[0], type: 1});
                 return;
             } else {
                 Axios.get("http://localhost:3001/showcards").then((res) => {
                     if (res.data.length > 0) {
-                        setDefaultType(2);
-                        setDefaultItem(res.data[0]);
+                        setFirstItem({...res.data[0], type: 2});
                         return;
                     } else {
                         Axios.get("http://localhost:3001/shownotes").then((res) => {
                             if (res.data.length > 0) {
-                                setDefaultType(3);
-                                setDefaultItem(res.data[0]);
+                                setFirstItem({...res.data[0], type: 3});
                                 return;
                             }
                         });
@@ -51,6 +48,10 @@ const Vault = (props) => {
             }
         });
     }, [state.data]);
+    
+    function handleUpdate(data) {
+        setLastItem(data);
+    }
 
     const safeForm = () => {
 
@@ -58,19 +59,19 @@ const Vault = (props) => {
         var type = 0;
 
         if (state.data) {
-            data = state.data;
-            type = state.type;
+            data = state.data.id === lastItem.id ? lastItem : state.data;
+            type = state.data.type;
         } else {
-            data = defaultItem;
-            type = defaultType;
+            data = firstItem;
+            type = firstItem.type;
         }
 
         if (type === 1)
-            return <SafeLogin ref={child} prop1={data} />
+            return <SafeLogin ref={child} prop1={data} onChange={handleUpdate} />
         else if (type === 2)
-            return <SafeCard ref={child} prop1={data} />
+            return <SafeCard ref={child} prop1={data} onChange={handleUpdate} />
         else if (type === 3)
-            return <SafeNote ref={child} prop1={data} />
+            return <SafeNote ref={child} prop1={data} onChange={handleUpdate} />
         else
             return navigate('/emptyvault');
     }
