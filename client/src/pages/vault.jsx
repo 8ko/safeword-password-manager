@@ -91,11 +91,11 @@ const Vault = (props) => {
                 <h2>Vault</h2>
             </Box>
             { safeForm() }
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={1.5}>
                 <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
                     Update
                 </Button>
-                <Button variant="outlined" color="error" onClick={() => child.current.deleteItem()} endIcon={<DeleteRoundedIcon />}>
+                <Button variant="outlined" color="error" onClick={() => child.current.deleteItem()} startIcon={<DeleteRoundedIcon />}>
                     Delete
                 </Button>
             </Stack>

@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import SafeLogin from '../components/forms/safelogin';
 import SafeCard from '../components/forms/safecard';
 import SafeNote from '../components/forms/safenote';
@@ -58,7 +58,11 @@ export default function AddItem() {
         ||
         <SafeLogin ref={child} />
       }
-      <Button variant="contained" onClick={() => child.current.addItem()}>
+      <Button
+        variant="outlined"
+        color="success"
+        onClick={() => child.current.addItem()}
+        startIcon={<LockRoundedIcon />}>
         Add {typeName}
       </Button>
     </div>

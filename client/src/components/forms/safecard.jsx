@@ -138,7 +138,7 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             });
         },
-        
+
         deleteItem() {
             Axios.delete(`http://localhost:3001/deletecard/${values.id}`)
             .then(() => {

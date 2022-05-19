@@ -14,7 +14,7 @@ const BottomNav = () => {
 
     return (
         <>
-            <Paper sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+            <Paper sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, position: 'fixed', bottom: 0, left: 0, right: 0 }}>
             <Divider />
             <BottomNavigation
             showLabels
