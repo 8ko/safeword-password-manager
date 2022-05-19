@@ -48,7 +48,7 @@ const SafeNote = forwardRef((props, ref) => {
 
             if (title === '' || note === '') {
                 return Swal.fire({
-                    title: 'Error! - Note',
+                    title: 'Error!',
                     text: 'Please fill out the fields.',
                     icon: 'error',
                     showConfirmButton: false,

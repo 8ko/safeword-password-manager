@@ -38,7 +38,7 @@ const SafeLogin = forwardRef((props, ref) => {
         event.preventDefault();
         setValues({ ...values, [props]: event.target.value });
     };
-    
+
     const handlePromptChange = (event) => {
         setValues({ ...values, prompt: event.target.checked });
     };
@@ -86,7 +86,7 @@ const SafeLogin = forwardRef((props, ref) => {
 
             if (title === '' || password === '') {
                 return Swal.fire({
-                    title: 'Error! - Login',
+                    title: 'Error!',
                     text: 'Please fill out the fields.',
                     icon: 'error',
                     showConfirmButton: false,
@@ -120,6 +120,17 @@ const SafeLogin = forwardRef((props, ref) => {
             });
         },
         updateItem() {
+            if (values.title === '' || values.password === '') {
+                return Swal.fire({
+                    title: 'Error!',
+                    text: 'Please fill out the fields.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                    timer: 1500,
+                });
+            }
             Axios.post(`http://localhost:3001/updatelogin/${values.id}`, {
                 title: values.title,
                 username: values.username,
@@ -129,14 +140,14 @@ const SafeLogin = forwardRef((props, ref) => {
                 prompt: values.prompt
             }).then(res => {
                 Swal.fire({
-                title: 'Success!',
-                text: 'Card has been updated.',
-                icon: 'success',
-                confirmButtonColor: '#318ce7',
-                confirmButtonText: 'Okay',
-                showCloseButton: 'true',
-                closeButtonHtml: '&times;',
-                timer: 5000
+                    title: 'Success!',
+                    text: 'Card has been updated.',
+                    icon: 'success',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: 'true',
+                    closeButtonHtml: '&times;',
+                    timer: 5000
                 }).then((result) => {
                     props.onChange(values);
                 });
@@ -144,20 +155,20 @@ const SafeLogin = forwardRef((props, ref) => {
         },
         deleteItem() {
             Axios.delete(`http://localhost:3001/deletelogin/${values.id}`)
-            .then(() => {
-                Swal.fire({
-                title: 'Success!',
-                text: 'Account has been removed from your vault.',
-                icon: 'success',
-                confirmButtonColor: '#318ce7',
-                confirmButtonText: 'Okay',
-                showCloseButton: 'true',
-                closeButtonHtml: '&times;',
-                timer: 5000
-                }).then((result) => {
-                    window.location.reload();
+                .then(() => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Account has been removed from your vault.',
+                        icon: 'success',
+                        confirmButtonColor: '#318ce7',
+                        confirmButtonText: 'Okay',
+                        showCloseButton: 'true',
+                        closeButtonHtml: '&times;',
+                        timer: 5000
+                    }).then((result) => {
+                        window.location.reload();
+                    });
                 });
-            });
         },
     }))
 

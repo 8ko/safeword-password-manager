@@ -72,7 +72,7 @@ const SafeCard = forwardRef((props, ref) => {
             if (title === '' || name === '' || number === '' ||
                 month === '' || year === '' || cvv === '') {
                 return Swal.fire({
-                    title: 'Error! - Card',
+                    title: 'Error!',
                     text: 'Please fill out the fields.',
                     icon: 'error',
                     showConfirmButton: false,
