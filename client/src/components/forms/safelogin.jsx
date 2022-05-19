@@ -1,5 +1,4 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
 
 import Axios from 'axios';
 import Swal from 'sweetalert2';
@@ -20,8 +19,6 @@ import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 
 const SafeLogin = forwardRef((props, ref) => {
-
-    const navigate = useNavigate();
 
     const [values, setValues] = React.useState({
         id: 0,
@@ -45,44 +42,36 @@ const SafeLogin = forwardRef((props, ref) => {
         setValues({ ...values, prompt: event.target.checked });
     };
 
-    // only decrypt password upon clicking show password?
     const handleClickShowPassword = () => {
-        if (values.iv !== '' && !values.decrypted) {
-            decryptPassword({
-                password: values.password,
-                iv: values.iv
-            });
-        } else {
-            setValues({
-                ...values,
-                showPassword: !values.showPassword,
-            });
-        }
+        setValues({
+            ...values,
+            showPassword: !values.showPassword,
+        });
     };
 
+    // invoked when selected item from sidebar or props updated
     useEffect(() => {
         if (props.prop1) {
-            setValues({
-                id: props.prop1.id || 0,
-                title: props.prop1.title || '',
-                username: props.prop1.username || '',
-                password: props.prop1.password || '',
-                website: props.prop1.website || '',
-                note: props.prop1.note || '',
-                prompt: Boolean(props.prop1.prompt) || false,
-                iv: props.prop1.iv || '',
+            // decrypt password upon render
+            Axios.post("http://localhost:3001/decryptpassword", {
+                password: props.prop1.password,
+                iv: props.prop1.iv,
+            }).then((res) => {
+                // update props with decrypted password
+                setValues({
+                    id: props.prop1.id || 0,
+                    title: props.prop1.title || '',
+                    username: props.prop1.username || '',
+                    password: res.data,
+                    website: props.prop1.website || '',
+                    note: props.prop1.note || '',
+                    prompt: Boolean(props.prop1.prompt) || false,
+                    iv: props.prop1.iv || '',
+                    decrypted: true
+                });
             });
         }
     }, [props]);
-
-    const decryptPassword = (encryption) => {
-        Axios.post("http://localhost:3001/decryptpassword", {
-            password: encryption.password,
-            iv: encryption.iv,
-        }).then((res) => {
-            setValues({...values, password: res.data, showPassword: !values.showPassword, decrypted: true});
-        });
-    };
 
     useImperativeHandle(ref, () => ({
         addItem() {
@@ -125,12 +114,10 @@ const SafeLogin = forwardRef((props, ref) => {
                     timer: 5000
                 }).then((result) => {
                     window.location.reload();
-                    navigate('/');
                 });
             });
         },
         updateItem() {
-            console.log(values.iv);
             Axios.post(`http://localhost:3001/updatelogin/${values.id}`, {
                 title: values.title,
                 username: values.username,

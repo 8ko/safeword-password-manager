@@ -80,7 +80,7 @@ const Vault = (props) => {
             <Box sx={{ mb: 4 }}>
                 <h2>Vault</h2>
             </Box>
-            {safeForm()}
+            { safeForm() }
             <Stack direction="row" spacing={2}>
                 <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
                     Update
