@@ -5,7 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
-import AddIcon from '@mui/icons-material/Add';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import InputBase from '@mui/material/InputBase';
 import { styled, alpha } from '@mui/material/styles';
 
@@ -78,11 +78,11 @@ const Appbar = () => {
                 edge="start"
                 color="inherit"
                 aria-label="add to vault"
-                sx={{ ml: 2 }}
+                sx={{ ml: 1 }}
                 component={Link}
                 to="/additem"
               >
-                <AddIcon />
+                <AddCircleRoundedIcon />
               </IconButton>
             </Toolbar>
         </AppBar>

@@ -10,7 +10,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
 const VaultList = ({title, type, list, icon}) => {
-    
     const navigate = useNavigate();
     const handleClick = (data) => {
         navigate('/', { state: { data }});

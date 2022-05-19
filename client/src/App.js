@@ -16,46 +16,66 @@ import Appbar from "./components/appbar";
 import Sidebar from "./components/sidebar";
 import Toolbar from '@mui/material/Toolbar';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';;
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ColorModeContext } from './context/color-context';
+
+import "@fontsource/roboto";
+
 
 function App() {
 
-  const theme = createTheme({
+  const light = createTheme({
     palette: {
       mode: "light",
     }
   });
 
-  const darkTheme = createTheme({
+  const dark = createTheme({
     palette: {
       mode: "dark",
     }
   });
 
+  const [isDark, setAsDark] = React.useState(false);
+  const colorMode = React.useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setAsDark((isDark) => !isDark);
+      },
+    }),
+    []
+  );
+
   const drawerWidth = 200;
   const bottomNavHeight = 7;
 
   return (
-    <div className="App">
-      <Router>
-        <Box sx={{ display: 'flex' }}>
-          <CssBaseline />
-          <Appbar />
-          <Sidebar width={drawerWidth} />
-          <Box component="main" sx={{ flexGrow: 1, p: 4, mb: bottomNavHeight }}>
-            <Toolbar />
-            <Routes>
-              <Route path="/" element={<Vault />} />
-              <Route path="/additem" element={<AddItem />} />
-              <Route path="/generator" element={<Generator />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/emptyvault" element={<EmptyVault />} />
-            </Routes>
-          </Box>
-        </Box>
-        <BottomNav />
-      </Router>
-    </div>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={isDark ? dark : light}>
+        <CssBaseline />
+        <div className="App">
+          <Router>
+            <Box sx={{ display: 'flex' }}>
+              <Appbar />
+              <Sidebar width={drawerWidth} />
+              <Box component="main" sx={{ flexGrow: 1, p: 4, mb: bottomNavHeight }}>
+                <Toolbar />
+                <Routes>
+                  <Route path="/" element={<Vault />} />
+                  <Route path="/additem" element={<AddItem />} />
+                  <Route path="/generator" element={<Generator />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/emptyvault" element={<EmptyVault />} />
+                </Routes>
+              </Box>
+            </Box>
+            <BottomNav />
+          </Router>
+        </div>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+
+
   );
 }
 

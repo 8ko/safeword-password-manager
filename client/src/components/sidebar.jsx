@@ -17,10 +17,13 @@ import VaultList from './vaultlist';
 import { VaultItemTypes } from '../constants';
 
 const Sidebar = (width) => {
+
     const [loginList, setLoginList] = useState([]);
     const [cardList, setCardList] = useState([]);
     const [noteList, setNoteList] = useState([]);
     const location = useLocation();
+
+
 
     useEffect(() => {
         Axios.get("http://localhost:3001/showlogins").then((res) => {
