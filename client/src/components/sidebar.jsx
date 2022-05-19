@@ -14,6 +14,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
 
 import VaultList from './vaultlist';
+import { VaultItemTypes } from '../constants';
 
 const Sidebar = (width) => {
     const [loginList, setLoginList] = useState([]);
@@ -45,11 +46,11 @@ const Sidebar = (width) => {
             >
                 <Toolbar />
                 <Box sx={{ overflow: 'hidden' }}>
-                <VaultList title="Logins" type={1} list={loginList} icon={<LanguageRoundedIcon />} />
+                <VaultList title="Logins" type={VaultItemTypes.Login} list={loginList} icon={<LanguageRoundedIcon />} />
                 <Divider />
-                <VaultList title="Cards" type={2} list={cardList} icon={<CreditCardIcon />} />
+                <VaultList title="Cards" type={VaultItemTypes.Card} list={cardList} icon={<CreditCardIcon />} />
                 <Divider />
-                <VaultList title="Notes" type={3} list={noteList} icon={<ArticleRoundedIcon />} />
+                <VaultList title="Notes" type={VaultItemTypes.Note} list={noteList} icon={<ArticleRoundedIcon />} />
                 </Box>
             </Drawer>
         </>

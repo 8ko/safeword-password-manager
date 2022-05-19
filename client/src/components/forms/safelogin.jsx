@@ -18,6 +18,9 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 
+import { VaultItemTypes } from '../../constants';
+import validateSafeForm from './validateSafeForm';
+
 const SafeLogin = forwardRef((props, ref) => {
 
     const [values, setValues] = React.useState({
@@ -77,14 +80,7 @@ const SafeLogin = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         addItem() {
-            var title = values.title;
-            var username = values.username;
-            var password = values.password;
-            var website = values.website;
-            var note = values.note;
-            var prompt = values.prompt;
-
-            if (title === '' || password === '') {
+            if (Object.keys(validateSafeForm(values, VaultItemTypes.Login)).length) {
                 return Swal.fire({
                     title: 'Error!',
                     text: 'Please fill out the fields.',
@@ -97,12 +93,12 @@ const SafeLogin = forwardRef((props, ref) => {
             }
 
             Axios.post("http://localhost:3001/addlogin", {
-                title: title,
-                username: username,
-                password: password,
-                website: website,
-                note: note,
-                prompt: prompt
+                title: values.title,
+                username: values.username,
+                password: values.password,
+                website: values.website,
+                note: values.note,
+                prompt: values.prompt
             }).then(res => {
                 Swal.fire({
                     title: 'Success!',
@@ -119,8 +115,9 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             });
         },
+
         updateItem() {
-            if (values.title === '' || values.password === '') {
+            if (Object.keys(validateSafeForm(values, VaultItemTypes.Login)).length) {
                 return Swal.fire({
                     title: 'Error!',
                     text: 'Please fill out the fields.',
@@ -131,6 +128,7 @@ const SafeLogin = forwardRef((props, ref) => {
                     timer: 1500,
                 });
             }
+
             Axios.post(`http://localhost:3001/updatelogin/${values.id}`, {
                 title: values.title,
                 username: values.username,
@@ -149,10 +147,11 @@ const SafeLogin = forwardRef((props, ref) => {
                     closeButtonHtml: '&times;',
                     timer: 5000
                 }).then((result) => {
-                    props.onChange(values);
+                    props.onUpdate(values);
                 });
             });
         },
+        
         deleteItem() {
             Axios.delete(`http://localhost:3001/deletelogin/${values.id}`)
                 .then(() => {
@@ -166,7 +165,7 @@ const SafeLogin = forwardRef((props, ref) => {
                         closeButtonHtml: '&times;',
                         timer: 5000
                     }).then((result) => {
-                        window.location.reload();
+                        props.onDelete();
                     });
                 });
         },

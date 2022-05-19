@@ -13,6 +13,8 @@ import SafeLogin from '../components/forms/safelogin';
 import SafeCard from '../components/forms/safecard';
 import SafeNote from '../components/forms/safenote';
 
+import { VaultItemTypes } from '../constants';
+
 const Vault = (props) => {
 
     const navigate = useNavigate();
@@ -22,58 +24,65 @@ const Vault = (props) => {
     const location = useLocation();
     const state = location.state || {};
 
-    const [firstItem, setFirstItem] = useState([]);
+    const [defaultItem, setDefaultItem] = useState([]);
     const [lastItem, setLastItem] = useState([]);
+    const [didDelete, setDidDelete] = useState(false);
 
     useEffect(() => {
-        if (state.data) return;
-        Axios.get("http://localhost:3001/showlogins").then((res) => {
-            if (res.data.length > 0) {
-                setFirstItem({...res.data[0], type: 1});
-                return;
-            } else {
-                Axios.get("http://localhost:3001/showcards").then((res) => {
-                    if (res.data.length > 0) {
-                        setFirstItem({...res.data[0], type: 2});
-                        return;
-                    } else {
-                        Axios.get("http://localhost:3001/shownotes").then((res) => {
-                            if (res.data.length > 0) {
-                                setFirstItem({...res.data[0], type: 3});
-                                return;
-                            }
-                        });
-                    }
-                });
-            }
-        });
+        // get first item in vault if user came from different page
+        if (!state.data) {
+            Axios.get("http://localhost:3001/showlogins").then((res) => {
+                if (res.data.length > 0) {
+                    setDefaultItem({...res.data[0], type: VaultItemTypes.Login});
+                } else {
+                    Axios.get("http://localhost:3001/showcards").then((res) => {
+                        if (res.data.length > 0) {
+                            setDefaultItem({...res.data[0], type: VaultItemTypes.Card});
+                        } else {
+                            Axios.get("http://localhost:3001/shownotes").then((res) => {
+                                if (res.data.length > 0) {
+                                    setDefaultItem({...res.data[0], type: VaultItemTypes.Note});
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
     }, [state.data]);
     
     function handleUpdate(data) {
         setLastItem(data);
     }
+    
+    function handleDelete() {
+        setDidDelete(true);
+        // dirty trick to select first item in vault after deleting
+        navigate('/emptyvault');
+        navigate('/');
+    }
 
     const safeForm = () => {
-
         var data = [];
         var type = 0;
-
-        if (state.data) {
+        
+        if (state.data && !didDelete) {
             data = state.data.id === lastItem.id ? lastItem : state.data;
             type = state.data.type;
         } else {
-            data = firstItem;
-            type = firstItem.type;
+            data = defaultItem;
+            type = defaultItem.type;
         }
 
-        if (type === 1)
-            return <SafeLogin ref={child} prop1={data} onChange={handleUpdate} />
-        else if (type === 2)
-            return <SafeCard ref={child} prop1={data} onChange={handleUpdate} />
-        else if (type === 3)
-            return <SafeNote ref={child} prop1={data} onChange={handleUpdate} />
-        else
-            return navigate('/emptyvault');
+        if (type === VaultItemTypes.Login) {
+            return <SafeLogin ref={child} prop1={data} onUpdate={handleUpdate} onDelete={handleDelete} />
+        } else if (type === VaultItemTypes.Card) {
+            return <SafeCard ref={child} prop1={data} onUpdate={handleUpdate} onDelete={handleDelete} />
+        } else if (type === VaultItemTypes.Note) {
+            return <SafeNote ref={child} prop1={data} onUpdate={handleUpdate} onDelete={handleDelete} />
+        } else {
+            navigate('/emptyvault');
+        }
     }
 
     return (

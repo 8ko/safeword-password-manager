@@ -17,6 +17,9 @@ import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
+import { VaultItemTypes } from '../../constants';
+import validateSafeForm from './validateSafeForm';
+
 const SafeCard = forwardRef((props, ref) => {
 
     const [values, setValues] = React.useState({
@@ -60,17 +63,7 @@ const SafeCard = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         addItem() {
-            var title = values.title;
-            var name = values.name;
-            var number = values.number;
-            var month = values.month;
-            var year = values.year;
-            var cvv = values.cvv;
-            var note = values.note;
-            var prompt = values.prompt;
-
-            if (title === '' || name === '' || number === '' ||
-                month === '' || year === '' || cvv === '') {
+            if (Object.keys(validateSafeForm(values, VaultItemTypes.Card)).length) {
                 return Swal.fire({
                     title: 'Error!',
                     text: 'Please fill out the fields.',
@@ -83,14 +76,14 @@ const SafeCard = forwardRef((props, ref) => {
             }
 
             Axios.post("http://localhost:3001/addcard", {
-                title: title,
-                name: name,
-                number: number,
-                month: month,
-                year: year,
-                cvv: cvv,
-                note: note,
-                prompt: prompt
+                title: values.title,
+                name: values.name,
+                number: values.number,
+                month: values.month,
+                year: values.year,
+                cvv: values.cvv,
+                note: values.note,
+                prompt: values.prompt
             }).then(res => {
                 Swal.fire({
                     title: 'Success!',
@@ -107,7 +100,20 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             });
         },
+
         updateItem() {
+            if (Object.keys(validateSafeForm(values, VaultItemTypes.Card)).length) {
+                return Swal.fire({
+                    title: 'Error!',
+                    text: 'Please fill out the fields.',
+                    icon: 'error',
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                    timer: 1500,
+                });
+            }
+
             Axios.post(`http://localhost:3001/updatecard/${values.id}`, {
                 title: values.title,
                 name: values.name,
@@ -128,10 +134,11 @@ const SafeCard = forwardRef((props, ref) => {
                 closeButtonHtml: '&times;',
                 timer: 5000
                 }).then((result) => {
-                    props.onChange(values);
+                    props.onUpdate(values);
                 });
             });
         },
+        
         deleteItem() {
             Axios.delete(`http://localhost:3001/deletecard/${values.id}`)
             .then(() => {
@@ -145,7 +152,7 @@ const SafeCard = forwardRef((props, ref) => {
                 closeButtonHtml: '&times;',
                 timer: 5000
                 }).then((result) => {
-                    window.location.reload();
+                    props.onDelete();
                 });
             });
         },
