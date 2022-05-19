@@ -16,7 +16,21 @@ import Appbar from "./components/appbar";
 import Sidebar from "./components/sidebar";
 import Toolbar from '@mui/material/Toolbar';
 
+import { ThemeProvider, createTheme } from '@mui/material/styles';;
+
 function App() {
+
+  const theme = createTheme({
+    palette: {
+      mode: "light",
+    }
+  });
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: "dark",
+    }
+  });
 
   const drawerWidth = 200;
   const bottomNavHeight = 7;

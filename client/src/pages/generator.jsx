@@ -126,7 +126,7 @@ const Generator = forwardRef((props, ref) => {
                             </IconButton>
                             <IconButton
                                 aria-label="generate password"
-                                onClick={generatePassword}
+                                onClick={() => generatePassword(values)}
                                 edge="end"
                             >
                                 <CachedIcon />
