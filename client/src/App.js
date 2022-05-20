@@ -29,7 +29,7 @@ import useAuth from './hooks/useAuth';
 
 function App() {
 
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
 
   let light = createTheme({
     palette: {
@@ -54,6 +54,11 @@ function App() {
     }),
     []
   );
+
+  // uncomment to bypass auth screen
+  // React.useEffect(() => {
+  //   setAuth({email:'bypass'});
+  // }, []);
 
   return (
     <div className="App">
