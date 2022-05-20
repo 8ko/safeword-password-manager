@@ -14,19 +14,21 @@ const BottomNav = () => {
 
     return (
         <>
-            <Paper sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-            <Divider />
-            <BottomNavigation
-            showLabels
-            value={value}
-            onChange={(event, newValue) => {
-                setValue(newValue);
-            }}
-            >
-                <BottomNavigationAction component={Link} to="/" label="Vault" value="vault" icon={<LockRoundedIcon />} />
-                <BottomNavigationAction component={Link} to="/generator" label="Generator" value="generator" icon={<CachedRoundedIcon />} />
-                <BottomNavigationAction component={Link} to="/settings" label="Settings" value="settings" icon={<SettingsIcon />} />
-            </BottomNavigation>
+            <Paper
+                elevation={4}
+                sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+                <Divider />
+                <BottomNavigation
+                    showLabels
+                    value={value}
+                    onChange={(event, newValue) => {
+                        setValue(newValue);
+                    }}
+                >
+                    <BottomNavigationAction component={Link} to="/" label="Vault" value="vault" icon={<LockRoundedIcon />} />
+                    <BottomNavigationAction component={Link} to="/generator" label="Generator" value="generator" icon={<CachedRoundedIcon />} />
+                    <BottomNavigationAction component={Link} to="/settings" label="Settings" value="settings" icon={<SettingsIcon />} />
+                </BottomNavigation>
             </Paper>
         </>
     );

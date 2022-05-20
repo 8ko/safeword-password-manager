@@ -62,6 +62,7 @@ export default function AddItem() {
       }
       <Button
         variant="outlined"
+        sx={{ display: 'flex', alignItems: 'flex-start' }}
         onClick={() => child.current.addItem()}
         startIcon=
         {
