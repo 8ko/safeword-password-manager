@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import Box from "@mui/material/Box";
 import Button from '@mui/material/Button';
 import TextField from "@mui/material/TextField";
-
 import { Typography } from '@mui/material';
 
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
@@ -23,15 +22,20 @@ const ForgotPassword = () => {
         setErrMsg('');
     }, [email]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    }
+
     return (
         <>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
             <Box sx={{ mr: 2 }}>
-                <form /*onSubmit={handleSubmit}*/>
+                <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center' }}>
                         Forgot Password
                     </Typography>
+
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
                         <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
                         <TextField
@@ -54,15 +58,14 @@ const ForgotPassword = () => {
                             Send Confirmation
                         </Button>
                     </Box>
+
                     <Box sx={{ textAlign: 'center', mt: 4 }}>
                         <Typography variant="overline" >
                             <Link to="/login" style={{ textDecoration: 'none' }}>Back to login</Link>
                         </Typography>
                     </Box>
-
                 </form>
             </Box>
-
         </>
     )
 }

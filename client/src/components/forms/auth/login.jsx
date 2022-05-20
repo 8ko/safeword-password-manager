@@ -55,8 +55,8 @@ const Login = () => {
                     withCredentials: true
                 }
             );
-            const accessToken = response?.data?.accessToken;
-            setAuth({ email, accessToken });
+            const hashedPassword = response?.data?.password;
+            setAuth({ email, hashedPassword });
             setEmail('');
             setPwd('');
             navigate(from, { replace: true });
@@ -73,7 +73,7 @@ const Login = () => {
             errRef.current.focus();
         }
     }
-//
+
     return (
         <>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
@@ -140,10 +140,8 @@ const Login = () => {
                             No account? <Link to="/register" style={{ textDecoration: 'none' }}>sign up</Link>
                         </Typography>
                     </Box>
-
                 </form>
             </Box>
-
         </>
     )
 }

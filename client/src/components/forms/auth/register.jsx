@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, { useRef, useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import "./../../../App.css";
@@ -45,7 +46,6 @@ const Register = () => {
     const [pwdFocus, setPwdFocus] = useState(false);
 
     const [errMsg, setErrMsg] = useState('');
-    const [success, setSuccess] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => {
@@ -94,10 +94,10 @@ const Register = () => {
                     withCredentials: true
                 }
             )
-            // console.log(response.data);
+            console.log(response?.data);
             // console.log(response.accessToken);
             // console.log(JSON.stringify(response));
-            setSuccess(true);
+            // setSuccess(true);
             // clear input fields
         } catch (err) {
             if (!err?.response) {
@@ -121,7 +121,7 @@ const Register = () => {
         const helperText = () => {
             if (pwd && !validPwd) {
                 return (
-                    <FormHelperText component={'span'} error={true}>
+                    <FormHelperText component={'span'} error={!pwdFocus}>
                         At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
                     </FormHelperText>
                 )
@@ -146,10 +146,8 @@ const Register = () => {
             } else {
                 return 'Avoid sharing your master password to anyone.';
             }
-
         };
         return <FormHelperText>{helperText()}</FormHelperText>;
-
     }
 
     return (
@@ -212,7 +210,7 @@ const Register = () => {
                                 onChange={(e) => setPwd(e.target.value)}
                                 onFocus={() => setPwdFocus(true)}
                                 onBlur={() => setPwdFocus(false)}
-                                error={!!pwd && !validPwd ? true : false}
+                                error={!pwdFocus && pwd && !validPwd ? true : false}
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton
@@ -244,7 +242,6 @@ const Register = () => {
                             Have an account? <Link to="/login" style={{ textDecoration: 'none' }}>log in</Link>
                         </Typography>
                     </Box>
-
                 </form>
             </Box>
         </>
