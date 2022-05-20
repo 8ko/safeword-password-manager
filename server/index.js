@@ -169,6 +169,17 @@ app.delete("/deletenote/:id", (req, res) => {
     });
 });
 
+app.post("/auth", (req, res) => {
+    const { email, password } = req.body;
+    db.query("SELECT * FROM users WHERE email=?", email, (err, result) => {
+        if (!err) {
+            res.send(result);
+        } else {
+            console.log(err);
+        }
+    });
+});
+
 app.post("/decryptpassword", (req, res) => {
     res.send(decrypt(req.body));
 });
