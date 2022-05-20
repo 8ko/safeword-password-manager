@@ -2,8 +2,10 @@ import * as React from 'react';
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Box from '@mui/material/Box';
+import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { ColorModeContext } from './context/color-context';
 import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
 
 import Vault from "./pages/vault";
 import AddItem from "./pages/additem";
@@ -16,25 +18,31 @@ import Appbar from "./components/appbar";
 import Sidebar from "./components/sidebar";
 import Toolbar from '@mui/material/Toolbar';
 
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { ColorModeContext } from './context/color-context';
+import Login from "./components/forms/auth/login";
+import Register from "./components/forms/auth/register";
+import ForgotPassword from "./components/forms/auth/forgotpassword";
 
 import "@fontsource/roboto";
-
+import RequireAuth from './components/RequireAuth';
 
 function App() {
 
-  const light = createTheme({
+  const drawerWidth = 200;
+  const bottomNavHeight = 7;
+
+  let light = createTheme({
     palette: {
       mode: "light",
     }
   });
+  light = responsiveFontSizes(light);
 
-  const dark = createTheme({
+  let dark = createTheme({
     palette: {
       mode: "dark",
     }
   });
+  dark = responsiveFontSizes(dark);
 
   const [isDark, setAsDark] = React.useState(false);
   const colorMode = React.useMemo(
@@ -46,36 +54,36 @@ function App() {
     []
   );
 
-  const drawerWidth = 200;
-  const bottomNavHeight = 7;
-
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={isDark ? dark : light}>
-        <CssBaseline />
-        <div className="App">
+    <div className="App">
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={isDark ? dark : light}>
+          <CssBaseline />
           <Router>
             <Box sx={{ display: 'flex' }}>
               <Appbar />
-              <Sidebar width={drawerWidth} />
+              {/* <Sidebar width={drawerWidth} /> */}
               <Box component="main" sx={{ flexGrow: 1, p: 4, mb: bottomNavHeight }}>
                 <Toolbar />
                 <Routes>
-                  <Route path="/" element={<Vault />} />
-                  <Route path="/additem" element={<AddItem />} />
-                  <Route path="/generator" element={<Generator />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/emptyvault" element={<EmptyVault />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgotpassword" element={<ForgotPassword />} />
+                  <Route element={<RequireAuth />}>
+                    <Route path="/" element={<Vault />} />
+                    <Route path="/additem" element={<AddItem />} />
+                    <Route path="/generator" element={<Generator />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/emptyvault" element={<EmptyVault />} />
+                  </Route>
                 </Routes>
               </Box>
             </Box>
             <BottomNav />
           </Router>
-        </div>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
-
-
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </div>
   );
 }
 
