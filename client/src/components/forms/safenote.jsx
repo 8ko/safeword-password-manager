@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
 
-import Axios from 'axios';
+import axios from '../../api/axios';
 import Swal from 'sweetalert2';
 
 import Typography from '@mui/material/Typography';
@@ -57,7 +57,7 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
-            Axios.post("http://localhost:3001/addnote", {
+            axios.post('/addnote', {
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt
@@ -91,7 +91,7 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
-            Axios.post(`http://localhost:3001/updatenote/${values.id}`, {
+            axios.post(`/updatenote/${values.id}`, {
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt
@@ -112,7 +112,7 @@ const SafeNote = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            Axios.delete(`http://localhost:3001/deletenote/${values.id}`)
+            axios.delete(`/deletenote/${values.id}`)
             .then(() => {
                 Swal.fire({
                 title: 'Success!',

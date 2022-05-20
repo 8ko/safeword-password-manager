@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
 
-import Axios from 'axios';
+import axios from '../../api/axios';
 import Swal from 'sweetalert2';
 
 import Typography from '@mui/material/Typography';
@@ -57,7 +57,7 @@ const SafeLogin = forwardRef((props, ref) => {
     useEffect(() => {
         if (props.prop1 && props.prop1.password) {
             // decrypt password upon render
-            Axios.post("http://localhost:3001/decryptpassword", {
+            axios.post('/decryptpassword', {
                 password: props.prop1.password,
                 iv: props.prop1.iv,
             }).then((res) => {
@@ -92,7 +92,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
-            Axios.post("http://localhost:3001/addlogin", {
+            axios.post('/addlogin', {
                 title: values.title,
                 username: values.username,
                 password: values.password,
@@ -129,7 +129,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
-            Axios.post(`http://localhost:3001/updatelogin/${values.id}`, {
+            axios.post(`/updatelogin/${values.id}`, {
                 title: values.title,
                 username: values.username,
                 password: values.password,
@@ -153,7 +153,7 @@ const SafeLogin = forwardRef((props, ref) => {
         },
         
         deleteItem() {
-            Axios.delete(`http://localhost:3001/deletelogin/${values.id}`)
+            axios.delete(`/deletelogin/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',

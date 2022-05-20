@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
 
-import Axios from 'axios';
+import axios from '../../api/axios';
 import Swal from 'sweetalert2';
 
 import Typography from '@mui/material/Typography';
@@ -75,7 +75,7 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
-            Axios.post("http://localhost:3001/addcard", {
+            axios.post('/addcard', {
                 title: values.title,
                 name: values.name,
                 number: values.number,
@@ -114,7 +114,7 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
-            Axios.post(`http://localhost:3001/updatecard/${values.id}`, {
+            axios.post(`/updatecard/${values.id}`, {
                 title: values.title,
                 name: values.name,
                 number: values.number,
@@ -140,7 +140,7 @@ const SafeCard = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            Axios.delete(`http://localhost:3001/deletecard/${values.id}`)
+            axios.delete(`/deletecard/${values.id}`)
             .then(() => {
                 Swal.fire({
                 title: 'Success!',
