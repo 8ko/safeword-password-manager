@@ -127,7 +127,7 @@ const Login = () => {
                     </Box>
 
                     <Typography variant="subtitle2" sx={{ mt: 0.5, textAlign: 'right' }}>
-                        <Link to="/register" style={{ textDecoration: 'none' }}>Forgot password?</Link>
+                        <Link to="/forgotpassword" style={{ textDecoration: 'none' }}>Forgot password?</Link>
                     </Typography>
 
                     <Box sx={{ textAlign: 'center', mt: 2.5, }}>

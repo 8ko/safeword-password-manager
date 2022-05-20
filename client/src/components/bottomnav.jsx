@@ -15,10 +15,10 @@ const BottomNav = () => {
     return (
         <>
             <Paper
-                elevation={4}
                 sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, position: 'fixed', bottom: 0, left: 0, right: 0 }}>
                 <Divider />
                 <BottomNavigation
+                    color="primary"
                     showLabels
                     value={value}
                     onChange={(event, newValue) => {

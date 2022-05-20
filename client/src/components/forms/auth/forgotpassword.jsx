@@ -1,34 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import useAuth from "../../../hooks/useAuth";
-import axios from "../../../api/axios";
+import { Link } from 'react-router-dom';
 
 import Box from "@mui/material/Box";
-import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import TextField from "@mui/material/TextField";
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import { Typography } from '@mui/material';
 
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
-import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
-import IconButton from '@mui/material/IconButton';
-
-const LOGIN_URL = '/auth';
 
 //implement? send otp instead
 
 const ForgotPassword = () => {
-    const { setAuth } = useAuth();
-
-    const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
 
     const userRef = useRef();
     const errRef = useRef();
@@ -39,8 +22,6 @@ const ForgotPassword = () => {
     useEffect(() => {
         setErrMsg('');
     }, [email]);
-
-
 
     return (
         <>
@@ -58,7 +39,6 @@ const ForgotPassword = () => {
                             id="email"
                             value={email}
                             ref={userRef}
-                            required
                             autoComplete="off"
                             placeholder="user@email.com"
                             label="Email"

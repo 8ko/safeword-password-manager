@@ -15,6 +15,7 @@ import EmptyVault from "./pages/emptyvault";
 
 import BottomNav from "./components/bottomnav";
 import Appbar from "./components/appbar";
+import AppbarGuest from './components/appbarguest';
 import Sidebar from "./components/sidebar";
 import Toolbar from '@mui/material/Toolbar';
 
@@ -23,12 +24,12 @@ import Register from "./components/forms/auth/register";
 import ForgotPassword from "./components/forms/auth/forgotpassword";
 
 import "@fontsource/roboto";
-import RequireAuth from './components/RequireAuth';
+import RequireAuth from './components/requireauth';
+import useAuth from './hooks/useAuth';
 
 function App() {
 
-  const drawerWidth = 200;
-  const bottomNavHeight = 7;
+  const { auth } = useAuth();
 
   let light = createTheme({
     palette: {
@@ -61,9 +62,9 @@ function App() {
           <CssBaseline />
           <Router>
             <Box sx={{ display: 'flex' }}>
-              <Appbar />
-              {/* <Sidebar width={drawerWidth} /> */}
-              <Box component="main" sx={{ flexGrow: 1, p: 4, mb: bottomNavHeight }}>
+              { auth?.email ? <Appbar /> : <AppbarGuest /> }
+              { auth?.email ? <Sidebar width={200} /> : <></> }
+              <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
                 <Toolbar />
                 <Routes>
                   <Route path="/login" element={<Login />} />
@@ -79,7 +80,7 @@ function App() {
                 </Routes>
               </Box>
             </Box>
-            <BottomNav />
+            { auth?.email ? <BottomNav /> : <></> }
           </Router>
         </ThemeProvider>
       </ColorModeContext.Provider>

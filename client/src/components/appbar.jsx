@@ -62,7 +62,7 @@ const Appbar = () => {
                 component="div"
                 sx={{ mr: 2 }}
               >
-                Safe<mark>Word</mark>
+                Safe&nbsp;<mark>Word</mark>
               </Typography>
               <Search sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}>
                 <SearchIconWrapper>

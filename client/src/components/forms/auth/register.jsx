@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import "./../../../App.css";
 
 import Box from "@mui/material/Box";
@@ -18,7 +18,7 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import IconButton from '@mui/material/IconButton';
-import { styled } from '@mui/material/styles';
+// import { styled } from '@mui/material/styles';
 
 import axios from "../../../api/axios";
 
@@ -112,51 +112,38 @@ const Register = () => {
     }
 
     function MyFormHelperText() {
-        const helperTextStyles = styled('MuiFormHelperText')({
-            '& .MuiFormHelperText-root': {
-                color: '#4caf50',
-            }
-        });
+        // const helperTextStyles = styled('MuiFormHelperText')({
+        //     '& .MuiFormHelperText-root': {
+        //         color: '#4caf50',
+        //     }
+        // });
+
         const helperText = () => {
-            if (!!pwd && !validPwd) {
+            if (pwd && !validPwd) {
                 return (
-                    <FormHelperText
-                        component={'span'}
-                        error={true}
-                    >
+                    <FormHelperText component={'span'} error={true}>
                         At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
                     </FormHelperText>
                 )
-            } else if (!!pwd && !validPwd) {
-                return (
-                    <FormHelperText
-                        component={'span'}
-                        error={true}
-                    >
-                        At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
-                    </FormHelperText>
-                )
-            } else if (!!pwd && pwdFocus && validPwd) {
-                //helper text should be green >:(= nvm fuck you
-                return (
-                    <FormHelperText
-                        component={'span'}
-                        sx={{
-                            '& .MuiFormHelperText-root': {
-                                color: '#4caf50 !important',
-                            },
-                        }}
-                        style={{
-                            '& .css-1d1r5q-MuiFormHelperText-root': {
-                                color: '#4caf50 !important',
-                            },
-                        }}
-                    >
-                        Avoid sharing your master password to anyone.
-                    </FormHelperText>
-                )
-            }
-            else {
+            // } else if (pwd && pwdFocus && validPwd) {
+            //     return (
+            //         <FormHelperText
+            //             component={'span'}
+            //             sx={{
+            //                 '& .MuiFormHelperText-root': {
+            //                     color: '#4caf50 !important',
+            //                 },
+            //             }}
+            //             style={{
+            //                 '& .css-1d1r5q-MuiFormHelperText-root': {
+            //                     color: '#4caf50 !important',
+            //                 },
+            //             }}
+            //         >
+            //             Avoid sharing your master password to anyone.
+            //         </FormHelperText>
+            //     )
+            } else {
                 return 'Avoid sharing your master password to anyone.';
             }
 
@@ -177,6 +164,7 @@ const Register = () => {
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
                         <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
                         <TextField
+                            required
                             id="email"
                             ref={userRef}
                             autoComplete="off"
@@ -195,6 +183,7 @@ const Register = () => {
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
                         <PhoneIphoneIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
                         <TextField
+                            required
                             id="phone"
                             autoComplete="off"
                             placeholder="0912 345 6789"
@@ -214,6 +203,7 @@ const Register = () => {
                         <FormControl fullWidth variant="standard">
                             <InputLabel htmlFor="standard-adornment-password">Master password</InputLabel>
                             <Input
+                                required
                                 id="password"
                                 autoComplete="off"
                                 label="Master Password"
