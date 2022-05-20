@@ -4,7 +4,11 @@ const mysql = require("mysql");
 const cors = require("cors");
 const PORT = 3001;
 
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 const { encrypt, decrypt } = require("./EncryptionHandler");
+const { response } = require("express");
 
 app.use(cors());
 app.use(express.json());
@@ -169,15 +173,33 @@ app.delete("/deletenote/:id", (req, res) => {
     });
 });
 
-app.post("/auth", (req, res) => {
+app.post("/auth", async (req, res) => {
     const { email, password } = req.body;
-    db.query("SELECT * FROM users WHERE email=?", email, (err, result) => {
-        if (!err) {
-            res.send(result);
-        } else {
-            console.log(err);
-        }
-    });
+    // return res.send();
+
+    if (email && password) {
+        db.query("SELECT * FROM users WHERE email=?", email, (err, result) => {
+            if (err) throw err;
+            if (result.length > 0) {
+                return res.send(result[0].password);
+                bcrypt.compare(password, result[0].password, function(err, match) {
+                    if (match) {
+                        res.send(result[0]);
+                    } else {
+                        console.log('401');
+                        res.status(401).send();
+                    }
+                });
+            } else {
+                console.log('401');
+                res.status(401).send();
+            }
+            res.end();
+        });
+    } else {
+        res.status(400).send();
+        res.end();
+    }
 });
 
 app.post("/decryptpassword", (req, res) => {
