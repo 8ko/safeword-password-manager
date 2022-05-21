@@ -111,7 +111,8 @@ const Vault = (props) => {
         } else {
             data = defaultItem;
         }
-        return format(new Date(String(data?.updated_at)), 'MMM dd, yyyy, h:i:s a') || '';
+        if (!data?.updated_at) return '';
+        return format(new Date(String(data.updated_at)), 'MMM dd, yyyy, h:i:s a');
     }
 
     return (
