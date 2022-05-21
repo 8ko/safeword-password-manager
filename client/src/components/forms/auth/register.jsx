@@ -13,12 +13,15 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Stack from '@mui/material/Stack';
 
 import { Typography } from '@mui/material';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import IconButton from '@mui/material/IconButton';
+import Checkbox from '@mui/material/Checkbox';
+
 // import { styled } from '@mui/material/styles';
 
 import axios from "../../../api/axios";
@@ -47,6 +50,11 @@ const Register = () => {
     const [pwdFocus, setPwdFocus] = useState(false);
 
     const [errMsg, setErrMsg] = useState('');
+
+    const [checked, setChecked] = React.useState(true);
+    const handleChange = (event) => {
+        setChecked(event.target.checked);
+    };
 
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => {
@@ -88,12 +96,12 @@ const Register = () => {
             return;
         }
         try {
-            await axios.post(REGISTER_URL, 
+            await axios.post(REGISTER_URL,
                 JSON.stringify({ email, phone, pwd }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
-                }    
+                }
             );
             // console.log(response?.data);
             // console.log(response.accessToken);
@@ -123,24 +131,24 @@ const Register = () => {
                         At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
                     </FormHelperText>
                 )
-            // } else if (pwd && pwdFocus && validPwd) {
-            //     return (
-            //         <FormHelperText
-            //             component={'span'}
-            //             sx={{
-            //                 '& .MuiFormHelperText-root': {
-            //                     color: '#4caf50 !important',
-            //                 },
-            //             }}
-            //             style={{
-            //                 '& .css-1d1r5q-MuiFormHelperText-root': {
-            //                     color: '#4caf50 !important',
-            //                 },
-            //             }}
-            //         >
-            //             Avoid sharing your master password to anyone.
-            //         </FormHelperText>
-            //     )
+                // } else if (pwd && pwdFocus && validPwd) {
+                //     return (
+                //         <FormHelperText
+                //             component={'span'}
+                //             sx={{
+                //                 '& .MuiFormHelperText-root': {
+                //                     color: '#4caf50 !important',
+                //                 },
+                //             }}
+                //             style={{
+                //                 '& .css-1d1r5q-MuiFormHelperText-root': {
+                //                     color: '#4caf50 !important',
+                //                 },
+                //             }}
+                //         >
+                //             Avoid sharing your master password to anyone.
+                //         </FormHelperText>
+                //     )
             } else {
                 return 'Avoid sharing your master password to anyone.';
             }
@@ -154,7 +162,7 @@ const Register = () => {
             <Box sx={{ pr: 4 }}>
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
-                        sx={{ textAlign: 'center' }}>
+                        sx={{ textAlign: 'center', mb: 1 }}>
                         Create an Account
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
@@ -194,7 +202,7 @@ const Register = () => {
                         />
                     </Box>
 
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3 }}>
                         <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3 }} />
                         <FormControl fullWidth variant="standard">
                             <InputLabel htmlFor="standard-adornment-password">Master password</InputLabel>
@@ -225,7 +233,25 @@ const Register = () => {
                         </FormControl>
                     </Box>
 
-                    <Box sx={{ textAlign: 'center', mt: 2.5 }}>
+                    <Stack direction="row"
+                        justifyContent="center"
+                        sx={{
+                            textAlign: 'center',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }} >
+                        <Checkbox
+                        size="small"
+                            checked={checked}
+                            onChange={handleChange}
+                            inputProps={{ 'aria-label': 'controlled' }}
+                        />
+                        <Typography variant="overline" style={{ display: "inline-block", lineHeight: '16px' }} >
+                            I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>terms & conditions</Link>
+                        </Typography>
+                    </Stack>
+
+                    <Box sx={{ textAlign: 'center', mt: 3 }}>
                         <Button
                             type="submit"
                             variant="outlined"
@@ -235,7 +261,7 @@ const Register = () => {
                         </Button>
                     </Box>
 
-                    <Box sx={{ textAlign: 'center', mt: 4 }}>
+                    <Box sx={{ textAlign: 'center', mt: 3 }}>
                         <Typography variant="overline" >
                             Have an account? <Link to="/login" style={{ textDecoration: 'none' }}>log in</Link>
                         </Typography>

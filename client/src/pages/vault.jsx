@@ -16,6 +16,7 @@ import { VaultItemTypes } from '../constants';
 
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { Typography } from '@mui/material';
 
 const Vault = (props) => {
 
@@ -33,24 +34,24 @@ const Vault = (props) => {
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
-    
+
     const user = decoded?.id || 0;
 
     useEffect(() => {
         // get first item in vault if user came from different page
         const getFirstItems = async () => {
             try {
-                axiosPrivate.post('/showlogins', {user}).then((res) => {
+                axiosPrivate.post('/showlogins', { user }).then((res) => {
                     if (res.data.length > 0) {
-                        setDefaultItem({...res.data[0], type: VaultItemTypes.Login});
+                        setDefaultItem({ ...res.data[0], type: VaultItemTypes.Login });
                     } else {
-                        axiosPrivate.post('/showcards', {user}).then((res) => {
+                        axiosPrivate.post('/showcards', { user }).then((res) => {
                             if (res.data.length > 0) {
-                                setDefaultItem({...res.data[0], type: VaultItemTypes.Card});
+                                setDefaultItem({ ...res.data[0], type: VaultItemTypes.Card });
                             } else {
-                                axiosPrivate.post('/shownotes', {user}).then((res) => {
+                                axiosPrivate.post('/shownotes', { user }).then((res) => {
                                     if (res.data.length > 0) {
-                                        setDefaultItem({...res.data[0], type: VaultItemTypes.Note});
+                                        setDefaultItem({ ...res.data[0], type: VaultItemTypes.Note });
                                     }
                                 });
                             }
@@ -59,19 +60,19 @@ const Vault = (props) => {
                 });
             } catch (err) {
                 setAuth({});
-                navigate('/login', { state: { from: location }, replace:true });
+                navigate('/login', { state: { from: location }, replace: true });
             }
         }
-        
+
         if (!state.data) {
             getFirstItems();
         }
-    }, [state.data,auth.id]); // eslint-disable-line react-hooks/exhaustive-deps
-    
+    }, [state.data, auth.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
     function handleUpdate(data) {
         setLastItem(data);
     }
-    
+
     function handleDelete() {
         setDidDelete(true);
         // dirty trick to select first item in vault after deleting
@@ -82,7 +83,7 @@ const Vault = (props) => {
     const safeForm = () => {
         var data = [];
         var type = 0;
-        
+
         if (state.data && !didDelete) {
             data = state.data.id === lastItem.id ? lastItem : state.data;
             type = state.data.type;
@@ -105,10 +106,10 @@ const Vault = (props) => {
     return (
         <>
             <Box sx={{ mb: 4 }}>
-                <h2>Vault</h2>
+                <h2>Item Information</h2>
             </Box>
-            { safeForm() }
-            <Stack direction="row" spacing={1.5}>
+            {safeForm()}
+            <Stack direction="row" spacing={1}>
                 <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
                     Update
                 </Button>
@@ -116,6 +117,14 @@ const Vault = (props) => {
                     Delete
                 </Button>
             </Stack>
+
+            <Box sx={{ mt: 1 }}>
+                <Typography variant="caption">
+                    Updated: 11:11 April 20, 2069
+                </Typography>
+            </Box>
+
+
         </>
     );
 }

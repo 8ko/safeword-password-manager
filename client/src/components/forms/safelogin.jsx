@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
@@ -17,7 +18,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
-
+import Tooltip from '@mui/material/Tooltip';
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 
@@ -97,7 +98,7 @@ const SafeLogin = forwardRef((props, ref) => {
                     timer: 1500,
                 });
             }
-            
+
             axios.post('/addlogin', {
                 user: auth?.id,
                 title: values.title,
@@ -158,7 +159,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             });
         },
-        
+
         deleteItem() {
             axios.delete(`/deletelogin/${values.id}`)
                 .then(() => {
@@ -204,13 +205,15 @@ const SafeLogin = forwardRef((props, ref) => {
                     onChange={handleChange('username')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.username)}
-                                edge="end"
-                            >
-                                <ContentCopyRoundedIcon />
-                            </IconButton>
+                            <Tooltip title="Copy">
+                                <IconButton
+                                    aria-label="copy input"
+                                    onClick={() => navigator.clipboard.writeText(values.username)}
+                                    edge="end"
+                                >
+                                    <ContentCopyRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
                         </InputAdornment>
                     }
                 />
@@ -226,27 +229,32 @@ const SafeLogin = forwardRef((props, ref) => {
                     onChange={handleChange('password')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
-                                edge="end"
-                            >
-                                {values.showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.password)}
-                                edge="end"
-                            >
-                                <CheckCircleOutlineRoundedIcon />
-                            </IconButton>
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.password)}
-                                edge="end"
-                            >
-                                <ContentCopyRoundedIcon />
-                            </IconButton>
+                            <Tooltip title="Show/Hide">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={handleClickShowPassword}
+                                    edge="end"
+                                >
+                                    {values.showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Verify security">
+                                <IconButton
+                                    aria-label="copy input"
+                                    edge="end"
+                                >
+                                    <CheckCircleOutlineRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Copy">
+                                <IconButton
+                                    aria-label="copy input"
+                                    onClick={() => navigator.clipboard.writeText(values.password)}
+                                    edge="end"
+                                >
+                                    <ContentCopyRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
                         </InputAdornment>
                     }
                     label="Password" />
@@ -262,13 +270,16 @@ const SafeLogin = forwardRef((props, ref) => {
                     onChange={handleChange('website')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.website)}
-                                edge="end"
-                            >
-                                <ContentCopyRoundedIcon />
-                            </IconButton>
+                            <Tooltip title="Copy">
+                                <IconButton
+                                    aria-label="copy input"
+                                    onClick={() => navigator.clipboard.writeText(values.website)}
+                                    edge="end"
+                                >
+                                    <ContentCopyRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+
                         </InputAdornment>
                     }
                 />
@@ -287,21 +298,23 @@ const SafeLogin = forwardRef((props, ref) => {
                 />
             </FormControl>
 
-            <Box sx={{ width: '100%', mb: 3 }}>
-                <Grid container spacing={1} alignItems="center">
-                    <Grid item xs>
-                        <Typography id="masterpassword-re">
-                            Master Password Re-prompt?
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Checkbox
-                            checked={values.prompt}
-                            onChange={handlePromptChange}
-                            inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                    </Grid>
-                </Grid>
+            <Box sx={{ width: '100%', mb: 1 }}>
+                <Stack direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={2}
+                    sx={{ mb: 4 }}
+                >
+                    <Typography variant="subtitle2" id="masterpassword-re">
+                        Master Password reprompt
+                    </Typography>
+                    <Checkbox
+                        size="small"
+                        checked={values.prompt}
+                        onChange={handlePromptChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                </Stack>
             </Box>
         </>
     );

@@ -7,11 +7,15 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
-
+import Stack from '@mui/material/Stack';
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 import useAuth from '../../hooks/useAuth';
+
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 
 const SafeNote = forwardRef((props, ref) => {
 
@@ -29,7 +33,7 @@ const SafeNote = forwardRef((props, ref) => {
         event.preventDefault();
         setValues({ ...values, [props]: event.target.value });
     };
-    
+
     const handlePromptChange = (event) => {
         setValues({ ...values, prompt: event.target.checked });
     };
@@ -101,14 +105,14 @@ const SafeNote = forwardRef((props, ref) => {
                 prompt: values.prompt
             }).then(() => {
                 Swal.fire({
-                title: 'Success!',
-                text: 'Note has been updated.',
-                icon: 'success',
-                confirmButtonColor: '#318ce7',
-                confirmButtonText: 'Okay',
-                showCloseButton: 'true',
-                closeButtonHtml: '&times;',
-                timer: 5000
+                    title: 'Success!',
+                    text: 'Note has been updated.',
+                    icon: 'success',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: 'true',
+                    closeButtonHtml: '&times;',
+                    timer: 5000
                 }).then((result) => {
                     props.onUpdate(values);
                 });
@@ -117,20 +121,20 @@ const SafeNote = forwardRef((props, ref) => {
 
         deleteItem() {
             axios.delete(`/deletenote/${values.id}`)
-            .then(() => {
-                Swal.fire({
-                title: 'Success!',
-                text: 'Note has been removed from your vault.',
-                icon: 'success',
-                confirmButtonColor: '#318ce7',
-                confirmButtonText: 'Okay',
-                showCloseButton: 'true',
-                closeButtonHtml: '&times;',
-                timer: 5000
-                }).then((result) => {
-                    props.onDelete();
+                .then(() => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Note has been removed from your vault.',
+                        icon: 'success',
+                        confirmButtonColor: '#318ce7',
+                        confirmButtonText: 'Okay',
+                        showCloseButton: 'true',
+                        closeButtonHtml: '&times;',
+                        timer: 5000
+                    }).then((result) => {
+                        props.onDelete();
+                    });
                 });
-            });
         },
     }))
 
@@ -162,24 +166,41 @@ const SafeNote = forwardRef((props, ref) => {
                     style={{ minWidth: '25%', width: '100%' }}
                     value={values.note}
                     onChange={handleChange('note')}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="start">
+                                <Tooltip title="Copy">
+                                    <IconButton
+                                        aria-label="copy input"
+                                        onClick={() => navigator.clipboard.writeText(values.note)}
+                                        edge="end"
+                                    >
+                                        <ContentCopyRoundedIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
             </Box>
 
-            <Box sx={{ width: '100%', mb: 3 }}>
-                <Grid container spacing={1} alignItems="center">
-                    <Grid item xs>
-                        <Typography id="masterpassword-re">
-                            Master Password Re-prompt?
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Checkbox
-                            checked={values.prompt}
-                            onChange={handlePromptChange}
-                            inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                    </Grid>
-                </Grid>
+            <Box sx={{ width: '100%', mb: 1 }}>
+                <Stack direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={2}
+                    sx={{ mb: 4 }}
+                >
+                    <Typography variant="subtitle2" id="masterpassword-re">
+                        Master Password reprompt
+                    </Typography>
+                    <Checkbox
+                        size="small"
+                        checked={values.prompt}
+                        onChange={handlePromptChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                </Stack>
             </Box>
         </>
     );

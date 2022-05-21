@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import IconButton from '@mui/material/IconButton';
@@ -13,10 +15,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
+import Tooltip from '@mui/material/Tooltip';
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 import useAuth from '../../hooks/useAuth';
@@ -42,7 +44,7 @@ const SafeCard = forwardRef((props, ref) => {
         event.preventDefault();
         setValues({ ...values, [props]: event.target.value });
     };
-    
+
     const handlePromptChange = (event) => {
         setValues({ ...values, prompt: event.target.checked });
     };
@@ -129,14 +131,14 @@ const SafeCard = forwardRef((props, ref) => {
                 prompt: values.prompt
             }).then(() => {
                 Swal.fire({
-                title: 'Success!',
-                text: 'Card has been updated.',
-                icon: 'success',
-                confirmButtonColor: '#318ce7',
-                confirmButtonText: 'Okay',
-                showCloseButton: 'true',
-                closeButtonHtml: '&times;',
-                timer: 5000
+                    title: 'Success!',
+                    text: 'Card has been updated.',
+                    icon: 'success',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: 'true',
+                    closeButtonHtml: '&times;',
+                    timer: 5000
                 }).then((result) => {
                     props.onUpdate(values);
                 });
@@ -145,20 +147,20 @@ const SafeCard = forwardRef((props, ref) => {
 
         deleteItem() {
             axios.delete(`/deletecard/${values.id}`)
-            .then(() => {
-                Swal.fire({
-                title: 'Success!',
-                text: 'Card has been removed from your vault.',
-                icon: 'success',
-                confirmButtonColor: '#318ce7',
-                confirmButtonText: 'Okay',
-                showCloseButton: 'true',
-                closeButtonHtml: '&times;',
-                timer: 5000
-                }).then((result) => {
-                    props.onDelete();
+                .then(() => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Card has been removed from your vault.',
+                        icon: 'success',
+                        confirmButtonColor: '#318ce7',
+                        confirmButtonText: 'Okay',
+                        showCloseButton: 'true',
+                        closeButtonHtml: '&times;',
+                        timer: 5000
+                    }).then((result) => {
+                        props.onDelete();
+                    });
                 });
-            });
         },
     }))
 
@@ -201,13 +203,16 @@ const SafeCard = forwardRef((props, ref) => {
                     onChange={handleChange('number')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.number)}
-                                edge="end"
-                            >
-                                <ContentCopyRoundedIcon />
-                            </IconButton>
+                            <Tooltip title="Copy">
+                                <IconButton
+                                    aria-label="copy input"
+                                    onClick={() => navigator.clipboard.writeText(values.number)}
+                                    edge="end"
+                                >
+                                    <ContentCopyRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+
                         </InputAdornment>
                     }
                 />
@@ -272,13 +277,15 @@ const SafeCard = forwardRef((props, ref) => {
                     onChange={handleChange('cvv')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.ccv)}
-                                edge="end"
-                            >
-                                <ContentCopyRoundedIcon />
-                            </IconButton>
+                            <Tooltip title="Copy">
+                                <IconButton
+                                    aria-label="copy input"
+                                    onClick={() => navigator.clipboard.writeText(values.cvv)}
+                                    edge="end"
+                                >
+                                    <ContentCopyRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
                         </InputAdornment>
                     }
                 />
@@ -298,22 +305,25 @@ const SafeCard = forwardRef((props, ref) => {
                 />
             </Box>
 
-            <Box sx={{ width: '100%', mb: 3 }}>
-                <Grid container spacing={1} alignItems="center">
-                    <Grid item xs>
-                        <Typography id="masterpassword-re">
-                            Master Password Re-prompt?
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Checkbox
-                            checked={values.prompt}
-                            onChange={handlePromptChange}
-                            inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                    </Grid>
-                </Grid>
+            <Box sx={{ width: '100%', mb: 1 }}>
+                <Stack direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    spacing={2}
+                    sx={{ mb: 4 }}
+                >
+                    <Typography variant="subtitle2" id="masterpassword-re">
+                        Master Password reprompt
+                    </Typography>
+                    <Checkbox
+                        size="small"
+                        checked={values.prompt}
+                        onChange={handlePromptChange}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                </Stack>
             </Box>
+
         </>
     );
 });

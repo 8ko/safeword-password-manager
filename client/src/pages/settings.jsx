@@ -2,27 +2,24 @@ import React from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Checkbox from '@mui/material/Checkbox';
 import Switch from '@mui/material/Switch';
 
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import { ColorModeContext } from '../context/color-context';
 import { styled } from '@mui/material/styles';
 
-// import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-// import LightModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
-    width: 62,
-    height: 34,
-    padding: 7,
+    width: 45,
+    height: 26,
+    padding: 5,
     '& .MuiSwitch-switchBase': {
         margin: 1,
         padding: 0,
-        transform: 'translateX(6px)',
+        transform: 'translateX(4px)',
         '&.Mui-checked': {
             color: '#fff',
-            transform: 'translateX(22px)',
+            transform: 'translateX(18px)',
             '& .MuiSwitch-thumb:before': {
                 backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
                     '#fff',
@@ -36,8 +33,8 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
     '& .MuiSwitch-thumb': {
         backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#f9a825',
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
         '&:before': {
             content: "''",
             position: 'absolute',
@@ -68,70 +65,35 @@ export default function Settings() {
                 <h2>Settings</h2>
             </Box>
 
-            {/* spacing issues... wtf */}
-
-            <Box sx={{ width: '95%', mb: 1.5 }}>
+            <Stack direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                spacing={2}
+                sx={{ mb: 4 }}
+            >
                 <Typography id="input-slider">
-                    Enable 2FA
+                    Theme
                 </Typography>
+                <MaterialUISwitch
+                    onChange={colorMode.toggleColorMode}
+                />
+            </Stack>
+
+
+            <Box sx={{ width: '100%', mb: 1.5 }}>
+                <Stack spacing={1}>
+                    <Button variant="outlined">
+                        Set up 2FA
+                    </Button>
+                    <Button variant="outlined">
+                        Reset Master Password
+                    </Button>
+                    <Button variant="outlined">
+                        Logout
+                    </Button>
+                </Stack>
             </Box>
 
-            <Box sx={{ width: '95%', mb: 0.5 }}>
-                <Grid container spacing={1} justifyContent="center" alignItems="center">
-                    <Grid item xs>
-                        <Typography id="input-slider">
-                            Dark Mode
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <MaterialUISwitch
-                            onChange={colorMode.toggleColorMode}
-                        />
-                    </Grid>
-                </Grid>
-            </Box>
-
-            <Box sx={{ width: '95%' }}>
-                <Grid container spacing={1} alignItems="center">
-                    <Grid item xs>
-                        <Typography id="checkbox-something">
-                            Sample Settings
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Checkbox
-                            inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                    </Grid>
-                </Grid>
-            </Box>
-
-            <Box sx={{ width: '95%', mb: 1 }}>
-                <Grid container spacing={1} alignItems="center">
-                    <Grid item xs>
-                        <Typography id="input-slider">
-                            Sample Settings
-                        </Typography>
-                    </Grid>
-                    <Grid item>
-                        <Checkbox
-                            inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                    </Grid>
-                </Grid>
-            </Box>
-
-            <Box sx={{ width: '95%', mb: 1.5 }}>
-                <Typography id="input-slider">
-                    Reset Master Password
-                </Typography>
-            </Box>
-
-            <Box sx={{ width: '95%', mb: 1.5 }}>
-                <Typography id="input-slider">
-                    Sample Settings
-                </Typography>
-            </Box>
         </>
     );
 }
