@@ -46,7 +46,7 @@ app.post("/register", async (req, res) => {
         const { email, pwd } = req.body;
         if (!email || !phone || !pwd) return res.sendStatus(400);
         const hashedPwd = await bcrypt.hash(pwd, saltRounds);
-        const result = await query("INSERT INTO users (email, password, created_at, updated_at) VALUES (?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [email, hashedPwd]);
+        const result = await query("INSERT INTO users (email, password) VALUES (?,?)", [email, hashedPwd]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -136,7 +136,7 @@ app.post("/addlogin", async (req, res) => {
     const { user, title, username, password, website, note, prompt, iv } = req.body;
     const hashedPassword = encrypt(password);
     try {
-        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, user, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, user]);
+        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, user) VALUES (?,?,?,?,?,?,?,?)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, user]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -146,7 +146,7 @@ app.post("/addlogin", async (req, res) => {
 app.post("/addcard", async (req, res) => {
     const { user, title, name, number, month, year, cvv, note, prompt } = req.body;
     try {
-        await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, name, number, month, year, cvv, note, prompt, user]);
+        await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user) VALUES (?,?,?,?,?,?,?,?,?)", [title, name, number, month, year, cvv, note, prompt, user]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -156,10 +156,9 @@ app.post("/addcard", async (req, res) => {
 app.post("/addnote", async (req, res) => {
     const { user, title, note, prompt } = req.body;
     try {
-        await query("INSERT INTO notes (title, note, prompt, user, created_at, updated_at) VALUES (?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, note, prompt, user]);
+        await query("INSERT INTO notes (title, note, prompt, user) VALUES (?,?,?,?)", [title, note, prompt, user]);
         res.send("Success");
     } catch (err) {
-        console.error(err);
         res.sendStatus(500);
     }
 });
@@ -169,7 +168,7 @@ app.post("/updatelogin/:id", async (req, res) => {
     const { title, username, password, website, note, prompt } = req.body;
     const hashedPassword = encrypt(password);
     try {
-        await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id]);
+        await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=? WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -180,7 +179,7 @@ app.post("/updatecard/:id", async (req, res) => {
     const id = req.params.id;
     const { title, name, number, month, year, cvv, note, prompt } = req.body;
     try {
-        await query("UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id]);
+        await query("UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=? WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -191,7 +190,7 @@ app.post("/updatenote/:id", async (req, res) => {
     const id = req.params.id;
     const { title, note, prompt } = req.body;
     try {
-        await query("UPDATE notes SET title=?, note=?, prompt=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", [title, note, prompt, id]);
+        await query("UPDATE notes SET title=?, note=?, prompt=? WHERE id=?", [title, note, prompt, id]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
