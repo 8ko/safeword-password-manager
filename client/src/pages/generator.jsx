@@ -19,6 +19,7 @@ import MuiInput from '@mui/material/Input';
 import { styled } from '@mui/material/styles';
 
 import Checkbox from '@mui/material/Checkbox';
+import { Tooltip } from '@mui/material';
 
 const PASSWORD_MIN = 6;
 const PASSWORD_MAX = 128;
@@ -117,20 +118,24 @@ const Generator = forwardRef((props, ref) => {
                     onChange={handleChange('password')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <IconButton
-                                aria-label="copy input"
-                                onClick={() => navigator.clipboard.writeText(values.password)}
-                                edge="end"
-                            >
-                                <ContentCopyRoundedIcon />
-                            </IconButton>
-                            <IconButton
-                                aria-label="generate password"
-                                onClick={() => generatePassword(values)}
-                                edge="end"
-                            >
-                                <CachedIcon />
-                            </IconButton>
+                            <Tooltip title="Copy">
+                                <IconButton
+                                    aria-label="copy input"
+                                    onClick={() => navigator.clipboard.writeText(values.password)}
+                                    edge="end"
+                                >
+                                    <ContentCopyRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Generate">
+                                <IconButton
+                                    aria-label="generate password"
+                                    onClick={() => generatePassword(values)}
+                                    edge="end"
+                                >
+                                    <CachedIcon />
+                                </IconButton>
+                            </Tooltip>
                         </InputAdornment>
                     }
                 />

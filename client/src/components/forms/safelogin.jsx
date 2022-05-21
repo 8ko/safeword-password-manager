@@ -228,7 +228,7 @@ const SafeLogin = forwardRef((props, ref) => {
                     onChange={handleChange('password')}
                     endAdornment={
                         <InputAdornment position="end">
-                            <Tooltip title="Show/Hide">
+                            <Tooltip title="Toggle Visibility">
                                 <IconButton
                                     aria-label="toggle password visibility"
                                     onClick={handleClickShowPassword}
