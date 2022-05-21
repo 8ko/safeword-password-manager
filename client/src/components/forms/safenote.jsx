@@ -1,25 +1,27 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
-
-import axios from '../../api/axios';
 import Swal from 'sweetalert2';
+import jwt_decode from "jwt-decode";
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
-import { VaultItemTypes } from '../../constants';
-import validateSafeForm from './validateSafeForm';
-import useAuth from '../../hooks/useAuth';
-
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 
+import { VaultItemTypes } from '../../constants';
+import validateSafeForm from './validateSafeForm';
+
+import useAuth from '../../hooks/useAuth';
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+
 const SafeNote = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
+    const axiosPrivate = useAxiosPrivate();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -28,6 +30,12 @@ const SafeNote = forwardRef((props, ref) => {
         note: '',
         prompt: false
     });
+
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const user = decoded?.id || 0;
 
     const handleChange = (props) => (event) => {
         event.preventDefault();
@@ -64,8 +72,8 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
-            axios.post('/addnote', {
-                user: auth?.id,
+            axiosPrivate.post('/addnote', {
+                user: user,
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt
@@ -99,7 +107,7 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
-            axios.post(`/updatenote/${values.id}`, {
+            axiosPrivate.post(`/updatenote/${values.id}`, {
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt
@@ -120,7 +128,7 @@ const SafeNote = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            axios.delete(`/deletenote/${values.id}`)
+            axiosPrivate.delete(`/deletenote/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',

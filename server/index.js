@@ -136,7 +136,7 @@ app.post("/addlogin", async (req, res) => {
     const { user, title, username, password, website, note, prompt, iv } = req.body;
     const hashedPassword = encrypt(password);
     try {
-        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, user, created_at, updated_at) VALUES (?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, user]);
+        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, user, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, user]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -146,7 +146,7 @@ app.post("/addlogin", async (req, res) => {
 app.post("/addcard", async (req, res) => {
     const { user, title, name, number, month, year, cvv, note, prompt } = req.body;
     try {
-        await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, name, number, month, year, cvv, note, prompt, user]);
+        await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, name, number, month, year, cvv, note, prompt, user]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
@@ -156,9 +156,10 @@ app.post("/addcard", async (req, res) => {
 app.post("/addnote", async (req, res) => {
     const { user, title, note, prompt } = req.body;
     try {
-        await query("INSERT INTO notes (title, note, prompt, user, created_at, updated_at) VALUES (?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, note, prompt, user]);
+        await query("INSERT INTO notes (title, note, prompt, user, created_at, updated_at) VALUES (?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, note, prompt, user]);
         res.send("Success");
     } catch (err) {
+        console.error(err);
         res.sendStatus(500);
     }
 });

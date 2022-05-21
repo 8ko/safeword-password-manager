@@ -1,7 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
-
-import axios from '../../api/axios';
 import Swal from 'sweetalert2';
+import jwt_decode from "jwt-decode";
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -18,6 +17,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
+
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 
@@ -42,6 +42,12 @@ const SafeLogin = forwardRef((props, ref) => {
         showPassword: false,
         decrypted: false
     });
+
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const user = decoded?.id || 0;
 
     const handleChange = (props) => (event) => {
         event.preventDefault();
@@ -98,8 +104,8 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
-            axios.post('/addlogin', {
-                user: auth?.id,
+            axiosPrivate.post('/addlogin', {
+                user: user,
                 title: values.title,
                 username: values.username,
                 password: values.password,
@@ -136,7 +142,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
-            axios.post(`/updatelogin/${values.id}`, {
+            axiosPrivate.post(`/updatelogin/${values.id}`, {
                 title: values.title,
                 username: values.username,
                 password: values.password,
@@ -160,7 +166,7 @@ const SafeLogin = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            axios.delete(`/deletelogin/${values.id}`)
+            axiosPrivate.delete(`/deletelogin/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',

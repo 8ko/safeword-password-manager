@@ -53,7 +53,7 @@ const Sidebar = (width) => {
             }
         }
         getItems();
-    }, [auth.id]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [location,auth.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>

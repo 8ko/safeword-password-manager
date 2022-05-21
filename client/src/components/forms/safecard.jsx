@@ -1,7 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
-
-import axios from '../../api/axios';
 import Swal from 'sweetalert2';
+import jwt_decode from "jwt-decode";
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -17,15 +16,18 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-
 import Tooltip from '@mui/material/Tooltip';
+
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
+
 import useAuth from '../../hooks/useAuth';
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const SafeCard = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
+    const axiosPrivate = useAxiosPrivate();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -39,6 +41,12 @@ const SafeCard = forwardRef((props, ref) => {
         note: '',
         prompt: false
     });
+
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const user = decoded?.id || 0;
 
     const handleChange = (props) => (event) => {
         event.preventDefault();
@@ -80,8 +88,8 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
-            axios.post('/addcard', {
-                user: auth?.id,
+            axiosPrivate.post('/addcard', {
+                user: user,
                 title: values.title,
                 name: values.name,
                 number: values.number,
@@ -120,7 +128,7 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
-            axios.post(`/updatecard/${values.id}`, {
+            axiosPrivate.post(`/updatecard/${values.id}`, {
                 title: values.title,
                 name: values.name,
                 number: values.number,
@@ -146,7 +154,7 @@ const SafeCard = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            axios.delete(`/deletecard/${values.id}`)
+            axiosPrivate.delete(`/deletecard/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',
