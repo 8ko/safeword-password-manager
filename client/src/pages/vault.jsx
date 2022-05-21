@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
 import Box from '@mui/material/Box';
@@ -99,7 +99,8 @@ const Vault = (props) => {
         } else if (type === VaultItemTypes.Note) {
             return <SafeNote ref={child} prop1={data} onUpdate={handleUpdate} onDelete={handleDelete} />
         } else {
-            navigate('/emptyvault');
+            // navigate('/emptyvault');
+            <Navigate to="/emptyvault" />
         }
     }
 

@@ -43,10 +43,10 @@ const query = util.promisify(db.query).bind(db);
 
 app.post("/register", async (req, res) => {
     try {
-        const { email, phone, pwd } = req.body;
+        const { email, pwd } = req.body;
         if (!email || !phone || !pwd) return res.sendStatus(400);
         const hashedPwd = await bcrypt.hash(pwd, saltRounds);
-        const result = await query("INSERT INTO users (email, phone, password, created_at, updated_at) VALUES (?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [email, phone, hashedPwd]);
+        const result = await query("INSERT INTO users (email, password, created_at, updated_at) VALUES (?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [email, hashedPwd]);
         res.send("Success");
     } catch (err) {
         res.sendStatus(500);
