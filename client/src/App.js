@@ -2,7 +2,7 @@
 import * as React from 'react';
 import "@fontsource/roboto";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { ColorModeContext } from './context/color-context';
@@ -83,9 +83,9 @@ function App() {
               <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
                 <Toolbar />
                 <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgotpassword" element={<ForgotPassword />} />
+                  { auth?.accessToken ? <Route path="/login" element={<Login />} /> : <Route path="/login" element={<Navigate to="/" />} /> }
+                  { auth?.accessToken ? <Route path="/register" element={<Register />} /> : <Route path="/register" element={<Navigate to="/" />} /> }
+                  { auth?.accessToken ? <Route path="/forgotpassword" element={<ForgotPassword />} /> : <Route path="/forgotpassword" element={<Navigate to="/" />} /> }
                   <Route element={<PersistLogin />}>
                     <Route element={<RequireAuth />}>
                       <Route path="/" element={<Vault />} />
