@@ -16,18 +16,15 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Stack from '@mui/material/Stack';
 
 import { Tooltip, Typography } from '@mui/material';
-import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
 
-// import { styled } from '@mui/material/styles';
-
 import axios from "../../../api/axios";
 
 const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-const PHONE_REGEX = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+// const PHONE_REGEX = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{12,32}$/;
 const REGISTER_URL = '/register';
 
@@ -41,19 +38,15 @@ const Register = () => {
     const [validEmail, setValidEmail] = useState(false);
     const [emailFocus, setEmailFocus] = useState(false);
 
-    const [phone, setPhone] = useState('');
-    const [validPhone, setValidPhone] = useState(false);
-    const [phoneFocus, setPhoneFocus] = useState(false);
-
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
 
     const [errMsg, setErrMsg] = useState('');
 
-    const [checked, setChecked] = React.useState(true);
+    const [agreeToc, setAgreeToc] = useState(false);
     const handleChange = (event) => {
-        setChecked(event.target.checked);
+        setAgreeToc(event.target.checked);
     };
 
     const [showPassword, setShowPassword] = useState(false);
@@ -74,30 +67,25 @@ const Register = () => {
     }, [email]);
 
     useEffect(() => {
-        setValidPhone(PHONE_REGEX.test(phone));
-    }, [phone]);
-
-    useEffect(() => {
         setValidPwd(PWD_REGEX.test(pwd));
     }, [pwd]);
 
     useEffect(() => {
         setErrMsg('');
-    }, [email, phone, pwd]);
+    }, [email, pwd]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         // if button enabled with JS hack
         const v1 = EMAIL_REGEX.test(email);
-        const v2 = PHONE_REGEX.test(phone);
-        const v3 = PWD_REGEX.test(pwd); // u can space as password char???
-        if (!v1 || !v2 || !v3) {
+        const v2 = PWD_REGEX.test(pwd); // u can space as password char???
+        if (!v1 || !v2) {
             setErrMsg("Invalid entry");
             return;
         }
         try {
             await axios.post(REGISTER_URL,
-                JSON.stringify({ email, phone, pwd }),
+                JSON.stringify({ email, pwd }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
@@ -108,7 +96,6 @@ const Register = () => {
             // console.log(JSON.stringify(response));
             // clear input fields
             setEmail('');
-            setPhone('');
             setPwd('');
             navigate('/login');
         } catch (err) {
@@ -184,24 +171,6 @@ const Register = () => {
                         />
                     </Box>
 
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
-                        <PhoneIphoneIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
-                        <TextField
-                            required
-                            id="phone"
-                            autoComplete="off"
-                            placeholder="0912 345 6789"
-                            label="Phone"
-                            variant="standard"
-                            onChange={(e) => setPhone(e.target.value)}
-                            onFocus={() => setPhoneFocus(true)}
-                            onBlur={() => setPhoneFocus(false)}
-                            error={!phoneFocus && phone && !validPhone ? true : false}
-                            helperText={!phoneFocus && phone && !validPhone ? "Not valid phone number." : ''}
-                            fullWidth
-                        />
-                    </Box>
-
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3 }}>
                         <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3 }} />
                         <FormControl fullWidth variant="standard">
@@ -243,13 +212,14 @@ const Register = () => {
                             alignItems: 'center',
                         }} >
                         <Checkbox
-                        size="small"
-                            checked={checked}
+                            required
+                            size="small"
+                            checked={agreeToc}
                             onChange={handleChange}
                             inputProps={{ 'aria-label': 'controlled' }}
                         />
                         <Typography variant="overline" style={{ display: "inline-block", lineHeight: '16px' }} >
-                            I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>terms & conditions</Link>
+                            I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>Terms & Conditions</Link>
                         </Typography>
                     </Stack>
 
@@ -257,7 +227,7 @@ const Register = () => {
                         <Button
                             type="submit"
                             variant="outlined"
-                            disabled={!validEmail || !validPhone || !validPwd ? true : false}
+                            disabled={!validEmail || !agreeToc || !validPwd ? true : false}
                         >
                             Sign Up
                         </Button>
