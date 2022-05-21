@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuth from "../../../hooks/useAuth";
 import axios from "../../../api/axios";
 
@@ -26,8 +26,6 @@ const Login = () => {
     const { setAuth } = useAuth();
 
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
 
     const userRef = useRef();
     const errRef = useRef();
@@ -64,7 +62,7 @@ const Login = () => {
             setAuth({ accessToken });
             setEmail('');
             setPwd('');
-            navigate(from, { replace: true });
+            navigate('/');
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No server response');

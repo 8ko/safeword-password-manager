@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import * as React from 'react';
+import "@fontsource/roboto";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -24,8 +25,9 @@ import Login from "./components/forms/auth/login";
 import Register from "./components/forms/auth/register";
 import ForgotPassword from "./components/forms/auth/forgotpassword";
 
-import "@fontsource/roboto";
 import RequireAuth from './components/requireauth';
+import PersistLogin from './components/persistlogin';
+
 import useAuth from './hooks/useAuth';
 import useRefreshToken from './hooks/useRefreshToken';
 
@@ -81,12 +83,14 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgotpassword" element={<ForgotPassword />} />
-                  <Route element={<RequireAuth />}>
-                    <Route path="/" element={<Vault />} />
-                    <Route path="/additem" element={<AddItem />} />
-                    <Route path="/generator" element={<Generator />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/emptyvault" element={<EmptyVault />} />
+                  <Route element={<PersistLogin />}>
+                    <Route element={<RequireAuth />}>
+                      <Route path="/" element={<Vault />} />
+                      <Route path="/additem" element={<AddItem />} />
+                      <Route path="/generator" element={<Generator />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/emptyvault" element={<EmptyVault />} />
+                    </Route>
                   </Route>
                 </Routes>
               </Box>
