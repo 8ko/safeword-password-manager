@@ -1,22 +1,23 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useLocation, useNavigate, Navigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import { format } from 'date-fns';
 
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import UpdateRoundedIcon from '@mui/icons-material/UpdateRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
+import { VaultItemTypes } from '../constants';
 import SafeLogin from '../components/forms/safelogin';
 import SafeCard from '../components/forms/safecard';
 import SafeNote from '../components/forms/safenote';
-
-import { VaultItemTypes } from '../constants';
+import EmptyVault from './emptyvault';
 
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { Typography } from '@mui/material';
 
 const Vault = (props) => {
 
@@ -99,9 +100,18 @@ const Vault = (props) => {
         } else if (type === VaultItemTypes.Note) {
             return <SafeNote ref={child} prop1={data} onUpdate={handleUpdate} onDelete={handleDelete} />
         } else {
-            // navigate('/emptyvault');
-            <Navigate to="/emptyvault" />
+            return <EmptyVault />;
         }
+    }
+
+    const getLastUpdate = () => {
+        var data = [];
+        if (state.data && !didDelete) {
+            data = state.data.id === lastItem.id ? lastItem : state.data;
+        } else {
+            data = defaultItem;
+        }
+        return format(new Date(String(data?.updated_at)), 'MMM dd, yyyy, h:i:s a') || '';
     }
 
     return (
@@ -109,7 +119,7 @@ const Vault = (props) => {
             <Box sx={{ mb: 4 }}>
                 <h2>Item Information</h2>
             </Box>
-            {safeForm()}
+            { safeForm() }
             <Stack direction="row" spacing={1}>
                 <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
                     Update
@@ -118,14 +128,11 @@ const Vault = (props) => {
                     Delete
                 </Button>
             </Stack>
-
             <Box sx={{ mt: 1 }}>
                 <Typography variant="caption">
-                    Updated: 11:11 April 20, 2069
+                    Updated: { getLastUpdate() }
                 </Typography>
             </Box>
-
-
         </>
     );
 }
