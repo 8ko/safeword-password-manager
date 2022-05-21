@@ -43,7 +43,7 @@ function App() {
   //     const accessToken = res.data.accessToken;
   //     setAuth({accessToken});
   //   });
-  // }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   let light = createTheme({
     palette: {
@@ -59,7 +59,7 @@ function App() {
   });
   dark = responsiveFontSizes(dark);
 
-  const [isDark, setDark] = useState(false);
+  const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
@@ -70,11 +70,6 @@ function App() {
     }),
     []
   );
-
-  useEffect(() => {
-    const darkMode = localStorage.getItem('darkMode') === 'true' ? true : false;
-    setDark(darkMode);
-  },[]);
 
   return (
     <div className="App">
