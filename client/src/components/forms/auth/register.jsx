@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import React, { useRef, useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import "./../../../App.css";
 
 import Box from "@mui/material/Box";
@@ -32,6 +32,7 @@ const Register = () => {
 
     const userRef = useRef();
     const errRef = useRef();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
     const [validEmail, setValidEmail] = useState(false);
@@ -81,24 +82,25 @@ const Register = () => {
         // if button enabled with JS hack
         const v1 = EMAIL_REGEX.test(email);
         const v2 = PHONE_REGEX.test(phone);
-        const v3 = PWD_REGEX.test(pwd); //u can space as password char???
+        const v3 = PWD_REGEX.test(pwd); // u can space as password char???
         if (!v1 || !v2 || !v3) {
             setErrMsg("Invalid entry");
             return;
         }
         try {
-            const response = await axios.post(REGISTER_URL,
-                JSON.stringify({ email: email, password: pwd }),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true
-                }
-            )
-            console.log(response?.data);
+            await axios.post(REGISTER_URL, {
+                email: email,
+                phone: phone,
+                password: pwd
+            });
+            // console.log(response?.data);
             // console.log(response.accessToken);
             // console.log(JSON.stringify(response));
-            // setSuccess(true);
             // clear input fields
+            setEmail('');
+            setPhone('');
+            setPwd('');
+            navigate('/login');
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No server response');
@@ -112,12 +114,6 @@ const Register = () => {
     }
 
     function MyFormHelperText() {
-        // const helperTextStyles = styled('MuiFormHelperText')({
-        //     '& .MuiFormHelperText-root': {
-        //         color: '#4caf50',
-        //     }
-        // });
-
         const helperText = () => {
             if (pwd && !validPwd) {
                 return (
@@ -153,11 +149,11 @@ const Register = () => {
     return (
         <>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-            <Box sx={{ mr: 2 }}>
+            <Box sx={{ pr: 4 }}>
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center' }}>
-                        Sign up
+                        Create an Account
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
                         <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />

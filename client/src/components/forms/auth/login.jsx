@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from "../../../hooks/useAuth";
@@ -54,9 +53,9 @@ const Login = () => {
                 password: pwd
             });
             const hashedPassword = response?.data?.password;
-            setAuth({ email, hashedPassword });
-            console.log(response);
+            // console.log(response);
             // console.log({ email, hashedPassword });
+            setAuth({ email, hashedPassword });
             setEmail('');
             setPwd('');
             navigate(from, { replace: true });
@@ -77,11 +76,11 @@ const Login = () => {
     return (
         <>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-            <Box sx={{ mr: 2 }}>
+            <Box sx={{ pr: 4 }}>
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center' }}>
-                        Login
+                        Unlock your vault
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
                         <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
@@ -126,11 +125,11 @@ const Login = () => {
                         </FormControl>
                     </Box>
 
-                    <Typography variant="subtitle2" sx={{ mt: 0.5, textAlign: 'right' }}>
+                    <Typography variant="subtitle2" sx={{ textAlign: 'right' }}>
                         <Link to="/forgotpassword" style={{ textDecoration: 'none' }}>Forgot password?</Link>
                     </Typography>
 
-                    <Box sx={{ textAlign: 'center', mt: 2.5, }}>
+                    <Box sx={{ textAlign: 'center', mt: 3, }}>
                         <Button type="submit" color="primary" variant="outlined">
                             Login
                         </Button>
