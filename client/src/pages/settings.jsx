@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -8,6 +8,9 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { ColorModeContext } from '../context/color-context';
 import { styled } from '@mui/material/styles';
+
+import { useNavigate } from 'react-router-dom';
+import useLogout from '../hooks/useLogout';
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     width: 45,
@@ -57,17 +60,21 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 export default function Settings() {
+    const navigate = useNavigate();
+    const logout = useLogout();
+
     const colorMode = React.useContext(ColorModeContext);
     
-    const [isDark, setDark] = useState(false);
-    useEffect(() => {
-        const darkMode = localStorage.getItem('darkMode') === 'true' ? true : false;
-        setDark(darkMode);
-    },[]);
+    const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
 
     const handleThemeChange = (event) => {
         setDark(event.target.checked);
         colorMode.toggleColorMode();
+    }
+
+    const signOut = async () => {
+        await logout();
+        navigate('/login');
     }
 
     return (
@@ -99,7 +106,7 @@ export default function Settings() {
                     <Button variant="outlined">
                         Reset Master Password
                     </Button>
-                    <Button variant="outlined">
+                    <Button variant="outlined" onClick={signOut}>
                         Logout
                     </Button>
                 </Stack>

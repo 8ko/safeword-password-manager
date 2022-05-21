@@ -9,23 +9,26 @@ const PersistLogin = () => {
     const { auth } = useAuth();
 
     useEffect(() => {
+        let isMounted = true;
         const verifyRefreshToken = async () => {
             try {
                 await refresh();
             } catch (err) {
                 // console.error(err);
             } finally {
-                setIsLoading(false);
+                isMounted && setIsLoading(false);
             }
         }
 
         !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
-    },[])
 
-    useEffect(() => {
-        // console.log(`isLoading: ${isLoading}`);
-        // console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
-    },[isLoading])
+        return () => isMounted = false;
+    },[]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // useEffect(() => {
+    //     console.log(`isLoading: ${isLoading}`);
+    //     console.log(`aT: ${JSON.stringify(auth?.accessToken)}`);
+    // },[isLoading])
 
     return (
         <>
