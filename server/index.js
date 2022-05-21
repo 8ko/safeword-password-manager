@@ -72,7 +72,7 @@ app.post("/auth", async (req, res) => {
                     "password": foundUser.password
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '30s' }
+                { expiresIn: '5m' }
             );
             const refreshToken = jwt.sign(
                 {
