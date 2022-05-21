@@ -21,7 +21,13 @@ import Grid from '@mui/material/Grid';
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 
+import useAuth from "../../hooks/useAuth";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+
 const SafeLogin = forwardRef((props, ref) => {
+
+    const { auth } = useAuth();
+    const axiosPrivate = useAxiosPrivate();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -57,7 +63,7 @@ const SafeLogin = forwardRef((props, ref) => {
     useEffect(() => {
         if (props.prop1 && props.prop1.password) {
             // decrypt password upon render
-            axios.post('/decryptpassword', {
+            axiosPrivate.post('/decryptpassword', {
                 password: props.prop1.password,
                 iv: props.prop1.iv,
             }).then((res) => {
@@ -76,7 +82,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             });
         }
-    }, [props]);
+    }, [props]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useImperativeHandle(ref, () => ({
         addItem() {
@@ -91,8 +97,9 @@ const SafeLogin = forwardRef((props, ref) => {
                     timer: 1500,
                 });
             }
-
+            
             axios.post('/addlogin', {
+                user: auth?.id,
                 title: values.title,
                 username: values.username,
                 password: values.password,

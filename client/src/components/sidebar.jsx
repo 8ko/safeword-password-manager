@@ -1,8 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom";
-
-import Axios from 'axios';
+import { useLocation, useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
@@ -16,26 +15,45 @@ import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
 import VaultList from './vaultlist';
 import { VaultItemTypes } from '../constants';
 
+import useAuth from '../hooks/useAuth';
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+
 const Sidebar = (width) => {
+
+    const { auth, setAuth } = useAuth();
+    const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [loginList, setLoginList] = useState([]);
     const [cardList, setCardList] = useState([]);
     const [noteList, setNoteList] = useState([]);
-    const location = useLocation();
 
-
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const user = decoded?.id || 0;
 
     useEffect(() => {
-        Axios.get("http://localhost:3001/showlogins").then((res) => {
-            setLoginList(res.data);
-        });
-        Axios.get("http://localhost:3001/showcards").then((res) => {
-            setCardList(res.data);
-        });
-        Axios.get("http://localhost:3001/shownotes").then((res) => {
-            setNoteList(res.data);
-        });
-    }, [location]);
+        const getItems = async () => {
+            try {
+                await axiosPrivate.post('/showlogins', {user}).then((res) => {
+                    setLoginList(res.data);
+                });
+                await axiosPrivate.post('/showcards', {user}).then((res) => {
+                    setCardList(res.data);
+                });
+                await axiosPrivate.post('/shownotes', {user}).then((res) => {
+                    setNoteList(res.data);
+                });
+            } catch (err) {
+                setAuth({});
+                navigate('/login', { state: { from: location }, replace:true });
+            }
+        }
+        getItems();
+    }, [auth.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>

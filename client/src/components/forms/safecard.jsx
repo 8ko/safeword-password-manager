@@ -19,8 +19,11 @@ import MenuItem from '@mui/material/MenuItem';
 
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
+import useAuth from '../../hooks/useAuth';
 
 const SafeCard = forwardRef((props, ref) => {
+
+    const { auth } = useAuth();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -76,6 +79,7 @@ const SafeCard = forwardRef((props, ref) => {
             }
 
             axios.post('/addcard', {
+                user: auth?.id,
                 title: values.title,
                 name: values.name,
                 number: values.number,

@@ -11,8 +11,11 @@ import Grid from '@mui/material/Grid';
 
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
+import useAuth from '../../hooks/useAuth';
 
 const SafeNote = forwardRef((props, ref) => {
+
+    const { auth } = useAuth();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -58,6 +61,7 @@ const SafeNote = forwardRef((props, ref) => {
             }
 
             axios.post('/addnote', {
+                user: auth?.id,
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt

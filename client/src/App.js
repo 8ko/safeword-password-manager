@@ -27,10 +27,20 @@ import ForgotPassword from "./components/forms/auth/forgotpassword";
 import "@fontsource/roboto";
 import RequireAuth from './components/requireauth';
 import useAuth from './hooks/useAuth';
+import useRefreshToken from './hooks/useRefreshToken';
+
+import axios from './api/axios';
 
 function App() {
 
   const { auth, setAuth } = useAuth();
+  // uncomment to bypass auth screen
+  // React.useEffect(() => {
+  //   axios.post('/auth', { email:'a@a.com', pwd:'password' }).then(res => {
+  //     const accessToken = res.data.accessToken;
+  //     setAuth({accessToken});
+  //   });
+  // }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   let light = createTheme({
     palette: {
@@ -56,11 +66,6 @@ function App() {
     []
   );
 
-  // uncomment to bypass auth screen
-  // React.useEffect(() => {
-  //   setAuth({email:'bypass'});
-  // }, []);
-
   return (
     <div className="App">
       <ColorModeContext.Provider value={colorMode}>
@@ -68,8 +73,8 @@ function App() {
           <CssBaseline />
           <Router>
             <Box sx={{ display: 'flex' }}>
-              { auth?.email ? <Appbar /> : <AppbarGuest /> }
-              { auth?.email ? <Sidebar width={200} /> : <></> }
+              { auth?.accessToken ? <Appbar /> : <AppbarGuest /> }
+              { auth?.accessToken ? <Sidebar width={200} /> : <></> }
               <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
                 <Toolbar />
                 <Routes>
@@ -86,7 +91,7 @@ function App() {
                 </Routes>
               </Box>
             </Box>
-            { auth?.email ? <BottomNav /> : <></> }
+            { auth?.accessToken ? <BottomNav /> : <></> }
           </Router>
         </ThemeProvider>
       </ColorModeContext.Provider>

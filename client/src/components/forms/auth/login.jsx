@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuth from "../../../hooks/useAuth";
@@ -48,14 +49,19 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(LOGIN_URL, {
-                email: email,
-                password: pwd
-            });
-            const hashedPassword = response?.data?.password;
-            // console.log(response);
-            // console.log({ email, hashedPassword });
-            setAuth({ email, hashedPassword });
+            // const response = await axios.post(LOGIN_URL, { email, pwd });
+            const response = await axios.post(LOGIN_URL,
+                JSON.stringify({ email, pwd }),
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                }    
+            );
+            // console.log(response.data);
+            // const id = response?.data?.id;
+            // const hashedPassword = response?.data?.password;
+            const accessToken = response?.data?.accessToken;
+            setAuth({ accessToken });
             setEmail('');
             setPwd('');
             navigate(from, { replace: true });
