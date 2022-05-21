@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const mysql = require("mysql");
+const util = require('util');
 const cors = require("cors");
 const PORT = 3001;
 
@@ -20,185 +21,173 @@ const db = mysql.createConnection({
     database: "safeword",
 });
 
-app.get("/showlogins", (req, res) => {
-    db.query("SELECT * FROM logins;", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
+// node native promisify
+const query = util.promisify(db.query).bind(db);
+
+app.get("/showlogins", async (req, res) => {
+    try {
+        const result = await query("SELECT * FROM logins");
+        res.send(result);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.get("/showcards", (req, res) => {
-    db.query("SELECT * FROM cards;", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
+app.get("/showcards", async (req, res) => {
+    try {
+        const result = await query("SELECT * FROM cards");
+        res.send(result);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.get("/shownotes", (req, res) => {
-    db.query("SELECT * FROM notes;", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
+app.get("/shownotes", async (req, res) => {
+    try {
+        const result = await query("SELECT * FROM notes");
+        res.send(result);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.post("/addlogin", (req, res) => {
+app.post("/addlogin", async (req, res) => {
     const { title, username, password, website, note, prompt, iv } = req.body;
     const hashedPassword = encrypt(password);
-    db.query(
-        "INSERT INTO logins (title, username, password, website, note, prompt, iv) VALUES (?,?,?,?,?,?,?)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Success");
-            }
-        }
-    );
+    try {
+        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, created_at, updated_at) VALUES (?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv]);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.post("/addcard", (req, res) => {
+app.post("/addcard", async (req, res) => {
     const { title, name, number, month, year, cvv, note, prompt } = req.body;
-    console.log(req.body);
-    db.query(
-        "INSERT INTO cards (title, name, number, month, year, cvv, note, prompt) VALUES (?,?,?,?,?,?,?,?)", [title, name, number, month, year, cvv, note, prompt],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Success");
-            }
-        }
-    );
+    try {
+        await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, name, number, month, year, cvv, note, prompt]);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.post("/addnote", (req, res) => {
+app.post("/addnote", async (req, res) => {
     const { title, note, prompt } = req.body;
-    db.query(
-        "INSERT INTO notes (title, note, prompt) VALUES (?,?,?)", [title, note, prompt],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Success");
-            }
-        }
-    );
+    try {
+        await query("INSERT INTO notes (title, note, prompt, created_at, updated_at) VALUES (?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [title, note, prompt]);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.post("/updatelogin/:id", (req, res) => {
+app.post("/updatelogin/:id", async (req, res) => {
     const id = req.params.id;
     const { title, username, password, website, note, prompt } = req.body;
     const hashedPassword = encrypt(password);
-    db.query(
-        "UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=? WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Success");
-            }
-        }
-    );
+    try {
+        await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id]);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.post("/updatecard/:id", (req, res) => {
+app.post("/updatecard/:id", async (req, res) => {
     const id = req.params.id;
     const { title, name, number, month, year, cvv, note, prompt } = req.body;
-    db.query(
-        "UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=? WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Success");
-            }
-        }
-    );
+    try {
+        await query("UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id]);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.post("/updatenote/:id", (req, res) => {
+app.post("/updatenote/:id", async (req, res) => {
     const id = req.params.id;
     const { title, note, prompt } = req.body;
-    db.query(
-        "UPDATE notes SET title=?, note=?, prompt=? WHERE id=?", [title, note, prompt, id],
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Success");
-            }
-        }
-    );
+    try {
+        await query("UPDATE notes SET title=?, note=?, prompt=?, updated_at=CURRENT_TIMESTAMP WHERE id=?", [title, note, prompt, id]);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.delete("/deletelogin/:id", (req, res) => {
+app.delete("/deletelogin/:id", async (req, res) => {
     const id = req.params.id;
-    db.query("DELETE FROM logins WHERE id=?", id, (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
+    try {
+        await query("DELETE FROM logins WHERE id=?", id);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.delete("/deletecard/:id", (req, res) => {
+app.delete("/deletecard/:id", async (req, res) => {
     const id = req.params.id;
-    db.query("DELETE FROM cards WHERE id=?", id, (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
+    try {
+        await query("DELETE FROM cards WHERE id=?", id);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
-app.delete("/deletenote/:id", (req, res) => {
+app.delete("/deletenote/:id", async (req, res) => {
     const id = req.params.id;
-    db.query("DELETE FROM notes WHERE id=?", id, (err, result) => {
-        if (err) {
-            console.log(err);
+    try {
+        await query("DELETE FROM notes WHERE id=?", id);
+        res.send("Success");
+    } catch (err) {
+        res.status(500).send();
+    }
+});
+
+app.post("/register", async (req, res) => {
+    try {
+        const { email, phone, password } = req.body;
+
+        if (email && phone && password) {
+            const hashedPwd = await bcrypt.hash(password, saltRounds);
+            const result = await query("INSERT INTO users (email, phone, password, created_at, updated_at) VALUES (?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)", [email, phone, hashedPwd]);
+            res.send("Success");
         } else {
-            res.send(result);
+            // missing input
+            res.status(400).send();
         }
-    });
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
 app.post("/auth", async (req, res) => {
-    const { email, password } = req.body;
-    // return res.send();
+    try {
+        const { email, password } = req.body;
 
-    if (email && password) {
-        db.query("SELECT * FROM users WHERE email=?", email, (err, result) => {
-            if (err) throw err;
-            if (result.length > 0) {
-                return res.send(result[0].password);
-                bcrypt.compare(password, result[0].password, function(err, match) {
-                    if (match) {
-                        res.send(result[0]);
-                    } else {
-                        console.log('401');
-                        res.status(401).send();
-                    }
-                });
+        if (email && password) {
+            const user = await query("SELECT * FROM users WHERE email=?", email);
+            if (user.length > 0) {
+                const match = await bcrypt.compare(password, user[0].password);
+                if (match) {
+                    // implement access token instead
+                    res.send(user[0].password);
+                } else {
+                    // incorrect password
+                    res.status(401).send();
+                }
             } else {
-                console.log('401');
+                // user does not exist
                 res.status(401).send();
             }
-            res.end();
-        });
-    } else {
-        res.status(400).send();
-        res.end();
+        } else {
+            // missing input
+            res.status(400).send();
+        }
+    } catch (err) {
+        res.status(500).send();
     }
 });
 
