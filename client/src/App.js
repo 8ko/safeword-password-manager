@@ -32,6 +32,7 @@ import useAuth from './hooks/useAuth';
 import useRefreshToken from './hooks/useRefreshToken';
 
 import axios from './api/axios';
+import { useState, useEffect } from "react";
 
 function App() {
 
@@ -58,15 +59,22 @@ function App() {
   });
   dark = responsiveFontSizes(dark);
 
-  const [isDark, setAsDark] = React.useState(false);
+  const [isDark, setDark] = useState(false);
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        setAsDark((isDark) => !isDark);
+        const darkMode = localStorage.getItem('darkMode') === 'true' ? false : true;
+        localStorage.setItem('darkMode', darkMode);
+        setDark(darkMode);
       },
     }),
     []
   );
+
+  useEffect(() => {
+    const darkMode = localStorage.getItem('darkMode') === 'true' ? true : false;
+    setDark(darkMode);
+  },[]);
 
   return (
     <div className="App">

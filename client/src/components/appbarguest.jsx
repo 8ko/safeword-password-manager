@@ -26,7 +26,7 @@ const AppbarGuest = () => {
   return (
     <>
       <Toolbar>
-        <AppBar enableColorOnDark
+        <AppBar
           position="fixed"
           sx={{
             flexGrow: 1,

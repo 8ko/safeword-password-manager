@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -58,6 +58,17 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 
 export default function Settings() {
     const colorMode = React.useContext(ColorModeContext);
+    
+    const [isDark, setDark] = useState(false);
+    useEffect(() => {
+        const darkMode = localStorage.getItem('darkMode') === 'true' ? true : false;
+        setDark(darkMode);
+    },[]);
+
+    const handleThemeChange = (event) => {
+        setDark(event.target.checked);
+        colorMode.toggleColorMode();
+    }
 
     return (
         <>
@@ -75,10 +86,10 @@ export default function Settings() {
                     Theme
                 </Typography>
                 <MaterialUISwitch
-                    onChange={colorMode.toggleColorMode}
+                    checked={isDark}
+                    onChange={handleThemeChange}
                 />
             </Stack>
-
 
             <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Stack spacing={1}>
@@ -93,7 +104,6 @@ export default function Settings() {
                     </Button>
                 </Stack>
             </Box>
-
         </>
     );
 }

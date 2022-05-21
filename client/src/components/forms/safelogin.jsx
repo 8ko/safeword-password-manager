@@ -17,7 +17,6 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
