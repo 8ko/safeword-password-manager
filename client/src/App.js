@@ -83,9 +83,9 @@ function App() {
               <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
                 <Toolbar />
                 <Routes>
-                  { auth?.accessToken ? <Route path="/login" element={<Login />} /> : <Route path="/login" element={<Navigate to="/" />} /> }
-                  { auth?.accessToken ? <Route path="/register" element={<Register />} /> : <Route path="/register" element={<Navigate to="/" />} /> }
-                  { auth?.accessToken ? <Route path="/forgotpassword" element={<ForgotPassword />} /> : <Route path="/forgotpassword" element={<Navigate to="/" />} /> }
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgotpassword" element={<ForgotPassword />} />
                   <Route element={<PersistLogin />}>
                     <Route element={<RequireAuth />}>
                       <Route path="/" element={<Vault />} />
