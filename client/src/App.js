@@ -2,7 +2,7 @@
 import * as React from 'react';
 import "@fontsource/roboto";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { ColorModeContext } from './context/color-context';
@@ -29,14 +29,12 @@ import RequireAuth from './components/requireauth';
 import PersistLogin from './components/persistlogin';
 
 import useAuth from './hooks/useAuth';
-import useRefreshToken from './hooks/useRefreshToken';
-
+import { useState } from "react";
 import axios from './api/axios';
-import { useState, useEffect } from "react";
 
 function App() {
 
-  const { auth, setAuth } = useAuth();
+  const { auth } = useAuth();
   // uncomment to bypass auth screen
   // React.useEffect(() => {
   //   axios.post('/auth', { email:'a@a.com', pwd:'password' }).then(res => {
