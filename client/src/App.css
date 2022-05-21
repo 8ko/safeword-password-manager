@@ -93,3 +93,13 @@ mark {
 /* .css-1d1r5q-MuiFormHelperText-root{
     color: #4caf50 !important;
 } */
+
+.css-16awh2u-MuiAutocomplete-root .MuiInput-root .MuiInput-input{
+    padding: 4p, 4px, 4px, 40px;
+    margin-left: 44px;
+    color: #ffffff;
+}
+
+.MuiAutocomplete-clearIndicator{
+    color: #ffffff !important;
+}
