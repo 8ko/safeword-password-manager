@@ -24,6 +24,10 @@ import validateSafeForm from './validateSafeForm';
 import useAuth from '../../hooks/useAuth';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
+const ADD_URL = '/addcard';
+const UPDATE_URL = '/updatecard';
+const DELETE_URL = '/deletecard';
+
 const SafeCard = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
@@ -88,7 +92,7 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
-            axiosPrivate.post('/addcard', {
+            axiosPrivate.post(ADD_URL, {
                 user: user,
                 title: values.title,
                 name: values.name,
@@ -128,7 +132,7 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
-            axiosPrivate.post(`/updatecard/${values.id}`, {
+            axiosPrivate.post(`${UPDATE_URL}/${values.id}`, {
                 title: values.title,
                 name: values.name,
                 number: values.number,
@@ -154,7 +158,7 @@ const SafeCard = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            axiosPrivate.delete(`/deletecard/${values.id}`)
+            axiosPrivate.delete(`${DELETE_URL}/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',

@@ -18,6 +18,10 @@ import validateSafeForm from './validateSafeForm';
 import useAuth from '../../hooks/useAuth';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
+const ADD_URL = '/addnote';
+const UPDATE_URL = '/updatenote';
+const DELETE_URL = '/deletenote';
+
 const SafeNote = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
@@ -72,7 +76,7 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
-            axiosPrivate.post('/addnote', {
+            axiosPrivate.post(ADD_URL, {
                 user: user,
                 title: values.title,
                 note: values.note,
@@ -107,7 +111,7 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
-            axiosPrivate.post(`/updatenote/${values.id}`, {
+            axiosPrivate.post(`${UPDATE_URL}/${values.id}`, {
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt
@@ -128,7 +132,7 @@ const SafeNote = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            axiosPrivate.delete(`/deletenote/${values.id}`)
+            axiosPrivate.delete(`${DELETE_URL}/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',

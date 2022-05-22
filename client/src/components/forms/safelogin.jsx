@@ -24,6 +24,11 @@ import validateSafeForm from './validateSafeForm';
 import useAuth from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
+const ADD_URL = '/addlogin';
+const UPDATE_URL = '/updatelogin';
+const DELETE_URL = '/deletelogin';
+const DECRYPT_URL = '/decryptpassword';
+
 const SafeLogin = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
@@ -69,7 +74,7 @@ const SafeLogin = forwardRef((props, ref) => {
     useEffect(() => {
         if (props.prop1 && props.prop1.password) {
             // decrypt password upon render
-            axiosPrivate.post('/decryptpassword', {
+            axiosPrivate.post(DECRYPT_URL, {
                 password: props.prop1.password,
                 iv: props.prop1.iv,
             }).then((res) => {
@@ -104,7 +109,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
-            axiosPrivate.post('/addlogin', {
+            axiosPrivate.post(ADD_URL, {
                 user: user,
                 title: values.title,
                 username: values.username,
@@ -142,7 +147,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
-            axiosPrivate.post(`/updatelogin/${values.id}`, {
+            axiosPrivate.post(`${UPDATE_URL}/${values.id}`, {
                 title: values.title,
                 username: values.username,
                 password: values.password,
@@ -166,7 +171,7 @@ const SafeLogin = forwardRef((props, ref) => {
         },
 
         deleteItem() {
-            axiosPrivate.delete(`/deletelogin/${values.id}`)
+            axiosPrivate.delete(`${DELETE_URL}/${values.id}`)
                 .then(() => {
                     Swal.fire({
                         title: 'Success!',
