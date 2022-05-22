@@ -1,6 +1,7 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import jwt_decode from "jwt-decode";
+import { EmailRegex } from '../../constants';
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -28,6 +29,9 @@ const ADD_URL = '/addlogin';
 const UPDATE_URL = '/updatelogin';
 const DELETE_URL = '/deletelogin';
 const DECRYPT_URL = '/decryptpassword';
+
+const HIBP_ACC_URL = '/hibp/account';
+const HIBP_PWD_URL = '/hibp/password';
 
 const SafeLogin = forwardRef((props, ref) => {
 
@@ -67,6 +71,65 @@ const SafeLogin = forwardRef((props, ref) => {
         setValues({
             ...values,
             showPassword: !values.showPassword,
+        });
+    };
+
+    const handleVerifyUsername = async () => {
+        await axiosPrivate.post(HIBP_ACC_URL, {
+            acc: values.username 
+        }).then(res => {
+            const breaches = res.data?.breaches?.length || 0;
+            const pastes = res.data?.pastes?.length || 0;
+            if (breaches || pastes) {
+                Swal.fire({
+                    title: 'Oh no - pwned!',
+                    text: `Pwned in ${breaches} data breaches and found ${pastes} pastes.`,
+                    icon: 'warning',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                });
+            } else {
+                Swal.fire({
+                    title: 'Good news - no pwnage found!',
+                    text: 'No breached accounts and no pastes.',
+                    icon: 'success',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                });
+            }
+        });
+    };
+
+    const handleVerifyPassword = async () => {
+        await axiosPrivate.post(HIBP_PWD_URL, {
+            pwd: values.password 
+        }).then(res => {
+            const pwns = res.data?.pwns || 0;
+            if (pwns) {
+                Swal.fire({
+                    title: 'Oh no - pwned!',
+                    text: `This password has been seen ${pwns} times before. This password has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it!`,
+                    icon: 'warning',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                });
+            } else {
+                Swal.fire({
+                    title: 'Good news - no pwnage found!',
+                    text: 'This password was not found in any of the Pwned Passwords loaded into Have I Been Pwned.',
+                    icon: 'success',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                });
+            }
         });
     };
 
@@ -207,14 +270,23 @@ const SafeLogin = forwardRef((props, ref) => {
 
             <FormControl sx={{ mb: 1.5 }}
                 style={{ minWidth: '25%', width: '100%' }} variant="outlined">
-                <InputLabel htmlFor="outlined-adornment-username">Username</InputLabel>
+                <InputLabel htmlFor="outlined-adornment-username">Username or Email</InputLabel>
                 <OutlinedInput
-                    id="outlined-username"
-                    label="Username"
+                    id="username"
+                    label="Username or Email"
                     value={values.username}
                     onChange={handleChange('username')}
                     endAdornment={
                         <InputAdornment position="end">
+                            <Tooltip title="Verify Security">
+                                <IconButton
+                                    aria-label="verify security"
+                                    edge="end"
+                                    onClick={handleVerifyUsername}
+                                >
+                                    <CheckCircleOutlineRoundedIcon />
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Copy">
                                 <IconButton
                                     aria-label="copy input"
@@ -248,10 +320,11 @@ const SafeLogin = forwardRef((props, ref) => {
                                     {values.showPassword ? <VisibilityOff /> : <Visibility />}
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title="Verify security">
+                            <Tooltip title="Verify Security">
                                 <IconButton
-                                    aria-label="copy input"
+                                    aria-label="verify security"
                                     edge="end"
+                                    onClick={handleVerifyPassword}
                                 >
                                     <CheckCircleOutlineRoundedIcon />
                                 </IconButton>

@@ -14,6 +14,7 @@ const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/corsOptions");
 const credentials = require("./middleware/credentials");
+const hibp = require('hibp');
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
@@ -184,6 +185,26 @@ app.post("/auth", async (req, res) => {
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 app.use(verifyJWT);
+
+app.post("/hibp/account", async (req, res) => {
+    hibp.search(req.body.acc, { apiKey: process.env.HIBP_API_KEY })
+    .then((data) => {
+        res.send(data);
+    })
+    .catch((err) => {
+        res.sendStatus(500);
+    });
+});
+
+app.post("/hibp/password", async (req, res) => {
+    hibp.pwnedPassword(req.body.pwd)
+    .then(numPwns => {
+        res.send({ pwns: numPwns});
+    })
+    .catch((err) => {
+        res.sendStatus(500);
+    });
+});
 
 app.post("/showlogins", async (req, res) => {
     try {
