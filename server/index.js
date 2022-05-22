@@ -51,7 +51,7 @@ app.get('/confirmation/:token', (req, res) => {
     try {
         jwt.verify(
             req.params.token,
-            process.env.EMAIL_SECRET,
+            process.env.EMAIL_TOKEN_SECRET,
             (err, decoded) => {
                 db.query("UPDATE users SET email_verified_at=CURRENT_TIMESTAMP WHERE id=?", decoded.user);
                 res.send('Your account has been verified.');
@@ -66,7 +66,7 @@ app.get('/reset/:token', async (req, res) => {
     try {
         jwt.verify(
             req.params.token,
-            process.env.EMAIL_SECRET,
+            process.env.EMAIL_TOKEN_SECRET,
             async (err, decoded) => {
                 const hashedPwd = await bcrypt.hash(decoded.password, saltRounds);
                 // reset password and remove refresh token to log out of all devices
@@ -91,7 +91,7 @@ app.post('/reset', async (req, res) => {
                 user: foundUser.id,
                 password: req.body.pwd
             },
-            process.env.EMAIL_SECRET,
+            process.env.EMAIL_TOKEN_SECRET,
             { expiresIn: '1d', }
         );
         const url = `${process.env.APP_URL}/reset/${emailToken}`;
@@ -117,7 +117,7 @@ app.post("/register", async (req, res) => {
         
         const emailToken = jwt.sign(
             { user: result.insertId },
-            process.env.EMAIL_SECRET,
+            process.env.EMAIL_TOKEN_SECRET,
             { expiresIn: '1d', }
         );
         const url = `${process.env.APP_URL}/confirmation/${emailToken}`;
