@@ -1,8 +1,8 @@
-/* eslint-disable no-useless-escape */
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import "./../../../App.css";
 import Swal from 'sweetalert2';
+import axios from "../../../api/axios";
+import { EmailRegex, PwdRegex } from "../../../constants";
 
 import Box from "@mui/material/Box";
 import FormControl from '@mui/material/FormControl';
@@ -14,18 +14,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
 import { Tooltip, Typography } from '@mui/material';
+
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
 
-import axios from "../../../api/axios";
-
-const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-// const PHONE_REGEX = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{12,32}$/;
 const REGISTER_URL = '/register';
 
 const Register = () => {
@@ -60,11 +55,11 @@ const Register = () => {
     }, [email]);
 
     useEffect(() => {
-        setValidEmail(EMAIL_REGEX.test(email));
+        setValidEmail(EmailRegex.test(email));
     }, [email]);
 
     useEffect(() => {
-        setValidPwd(PWD_REGEX.test(pwd));
+        setValidPwd(PwdRegex.test(pwd));
     }, [pwd]);
 
     useEffect(() => {
@@ -74,8 +69,8 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         // if button enabled with JS hack
-        const v1 = EMAIL_REGEX.test(email);
-        const v2 = PWD_REGEX.test(pwd); // u can space as password char???
+        const v1 = EmailRegex.test(email);
+        const v2 = PwdRegex.test(pwd); // u can space as password char???
         if (!v1 || !v2) {
             setErrMsg("Invalid entry");
             return;

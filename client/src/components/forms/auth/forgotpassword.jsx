@@ -1,6 +1,8 @@
 /* eslint-disable no-useless-escape */
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
+import axios from "../../../api/axios";
+import { EmailRegex, PwdRegex } from "../../../constants";
 
 import Box from "@mui/material/Box";
 import FormControl from '@mui/material/FormControl';
@@ -19,10 +21,6 @@ import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import Swal from "sweetalert2";
 
-import axios from "../../../api/axios";
-
-const EMAIL_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{12,32}$/;
 const FORGOT_URL = '/forgot';
 
 const ForgotPassword = () => {
@@ -47,11 +45,11 @@ const ForgotPassword = () => {
     }, [email]);
 
     useEffect(() => {
-        setValidEmail(EMAIL_REGEX.test(email));
+        setValidEmail(EmailRegex.test(email));
     }, [email]);
 
     useEffect(() => {
-        setValidPwd(PWD_REGEX.test(pwd));
+        setValidPwd(PwdRegex.test(pwd));
     }, [pwd]);
 
     useEffect(() => {
