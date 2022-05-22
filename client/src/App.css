@@ -4,102 +4,23 @@
     align-items: center;
 }
 
-mark {
-    color: #1976d2;
-    padding: 2px 4px 2px 2px;
-    border-radius: 0.1em;
+*{
+    -ms-overflow-style: none;
 }
-
-.AddingPassword {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffffff;
-    border: solid 2px #318CE7;
-    width: 50%;
-    height: 20em;
-    border-radius: 20px;
-    margin-top: 2em;
-    padding-bottom: 1em;
-}
-
-.AddingPassword input {
-    width: 12em;
-    height: 2.2em;
-    border: solid 2px #7c7c7c;
-    border-radius: 7px;
-    margin: 0.5em;
-    text-align: center;
-    font-size: 1.2em;
-}
-
-.AddingPassword input:focus {
-    outline: none !important;
-    border-color: #719ECE;
-    box-shadow: 0 0 6px #719ECE;
-}
-
-.AddingPassword button {
-    width: 10em;
-    height: 2.2em;
-    border: none;
-    background-color: #318CE7;
-    border-radius: 10em;
-    color: #FFFFFF;
-    margin: 0.5em;
-    text-align: center;
-    font-size: 1em;
-}
-
-.Passwords {
-    flex-direction: column;
-    margin-top: 20px;
-}
-
-.password {
-    display: flex;
-    background-color: #318CE7;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0px 10px 0px;
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    cursor: pointer;
-}
-
-.view {
-    display: flex;
-    background-color: #318CE7;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0px 10px 0px;
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    cursor: pointer;
-}
-
-.del {
-    display: flex;
-    background-color: #318CE7;
-    justify-content: center;
-    align-items: center;
-    margin: 10px 0px 10px 0px;
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    cursor: pointer;
+::-webkit-scrollbar {
+    display: none;
 }
 
 /* .css-1d1r5q-MuiFormHelperText-root{
     color: #4caf50 !important;
 } */
 
-.css-16awh2u-MuiAutocomplete-root .MuiInput-root .MuiInput-input{
+.css-16awh2u-MuiAutocomplete-root .MuiInput-root .MuiInput-input {
     padding: 4p, 4px, 4px, 40px;
     margin-left: 44px;
     color: #ffffff;
 }
 
-.MuiAutocomplete-clearIndicator{
+.MuiAutocomplete-clearIndicator {
     color: #ffffff !important;
 }

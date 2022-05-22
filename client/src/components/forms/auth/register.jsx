@@ -2,6 +2,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import "./../../../App.css";
+import Swal from 'sweetalert2';
 
 import Box from "@mui/material/Box";
 import FormControl from '@mui/material/FormControl';
@@ -13,7 +14,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Stack from '@mui/material/Stack';
 
 import { Tooltip, Typography } from '@mui/material';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
@@ -97,7 +97,19 @@ const Register = () => {
             // clear input fields
             setEmail('');
             setPwd('');
-            navigate('/login');
+
+            Swal.fire({
+                title: 'A verification link has been sent to your email.',
+                text: 'Please click on the link that has been sent to your email.',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonColor: '#318ce7',
+                confirmButtonText: 'Okay',
+                showCloseButton: true,
+                closeButtonHtml: '&times;'
+            }).then((result) => {
+                navigate('/login');
+            });
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No server response');
@@ -155,6 +167,7 @@ const Register = () => {
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
                         <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
                         <TextField
+                            InputLabelProps={{ required: false }}
                             required
                             id="email"
                             ref={userRef}
@@ -172,9 +185,9 @@ const Register = () => {
                     </Box>
 
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3 }}>
-                        <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3 }} />
+                        <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
                         <FormControl fullWidth variant="standard">
-                            <InputLabel htmlFor="standard-adornment-password">Master password</InputLabel>
+                            <InputLabel htmlFor="standard-adornment-password">Master Password</InputLabel>
                             <Input
                                 required
                                 id="password"
@@ -204,24 +217,25 @@ const Register = () => {
                         </FormControl>
                     </Box>
 
-                    <Stack direction="row"
-                        justifyContent="center"
-                        sx={{
-                            textAlign: 'center',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }} >
-                        <Checkbox
-                            required
-                            size="small"
-                            checked={agreeToc}
-                            onChange={handleChange}
-                            inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                        <Typography variant="overline" style={{ display: "inline-block", lineHeight: '16px' }} >
+                    <Box sx={{
+                        textAlign: 'center',
+                        alignItems: 'center',
+                        lineHeight: '12px'
+                    }}>
+                        <Typography variant="overline" style={{ lineHeight: 0 }} >
+                            <Checkbox
+                                required
+                                size="small"
+                                checked={agreeToc}
+                                onChange={handleChange}
+                                inputProps={{ 'aria-label': 'controlled' }}
+                                style={{ transform: "scale(0.8)", height: 20 }}
+                            />
                             I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" style={{ textDecoration: 'none' }}>Privacy Policy</Link>
+
+
                         </Typography>
-                    </Stack>
+                    </Box>
 
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
                         <Button
@@ -234,7 +248,7 @@ const Register = () => {
                     </Box>
 
                     <Box sx={{ textAlign: 'center', mt: 3 }}>
-                        <Typography variant="overline" >
+                        <Typography variant="overline">
                             Have an account? <Link to="/login" style={{ textDecoration: 'none' }}>log in</Link>
                         </Typography>
                     </Box>

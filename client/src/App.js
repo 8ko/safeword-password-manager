@@ -16,6 +16,7 @@ import Settings from "./pages/settings";
 import EmptyVault from "./pages/emptyvault";
 import TermsAndConditions from "./pages/terms";
 import PrivacyPolicy from "./pages/privacy";
+import VerifiedEmail from "./pages/verifiedemail";
 
 import BottomNav from "./components/bottomnav";
 import Appbar from "./components/appbar";
@@ -78,8 +79,8 @@ function App() {
           <CssBaseline />
           <Router>
             <Box sx={{ display: 'flex' }}>
-              { auth?.accessToken ? <Appbar /> : <AppbarGuest /> }
-              { auth?.accessToken ? <Sidebar width={200} /> : <></> }
+              {auth?.accessToken ? <Appbar /> : <AppbarGuest />}
+              {auth?.accessToken ? <Sidebar width={200} /> : <></>}
               <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
                 <Toolbar />
                 <Routes>
@@ -88,6 +89,7 @@ function App() {
                   <Route path="/forgotpassword" element={<ForgotPassword />} />
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/verifiedemail" element={<VerifiedEmail />} />
                   <Route element={<PersistLogin />}>
                     <Route element={<RequireAuth />}>
                       <Route path="/" element={<Vault />} />
@@ -100,7 +102,7 @@ function App() {
                 </Routes>
               </Box>
             </Box>
-            { auth?.accessToken ? <BottomNav /> : <></> }
+            {auth?.accessToken ? <BottomNav /> : <></>}
           </Router>
         </ThemeProvider>
       </ColorModeContext.Provider>

@@ -53,7 +53,7 @@ const Login = () => {
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
-                }    
+                }
             );
             // console.log(response.data);
             // const id = response?.data?.id;
@@ -70,6 +70,8 @@ const Login = () => {
                 setErrMsg('Missing email or password');
             } else if (err.response?.status === 401) {
                 setErrMsg('Unauthorized');
+            } else if (err.response?.status === 403) {
+                setErrMsg('Email not verified');
             } else {
                 setErrMsg('Login failed');
             }
@@ -83,7 +85,7 @@ const Login = () => {
             <Box sx={{ pr: 4 }}>
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
-                        sx={{ textAlign: 'center' }}>
+                        sx={{ textAlign: 'center', mb: 1 }}>
                         Unlock your vault
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
