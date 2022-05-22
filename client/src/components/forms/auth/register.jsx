@@ -219,7 +219,7 @@ const Register = () => {
                             inputProps={{ 'aria-label': 'controlled' }}
                         />
                         <Typography variant="overline" style={{ display: "inline-block", lineHeight: '16px' }} >
-                            I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>Terms & Conditions</Link>
+                            I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" style={{ textDecoration: 'none' }}>Privacy Policy</Link>
                         </Typography>
                     </Stack>
 

@@ -14,6 +14,8 @@ import AddItem from "./pages/additem";
 import Generator from "./pages/generator";
 import Settings from "./pages/settings";
 import EmptyVault from "./pages/emptyvault";
+import TermsAndConditions from "./pages/terms";
+import PrivacyPolicy from "./pages/privacy";
 
 import BottomNav from "./components/bottomnav";
 import Appbar from "./components/appbar";
@@ -84,6 +86,8 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgotpassword" element={<ForgotPassword />} />
+                  <Route path="/terms" element={<TermsAndConditions />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route element={<PersistLogin />}>
                     <Route element={<RequireAuth />}>
                       <Route path="/" element={<Vault />} />
