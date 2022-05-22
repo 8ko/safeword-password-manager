@@ -103,7 +103,7 @@ export default function Settings() {
                     <Button variant="outlined">
                         Set up 2FA
                     </Button>
-                    <Button variant="outlined">
+                    <Button variant="outlined" onClick={() => navigate('/reset')}>
                         Reset Master Password
                     </Button>
                     <Button variant="outlined" onClick={signOut}>

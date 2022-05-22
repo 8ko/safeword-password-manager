@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import Swal from "sweetalert2";
+import { useNavigate } from 'react-router-dom';
+import { PwdRegex } from "../../../constants";
 import axios from "../../../api/axios";
-import { EmailRegex, PwdRegex } from "../../../constants";
+import useAuth from "../../../hooks/useAuth";
 
 import Box from "@mui/material/Box";
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import TextField from "@mui/material/TextField";
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -15,22 +16,18 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Tooltip, Typography } from '@mui/material';
-
-import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
-import Swal from "sweetalert2";
 
 const RESET_URL = '/reset';
 
-const ForgotPassword = () => {
+const ResetPassword = () => {
 
+    const { auth } = useAuth();
     const userRef = useRef();
     const errRef = useRef();
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
-    const [validEmail, setValidEmail] = useState(false);
-    const [emailFocus, setEmailFocus] = useState(false);
+    const email = auth?.email || '';
 
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
@@ -41,11 +38,7 @@ const ForgotPassword = () => {
 
     useEffect(() => {
         userRef.current.focus();
-    }, [email]);
-
-    useEffect(() => {
-        setValidEmail(EmailRegex.test(email));
-    }, [email]);
+    }, [pwd]);
 
     useEffect(() => {
         setValidPwd(PwdRegex.test(pwd));
@@ -53,7 +46,7 @@ const ForgotPassword = () => {
 
     useEffect(() => {
         setErrMsg('');
-    }, [email, pwd]);
+    }, [pwd]);
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -95,7 +88,7 @@ const ForgotPassword = () => {
             showCloseButton: true,
             closeButtonHtml: '&times;'
         }).then((result) => {
-            navigate('/login');
+            navigate('/settings');
         });
     }
 
@@ -106,28 +99,8 @@ const ForgotPassword = () => {
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center' }}>
-                        Forgot Password
+                        Reset Master Password
                     </Typography>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
-                        <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
-                        <TextField
-                            InputLabelProps={{ required: false }}
-                            required
-                            id="email"
-                            ref={userRef}
-                            autoComplete="off"
-                            placeholder="user@email.com"
-                            label="Email"
-                            variant="standard"
-                            onChange={(e) => setEmail(e.target.value)}
-                            onFocus={() => setEmailFocus(true)}
-                            onBlur={() => setEmailFocus(false)}
-                            error={!emailFocus && email && !validEmail ? true : false}
-                            helperText={!emailFocus && email && !validEmail ? "Not valid email." : ''}
-                            fullWidth
-                        />
-                    </Box>
 
                     <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3 }}>
                         <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
@@ -136,6 +109,7 @@ const ForgotPassword = () => {
                             <Input
                                 required
                                 id="password"
+                                ref={userRef}
                                 autoComplete="off"
                                 label="New Password"
                                 placeholder="************"
@@ -166,16 +140,10 @@ const ForgotPassword = () => {
                             type="submit"
                             color="primary"
                             variant="outlined"
-                            disabled={!validEmail || !validPwd ? true : false}
+                            disabled={!validPwd ? true : false}
                         >
                             Reset Password
                         </Button>
-                    </Box>
-
-                    <Box sx={{ textAlign: 'center', mt: 4 }}>
-                        <Typography variant="overline" >
-                            <Link to="/login" style={{ textDecoration: 'none' }}>Back to login</Link>
-                        </Typography>
                     </Box>
                 </form>
             </Box>
@@ -183,4 +151,4 @@ const ForgotPassword = () => {
     )
 }
 
-export default ForgotPassword;
+export default ResetPassword;

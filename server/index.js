@@ -69,7 +69,8 @@ app.get('/reset/:token', async (req, res) => {
             process.env.EMAIL_SECRET,
             async (err, decoded) => {
                 const hashedPwd = await bcrypt.hash(decoded.password, saltRounds);
-                await query("UPDATE users SET password=? WHERE id=?", [hashedPwd, decoded.user]);
+                // reset password and remove refresh token to log out of all devices
+                await query("UPDATE users SET password=?, refresh_token='' WHERE id=?", [hashedPwd, decoded.user]);
                 res.send('Your password has been reset.');
             }
         );
@@ -78,7 +79,7 @@ app.get('/reset/:token', async (req, res) => {
     }
 });
 
-app.post('/forgot', async (req, res) => {
+app.post('/reset', async (req, res) => {
     try {
         const users = await query("SELECT * FROM users WHERE email=?", req.body.email);
         if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
@@ -98,7 +99,7 @@ app.post('/forgot', async (req, res) => {
             from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_ADDRESS}>`,
             to: foundUser.email,
             subject: 'Reset Password',
-            html: `Please click this link to reset your password: <a href="${url}">${url}</a>`
+            html: `Please click this link to reset your password: <a href="${url}" target="_blank">${url}</a>`
         });
 
         res.send("Success");

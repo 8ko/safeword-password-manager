@@ -27,6 +27,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Login from "./components/forms/auth/login";
 import Register from "./components/forms/auth/register";
 import ForgotPassword from "./components/forms/auth/forgotpassword";
+import ResetPassword from './components/forms/auth/resetpassword';
 
 import RequireAuth from './components/requireauth';
 import PersistLogin from './components/persistlogin';
@@ -96,6 +97,7 @@ function App() {
                       <Route path="/additem" element={<AddItem />} />
                       <Route path="/generator" element={<Generator />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/reset" element={<ResetPassword />} />
                       <Route path="/emptyvault" element={<EmptyVault />} />
                     </Route>
                   </Route>

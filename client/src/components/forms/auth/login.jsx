@@ -58,7 +58,7 @@ const Login = () => {
             // const id = response?.data?.id;
             // const hashedPassword = response?.data?.password;
             const accessToken = response?.data?.accessToken;
-            setAuth({ accessToken });
+            setAuth({ email, accessToken });
             setEmail('');
             setPwd('');
             navigate('/');
