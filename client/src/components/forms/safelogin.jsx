@@ -97,15 +97,15 @@ const SafeLogin = forwardRef((props, ref) => {
 
     useImperativeHandle(ref, () => ({
         addItem() {
-            if (Object.keys(validateSafeForm(values, VaultItemTypes.Login)).length) {
+            var err = '';
+            if (Object.keys(err = validateSafeForm(values, VaultItemTypes.Login)).length) {
                 return Swal.fire({
                     title: 'Error!',
-                    text: 'Please fill out the fields.',
+                    text: err,
                     icon: 'error',
                     showConfirmButton: false,
                     showCloseButton: true,
                     closeButtonHtml: '&times;',
-                    timer: 1500,
                 });
             }
 
@@ -135,15 +135,15 @@ const SafeLogin = forwardRef((props, ref) => {
         },
 
         updateItem() {
-            if (Object.keys(validateSafeForm(values, VaultItemTypes.Login)).length) {
+            var err = '';
+            if (Object.keys(err = validateSafeForm(values, VaultItemTypes.Login)).length) {
                 return Swal.fire({
                     title: 'Error!',
-                    text: 'Please fill out the fields.',
+                    text: err,
                     icon: 'error',
                     showConfirmButton: false,
                     showCloseButton: true,
                     closeButtonHtml: '&times;',
-                    timer: 1500,
                 });
             }
 

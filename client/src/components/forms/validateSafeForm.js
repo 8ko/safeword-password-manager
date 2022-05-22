@@ -1,32 +1,34 @@
-import { VaultItemTypes } from "../../constants";
+import { VaultItemTypes, CardRegex, CvvRegex } from "../../constants";
+
+const EMPTY_MSSG = "Please fill out the fields.";
 
 // check if input is empty or contains only spaces
 function validate(str) {
-    return !(!str || /^\s*$/.test(str));
+    return str && !(/^\s*$/.test(str));
 }
 
 export default function validateSafeForm(values, type) {
-    let errors = {};
-
     if (type === VaultItemTypes.Login) {
 
-        if (!validate(values.title)) errors.title = "* Title is required";
-        if (!validate(values.password)) errors.password = "* Password is required";
+        if (!validate(values.title)) return EMPTY_MSSG;
+        if (!validate(values.password)) return EMPTY_MSSG;
 
     } else if (type === VaultItemTypes.Card) {
 
-        if (!validate(values.title)) errors.title = "* Brand is required";
-        if (!validate(values.name)) errors.name = "* Name is required";
-        if (!validate(values.number)) errors.number = "* Card number is required";
-        if (!validate(values.month)) errors.year = "* Expiry month is required";
-        if (!validate(values.year)) errors.year = "* Expiry year is required";
-        if (!validate(values.cvv)) errors.cvv = "* CVV/CVC is required";
+        if (!validate(values.title)) return EMPTY_MSSG;
+        if (!validate(values.name)) return EMPTY_MSSG;
+        if (!validate(values.number)) return EMPTY_MSSG;
+        if (!CardRegex.test(values.number)) return "Card number is invalid.";
+        if (!validate(values.month)) return EMPTY_MSSG;
+        if (!validate(values.year)) return EMPTY_MSSG;
+        if (!validate(values.cvv)) return EMPTY_MSSG;
+        if (!CvvRegex.test(values.cvv)) return EMPTY_MSSG;
 
     } else if (type === VaultItemTypes.Note) {
 
-        if (!validate(values.title)) errors.title = "* Title is required";
-        if (!validate(values.note)) errors.note = "* Note is required";
+        if (!validate(values.title)) return EMPTY_MSSG;
+        if (!validate(values.note)) return EMPTY_MSSG;
     }
 
-    return errors;
+    return '';
 }
