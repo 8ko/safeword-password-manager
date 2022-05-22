@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import React, { useRef, useState, useEffect } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import "./../../../App.css";
 import Swal from 'sweetalert2';
 
@@ -33,12 +33,13 @@ const Register = () => {
     const userRef = useRef();
     const errRef = useRef();
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(location.state?.email || '');
     const [validEmail, setValidEmail] = useState(false);
     const [emailFocus, setEmailFocus] = useState(false);
 
-    const [pwd, setPwd] = useState('');
+    const [pwd, setPwd] = useState(location.state?.pwd || '');
     const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
 
@@ -153,6 +154,7 @@ const Register = () => {
                             placeholder="user@email.com"
                             label="Email"
                             variant="standard"
+                            value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             onFocus={() => setEmailFocus(true)}
                             onBlur={() => setEmailFocus(false)}
@@ -172,6 +174,7 @@ const Register = () => {
                                 autoComplete="off"
                                 label="Master Password"
                                 placeholder="************"
+                                value={pwd}
                                 type={showPassword ? 'text' : 'password'}
                                 onChange={(e) => setPwd(e.target.value)}
                                 onFocus={() => setPwdFocus(true)}
@@ -208,9 +211,7 @@ const Register = () => {
                                 inputProps={{ 'aria-label': 'controlled' }}
                                 style={{ transform: "scale(0.8)", height: 20 }}
                             />
-                            I agree to the <Link to="/terms" style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" style={{ textDecoration: 'none' }}>Privacy Policy</Link>
-
-
+                            I agree to the <Link to="/terms" state={{email,pwd}} style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" state={{email,pwd}} style={{ textDecoration: 'none' }}>Privacy Policy</Link>
                         </Typography>
                     </Box>
 

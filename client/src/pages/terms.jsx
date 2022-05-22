@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -9,6 +9,9 @@ const terms = "These Terms & Conditions govern your use of SafeWord and provide 
 
 const TermsAndConditions = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const email = location?.state?.email || '';
+    const pwd = location?.state?.pwd || '';
 
     return (
         <Box sx={{ textAlign: 'center', overflowY: 'hidden' }}>
@@ -27,7 +30,7 @@ const TermsAndConditions = () => {
                 </Typography>
             </Box>
             <Box sx={{ mt: 4 }} style={{ marginLeft: -25 }}>
-                <Button variant="outlined" onClick={() => navigate(-1)}>
+                <Button variant="outlined" onClick={() => navigate('/register', { state: { email, pwd }, replace:true})}>
                     Back
                 </Button>
             </Box>
