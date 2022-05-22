@@ -47,7 +47,7 @@ const transporter = nodemailer.createTransport({
 // node native promisify
 const query = util.promisify(db.query).bind(db);
 
-app.get('/confirmation/:token', async (req, res) => {
+app.get('/confirmation/:token', (req, res) => {
     try {
         jwt.verify(
             req.params.token,
@@ -57,6 +57,51 @@ app.get('/confirmation/:token', async (req, res) => {
                 res.send('Your account has been verified.');
             }
         );
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+app.get('/reset/:token', async (req, res) => {
+    try {
+        jwt.verify(
+            req.params.token,
+            process.env.EMAIL_SECRET,
+            async (err, decoded) => {
+                const hashedPwd = await bcrypt.hash(decoded.password, saltRounds);
+                await query("UPDATE users SET password=? WHERE id=?", [hashedPwd, decoded.user]);
+                res.send('Your password has been reset.');
+            }
+        );
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+app.post('/forgot', async (req, res) => {
+    try {
+        const users = await query("SELECT * FROM users WHERE email=?", req.body.email);
+        if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
+        const foundUser = { ...users[0] };
+        if (!foundUser.email_verified_at) return res.sendStatus(403); // email not verified
+        
+        const emailToken = jwt.sign(
+            {
+                user: foundUser.id,
+                password: req.body.pwd
+            },
+            process.env.EMAIL_SECRET,
+            { expiresIn: '1d', }
+        );
+        const url = `${process.env.APP_URL}/reset/${emailToken}`;
+        transporter.sendMail({
+            from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_ADDRESS}>`,
+            to: foundUser.email,
+            subject: 'Reset Password',
+            html: `Please click this link to reset your password: <a href="${url}">${url}</a>`
+        });
+
+        res.send("Success");
     } catch (err) {
         res.sendStatus(500);
     }

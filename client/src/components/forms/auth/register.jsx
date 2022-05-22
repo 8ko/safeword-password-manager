@@ -54,10 +54,6 @@ const Register = () => {
         setShowPassword(!showPassword);
     };
 
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
-
     useEffect(() => {
         userRef.current.focus();
     }, [email]);
@@ -130,24 +126,6 @@ const Register = () => {
                         At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
                     </FormHelperText>
                 )
-                // } else if (pwd && pwdFocus && validPwd) {
-                //     return (
-                //         <FormHelperText
-                //             component={'span'}
-                //             sx={{
-                //                 '& .MuiFormHelperText-root': {
-                //                     color: '#4caf50 !important',
-                //                 },
-                //             }}
-                //             style={{
-                //                 '& .css-1d1r5q-MuiFormHelperText-root': {
-                //                     color: '#4caf50 !important',
-                //                 },
-                //             }}
-                //         >
-                //             Avoid sharing your master password to anyone.
-                //         </FormHelperText>
-                //     )
             } else {
                 return 'Avoid sharing your master password to anyone.';
             }
@@ -205,7 +183,6 @@ const Register = () => {
                                             <IconButton
                                                 aria-label="toggle password visibility"
                                                 onClick={handleClickShowPassword}
-                                                onMouseDown={handleMouseDownPassword}
                                             >
                                                 {showPassword ? <VisibilityOff /> : <Visibility />}
                                             </IconButton>
