@@ -1,7 +1,8 @@
+require('dotenv').config();
+
 const allowedOrigins = [
-    'https://www.yoursite.com',
+    process.env.APP_URL,
     'http://localhost:3000',
-    'http://localhost:3001'
 ];
 
 module.exports = allowedOrigins;
