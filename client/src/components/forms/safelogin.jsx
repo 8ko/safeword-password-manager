@@ -1,7 +1,6 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import jwt_decode from "jwt-decode";
-import { EmailRegex } from '../../constants';
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
