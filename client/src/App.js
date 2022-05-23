@@ -78,10 +78,9 @@ function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={isDark ? dark : light}>
           <CssBaseline />
-          <Router>
             <Box sx={{ display: 'flex' }}>
               {auth?.accessToken ? <Appbar /> : <AppbarGuest />}
-              {auth?.accessToken ? <Sidebar width={200} /> : <></>}
+              {auth?.accessToken ? <Sidebar width={180} /> : <></>}
               <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
                 <Toolbar />
                 <Routes>
@@ -105,7 +104,6 @@ function App() {
               </Box>
             </Box>
             {auth?.accessToken ? <BottomNav /> : <></>}
-          </Router>
         </ThemeProvider>
       </ColorModeContext.Provider>
     </div>

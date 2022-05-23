@@ -66,7 +66,7 @@ const Sidebar = (width) => {
                 }}
             >
                 <Toolbar />
-                <Box sx={{ overflow: 'hidden' }}>
+                <Box sx={{ overflow: 'auto' }}>
                 <VaultList title="Logins" type={VaultItemTypes.Login} list={loginList} icon={<LanguageRoundedIcon />} />
                 <Divider />
                 <VaultList title="Cards" type={VaultItemTypes.Card} list={cardList} icon={<CreditCardIcon />} />

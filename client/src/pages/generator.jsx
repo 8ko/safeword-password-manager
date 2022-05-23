@@ -101,7 +101,7 @@ const Generator = forwardRef((props, ref) => {
     };
 
     return (
-        <div>
+        <>
             <Box sx={{ mb: 4 }}>
                 <h2>Password Generator</h2>
             </Box>
@@ -248,8 +248,7 @@ const Generator = forwardRef((props, ref) => {
                 </Grid>
             </Box>
 
-
-        </div>
+        </>
     );
 });
 

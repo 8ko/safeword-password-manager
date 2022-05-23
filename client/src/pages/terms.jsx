@@ -15,10 +15,10 @@ const TermsAndConditions = () => {
 
     return (
         <Box sx={{ textAlign: 'center', overflowY: 'hidden' }}>
-            <Typography paragraph variant="h5" sx={{ mt: 2 }} style={{ marginLeft: -25 }}>
+            <Typography paragraph variant="h5" sx={{ mt: 1 }} style={{ marginLeft: -25 }}>
                 TERMS AND CONDITIONS
             </Typography>
-            <Box sx={{ mt: 2, width: '90%', height: 600, overflow: 'auto', p: 1 }}>
+            <Box sx={{ mt: 2, width: '90%', height: 350, overflow: 'auto', p: 1 }}>
                 <Typography paragraph
                     variant="overline"
                     sx={{
@@ -29,7 +29,7 @@ const TermsAndConditions = () => {
                     {terms}
                 </Typography>
             </Box>
-            <Box sx={{ mt: 4 }} style={{ marginLeft: -25 }}>
+            <Box sx={{ mt: 2 }} style={{ marginLeft: -25 }}>
                 <Button variant="outlined" onClick={() => navigate('/register', { state: { email, pwd }, replace:true})}>
                     Back
                 </Button>

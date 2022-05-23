@@ -5,9 +5,11 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import { styled, alpha } from '@mui/material/styles';
+import { grey } from '@mui/material/colors';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -16,30 +18,10 @@ const Search = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  marginLeft: 0,
+  paddingLeft: 10,
+  paddingRight: 10,
   width: '100%',
 }));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(1, 1.5),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-// const StyledTextField = styled(TextField)(({ theme }) => ({
-//   color: 'inherit',
-//   '& .MuiTextField-input': {
-//     padding: theme.spacing(1, 1, 1, 1),
-//     // vertical padding + font size from searchIcon
-//     color: '#ffffff !important',
-//     paddingLeft: `calc(1em + ${theme.spacing(5)})`,
-//     transition: theme.transitions.create('width'),
-//   },
-// }));
 
 const dummyData = [
   { title: 'The Shawshank Redemption', year: 1994 },
@@ -183,9 +165,6 @@ const Appbar = () => {
           </IconButton>
 
           <Search sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' } }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
             <Autocomplete
               freeSolo
               noOptionsText="Vault is empty"
@@ -195,10 +174,15 @@ const Appbar = () => {
                 <TextField
                   {...params}
                   variant="standard"
-                  // className={StyledTextField}
+                  sx={{ input: { color: grey['A200'] } }}
                   placeholder="Search vault..."
                   InputProps={{
                     ...params.InputProps,
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: grey['A200'] }} />
+                      </InputAdornment>
+                    ),
                     disableUnderline: true
                   }}
                 />
