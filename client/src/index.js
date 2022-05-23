@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MemoryRouter as Router } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from './context/AuthProvider'
 // import { disableReactDevTools } from '@fvilers/disable-react-devtools';
@@ -14,9 +13,9 @@ import App from './App';
 ReactDOM.render(
   <React.StrictMode>
     <AuthProvider>
-      <Router>
+      {/* <Router> */}
         <App />
-      </Router>
+      {/* </Router> */}
     </AuthProvider>
   </React.StrictMode>,
   document.getElementById('root')

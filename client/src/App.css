@@ -8,11 +8,19 @@
     max-height: 900px;
 }
 
-*{
+* {
     -ms-overflow-style: none;
 }
 ::-webkit-scrollbar {
     display: none;
+}
+
+.MuiListItemText {
+    margin-left: -100px;
+}
+
+.MuiListItemIcon {
+    margin-right: -100px;
 }
 
 .MuiAutocomplete-clearIndicator {
@@ -21,4 +29,9 @@
 
 .swal2-container {
     z-index: 20000 !important;
-  }
+}
+
+.swal2-popup {
+    font-size: 0.9rem !important;
+    font-family: 'Roboto';
+}

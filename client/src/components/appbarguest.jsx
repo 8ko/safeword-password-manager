@@ -20,7 +20,8 @@ const pwet = [
   "bata pa ko kol",
   "sakit kaayo kol",
   "kol bata pa ko kol",
-  "imong pante"
+  "imong pante",
+  "antok na ko"
 ];
 
 const AppbarGuest = () => {

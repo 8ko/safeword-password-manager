@@ -1,8 +1,8 @@
-/* eslint-disable no-unused-vars */
-import * as React from 'react';
+import React, { useState } from 'react';
+import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
+
 import "@fontsource/roboto";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { ColorModeContext } from './context/color-context';
@@ -29,24 +29,14 @@ import Login from "./components/forms/auth/login";
 import Register from "./components/forms/auth/register";
 import ForgotPassword from "./components/forms/auth/forgotpassword";
 import ResetPassword from './components/forms/auth/resetpassword';
-
 import RequireAuth from './components/requireauth';
 import PersistLogin from './components/persistlogin';
 
 import useAuth from './hooks/useAuth';
-import { useState } from "react";
-import axios from './api/axios';
 
 function App() {
 
   const { auth } = useAuth();
-  // uncomment to bypass auth screen
-  // React.useEffect(() => {
-  //   axios.post('/auth', { email:'a@a.com', pwd:'password' }).then(res => {
-  //     const accessToken = res.data.accessToken;
-  //     setAuth({accessToken});
-  //   });
-  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   let light = createTheme({
     palette: {
@@ -75,6 +65,7 @@ function App() {
   );
 
   return (
+    <Router>
     <div className="App">
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={isDark ? dark : light}>
@@ -109,6 +100,7 @@ function App() {
         </ThemeProvider>
       </ColorModeContext.Provider>
     </div>
+    </Router>
   );
 }
 

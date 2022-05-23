@@ -9,39 +9,41 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
-const VaultList = ({title, type, list, icon}) => {
+const VaultList = ({ title, type, list, icon }) => {
     const navigate = useNavigate();
     const handleClick = (data) => {
-        navigate('/', { state: { data }});
+        navigate('/', { state: { data } });
     }
 
     return (
         <>
-          <List
-              aria-labelledby="nested-list-subheader"
-              subheader={
-              <ListSubheader style={{fontSize: '0.9rem', letterSpacing: 0.5, marginBottom: -10}} component="div" id="nested-list-subheader">
-                  <Typography variant="overline">{title}</Typography>
-              </ListSubheader>
-              }
-          >
-              {list.map((data, key) => (
-              <ListItem
-                    key={data.id}
-                    onClick={()=>handleClick({...data, type: type})}
-                    disablePadding
-                >
-                  <ListItemButton>
-                  <ListItemIcon>
-                      {icon}
-                  </ListItemIcon>
-                  <ListItemText primary={data.title} />
-                  </ListItemButton>
-              </ListItem>
-              ))}
-          </List>
+            <List
+                disablePadding
+                aria-labelledby="nested-list-subheader"
+                subheader={
+                    <ListSubheader style={{ fontSize: '0.9rem', letterSpacing: 0.5, marginBottom: -10 }} component="div" id="nested-list-subheader">
+                        <Typography variant="overline">{title}</Typography>
+                    </ListSubheader>
+                }
+            >
+                {list.map((data, key) => (
+                    <ListItem
+                        key={data.id}
+                        onClick={() => handleClick({ ...data, type: type })}
+                        disablePadding
+                        disableGutters
+                    >
+                        <ListItemButton>
+                            <ListItemIcon>
+                                {icon}
+                            </ListItemIcon>
+                            <ListItemText primary={data.title} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
         </>
     );
-  };
+};
 
-  export default VaultList;
+export default VaultList;

@@ -19,9 +19,8 @@ const FAQ = () => {
 
             <Box sx={{
                 mt: 2,
-                ml: 1,
                 width: '95%',
-                height: 350,
+                height: 300,
                 overflow: 'auto',
                 p: 2,
                 textAlign: 'justify',

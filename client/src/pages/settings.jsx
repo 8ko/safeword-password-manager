@@ -4,6 +4,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Switch from '@mui/material/Switch';
 
+import Swal from 'sweetalert2';
+
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import { ColorModeContext } from '../context/color-context';
@@ -59,12 +61,28 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
+const SwalTest = () => {
+    Swal.fire({
+        title: 'Password Reprompt',
+        input: 'password',
+        inputPlaceholder: '************',
+        text: 'Enter your master password to proceed:',
+        // inputValue: {values.masterpass},
+        showConfirmButton: true,
+        confirmButtonColor: '#318ce7',
+        confirmButtonText: 'Confirm',
+        showCancelButton: true,
+    }).then((result) => {
+        window.location.reload();
+    });
+}
 export default function Settings() {
+
     const navigate = useNavigate();
     const logout = useLogout();
 
     const colorMode = React.useContext(ColorModeContext);
-    
+
     const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
 
     const handleThemeChange = (event) => {
@@ -79,6 +97,9 @@ export default function Settings() {
 
     return (
         <>
+            <link rel="stylesheet" href="@sweetalert2/themes/dark/dark.css" />
+            <script src="sweetalert2/dist/sweetalert2.min.js"></script>
+
             <Box sx={{ mb: 4 }}>
                 <h2>Settings</h2>
             </Box>
@@ -108,6 +129,9 @@ export default function Settings() {
                     </Button>
                     <Button variant="outlined" onClick={() => navigate('/faq')}>
                         Frequently Asked Questions
+                    </Button>
+                    <Button variant="outlined" onClick={SwalTest}>
+                        Reprompt SWAL Test
                     </Button>
                     <Button variant="outlined" onClick={signOut}>
                         Logout
