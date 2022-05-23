@@ -95,14 +95,13 @@ const ResetPassword = () => {
     return (
         <>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-            <Box sx={{ mr: 2 }}>
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center' }}>
                         Reset Master Password
                     </Typography>
 
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3 }}>
+                    <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center'}}>
                         <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
                         <FormControl fullWidth variant="standard">
                             <InputLabel htmlFor="standard-adornment-password">New Password</InputLabel>
@@ -135,7 +134,7 @@ const ResetPassword = () => {
                         </FormControl>
                     </Box>
 
-                    <Box sx={{ textAlign: 'center', mt: 2.5, }}>
+                    <Box sx={{ textAlign: 'center', mt: 2 }}>
                         <Button
                             type="submit"
                             color="primary"
@@ -146,7 +145,6 @@ const ResetPassword = () => {
                         </Button>
                     </Box>
                 </form>
-            </Box>
         </>
     )
 }

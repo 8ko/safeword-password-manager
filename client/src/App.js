@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "@fontsource/roboto";
 import "./App.css";
@@ -29,6 +29,8 @@ import Login from "./components/forms/auth/login";
 import Register from "./components/forms/auth/register";
 import ForgotPassword from "./components/forms/auth/forgotpassword";
 import ResetPassword from './components/forms/auth/resetpassword';
+import SetUp2FA from './components/forms/auth/setup2fa';
+import Verify2FA from './components/forms/auth/verify2fa';
 import RequireAuth from './components/requireauth';
 import PersistLogin from './components/persistlogin';
 
@@ -90,6 +92,8 @@ function App() {
                     <Route path="/generator" element={<Generator />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/reset" element={<ResetPassword />} />
+                    <Route path="/setup2fa" element={<SetUp2FA />} />
+                    <Route path="/verify2fa" element={<Verify2FA />} />
                     <Route path="/emptyvault" element={<EmptyVault />} />
                   </Route>
                 </Route>

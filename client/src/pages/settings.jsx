@@ -72,10 +72,29 @@ const SwalTest = () => {
         confirmButtonColor: '#318ce7',
         confirmButtonText: 'Confirm',
         showCancelButton: true,
-    }).then((result) => {
-        window.location.reload();
     });
 }
+
+
+const Set2FA = () => {
+    Swal.fire({
+        title: 'Set up 2FA',
+        input: 'password',
+        inputPlaceholder: '************',
+        text: 'Enter your master password to proceed:',
+        // inputValue: {values.masterpass},
+        showConfirmButton: true,
+        confirmButtonColor: '#318ce7',
+        confirmButtonText: 'Confirm',
+        showCancelButton: true,
+        width: '60%',
+    }).then((result) => {
+        //  if swal value === masterpassword {
+        //     navigate to /setup2fa
+        // }
+    });
+}
+
 export default function Settings() {
 
     const navigate = useNavigate();
@@ -121,7 +140,7 @@ export default function Settings() {
 
             <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Stack spacing={1}>
-                    <Button variant="outlined">
+                    <Button variant="outlined" onClick={Set2FA}>
                         Set up 2FA
                     </Button>
                     <Button variant="outlined" onClick={() => navigate('/reset')}>
