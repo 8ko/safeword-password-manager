@@ -15,10 +15,10 @@
     display: none;
 }
 
-/* .css-1d1r5q-MuiFormHelperText-root{
-    color: #4caf50 !important;
-} */
-
 .MuiAutocomplete-clearIndicator {
     color: #ffffff !important;
 }
+
+.swal2-container {
+    z-index: 20000 !important;
+  }

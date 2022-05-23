@@ -1,4 +1,5 @@
-import React from 'react'; 
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
@@ -23,6 +24,8 @@ const pwet = [
 ];
 
 const AppbarGuest = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <Toolbar>
@@ -53,9 +56,10 @@ const AppbarGuest = () => {
               aria-label="menu"
             >
               <Tooltip title={pwet[parseInt(Math.random() * pwet.length)]} placement="bottom">
-                <InfoIcon />
+                <InfoIcon onClick={() => navigate('/faq')} />
               </Tooltip>
             </IconButton>
+
           </Stack>
         </AppBar>
       </Toolbar>

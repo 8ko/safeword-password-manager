@@ -17,6 +17,7 @@ import EmptyVault from "./pages/emptyvault";
 import TermsAndConditions from "./pages/terms";
 import PrivacyPolicy from "./pages/privacy";
 import VerifiedEmail from "./pages/verifiedemail";
+import FAQ from "./pages/faq";
 
 import BottomNav from "./components/bottomnav";
 import Appbar from "./components/appbar";
@@ -78,32 +79,33 @@ function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={isDark ? dark : light}>
           <CssBaseline />
-            <Box sx={{ display: 'flex' }}>
-              {auth?.accessToken ? <Appbar /> : <AppbarGuest />}
-              {auth?.accessToken ? <Sidebar width={180} /> : <></>}
-              <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
-                <Toolbar />
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgotpassword" element={<ForgotPassword />} />
-                  <Route path="/terms" element={<TermsAndConditions />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/verifiedemail" element={<VerifiedEmail />} />
-                  <Route element={<PersistLogin />}>
-                    <Route element={<RequireAuth />}>
-                      <Route path="/" element={<Vault />} />
-                      <Route path="/additem" element={<AddItem />} />
-                      <Route path="/generator" element={<Generator />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/reset" element={<ResetPassword />} />
-                      <Route path="/emptyvault" element={<EmptyVault />} />
-                    </Route>
+          <Box sx={{ display: 'flex' }}>
+            {auth?.accessToken ? <Appbar /> : <AppbarGuest />}
+            {auth?.accessToken ? <Sidebar width={180} /> : <></>}
+            <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
+              <Toolbar />
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgotpassword" element={<ForgotPassword />} />
+                <Route path="/terms" element={<TermsAndConditions />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/verifiedemail" element={<VerifiedEmail />} />
+                <Route element={<PersistLogin />}>
+                  <Route element={<RequireAuth />}>
+                    <Route path="/" element={<Vault />} />
+                    <Route path="/additem" element={<AddItem />} />
+                    <Route path="/generator" element={<Generator />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/reset" element={<ResetPassword />} />
+                    <Route path="/emptyvault" element={<EmptyVault />} />
                   </Route>
-                </Routes>
-              </Box>
+                </Route>
+              </Routes>
             </Box>
-            {auth?.accessToken ? <BottomNav /> : <></>}
+          </Box>
+          {auth?.accessToken ? <BottomNav /> : <></>}
         </ThemeProvider>
       </ColorModeContext.Provider>
     </div>

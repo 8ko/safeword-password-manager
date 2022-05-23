@@ -106,6 +106,9 @@ export default function Settings() {
                     <Button variant="outlined" onClick={() => navigate('/reset')}>
                         Reset Master Password
                     </Button>
+                    <Button variant="outlined" onClick={() => navigate('/faq')}>
+                        Frequently Asked Questions
+                    </Button>
                     <Button variant="outlined" onClick={signOut}>
                         Logout
                     </Button>
