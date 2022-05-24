@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
 
 import "@fontsource/roboto";
 import "./App.css";
@@ -72,6 +72,7 @@ function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={isDark ? dark : light}>
           <CssBaseline />
+          { isDark ? <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" /> : <></> }
           <Box sx={{ display: 'flex' }}>
             {auth?.accessToken ? <Appbar /> : <AppbarGuest />}
             {auth?.accessToken ? <Sidebar width={180} /> : <></>}

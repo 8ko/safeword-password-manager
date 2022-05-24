@@ -75,7 +75,6 @@ const SwalTest = () => {
     });
 }
 
-
 const Set2FA = () => {
     Swal.fire({
         title: 'Set up 2FA',
@@ -96,7 +95,6 @@ const Set2FA = () => {
 }
 
 export default function Settings() {
-
     const navigate = useNavigate();
     const logout = useLogout();
 
@@ -116,9 +114,6 @@ export default function Settings() {
 
     return (
         <>
-            <link rel="stylesheet" href="@sweetalert2/themes/dark/dark.css" />
-            <script src="sweetalert2/dist/sweetalert2.min.js"></script>
-
             <Box sx={{ mb: 4 }}>
                 <h2>Settings</h2>
             </Box>
@@ -147,7 +142,7 @@ export default function Settings() {
                         Reset Master Password
                     </Button>
                     <Button variant="outlined" onClick={() => navigate('/faq')}>
-                        Frequently Asked Questions
+                        FAQs
                     </Button>
                     <Button variant="outlined" onClick={SwalTest}>
                         Reprompt SWAL Test

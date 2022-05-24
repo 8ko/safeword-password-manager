@@ -14,7 +14,6 @@ import TextField from '@mui/material/TextField';
 import VpnKeyRoundedIcon from '@mui/icons-material/VpnKeyRounded';
 
 const Verify2FA = () => {
-
     const { auth } = useAuth();
     const navigate = useNavigate();
 
@@ -26,7 +25,6 @@ const Verify2FA = () => {
     const handleChange = (event: SelectChangeEvent) => {
         setAuthType(event.target.value);
     };
-
 
     return (
         <>

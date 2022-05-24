@@ -9,14 +9,12 @@ import Divider from '@mui/material/Divider';
 const FAQ = () => {
     const navigate = useNavigate();
 
-
     return (
         <Box sx={{ textAlign: 'center', overflowY: 'hidden' }}>
             <Box sx={{ mb: 1 }}>
                 <Typography variant="h5">Frequently Asked Questions</Typography>
             </Box>
             <Divider />
-
             <Box sx={{
                 mt: 2,
                 width: '95%',
@@ -41,7 +39,6 @@ const FAQ = () => {
                     }}>
                     SafeWord is a password manager extension for Google Chrome. It offers tools such as password generation, organized profiles, and end-to-end encryption. All the sensitive information will be stored securely in an encrypted form without requiring users to remember all of their passwords.
                 </Typography>
-
                 <Typography paragraph
                     variant="h6"
                     sx={{
@@ -58,7 +55,6 @@ const FAQ = () => {
                     }}>
                     SafeWord works by requiring the user to register an account containing their email, name, and a Master Password. It will send a verfication before the user can proceed to the password Manager. It allows the user to edit, add, and delete data on their vault.
                 </Typography>
-
                 <Typography paragraph
                     variant="h6"
                     sx={{
@@ -73,9 +69,8 @@ const FAQ = () => {
                         whiteSpace: 'pre-line',
                         lineHeight: '16px'
                     }}>
-                    No, all sensitive information are stored in encrypted form. The master password is hashed via Bcrypt. For more information, please read the <Link to="/register" style={{ textDecoration: 'none' }}>Privacy Policy</Link>.
+                    No, all sensitive information are stored in encrypted form. The master password is hashed via Bcrypt. For more information, please read the <Link to="/privacy" style={{ textDecoration: 'none' }}>Privacy Policy</Link>.
                 </Typography>
-
                 <Typography paragraph
                     variant="h6"
                     sx={{
@@ -92,7 +87,6 @@ const FAQ = () => {
                     }}>
                     Nothing is explicitly logged by the extension. Separately to the pwned address search feature, the securiy verification service for passwords allows you to check if an individual password has previously been seen in a data breach. No password is stored next to any personally identifiable data (such as an email address).
                 </Typography>
-
                 <Typography paragraph
                     variant="h6"
                     sx={{
@@ -109,7 +103,6 @@ const FAQ = () => {
                     }}>
                     Yes, it’s a free Google Chrome extension that you can use to store your sensitive information. Donations are appreciated and will go to the maintenance of SafeWord.
                 </Typography>
-
                 <Typography paragraph
                     variant="h6"
                     sx={{
@@ -126,7 +119,6 @@ const FAQ = () => {
                     }}>
                     A "breach" is an incident where data is inadvertently exposed in a vulnerable system, usually due to insufficient access controls or security weaknesses in the software. HIBP aggregates breaches and enables people to assess where their personal data has been exposed. (https://haveibeenpwned.com/FAQs)
                 </Typography>
-
                 <Typography paragraph
                     variant="h6"
                     sx={{
@@ -145,7 +137,7 @@ const FAQ = () => {
                 </Typography>
             </Box>
             <Box sx={{ my: 2 }}>
-                <Button variant="contained" onClick={() => navigate(-1)}>
+                <Button variant="outlined" onClick={() => navigate(-1)}>
                     Back
                 </Button>
             </Box>
