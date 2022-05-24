@@ -332,6 +332,21 @@ app.post("/decryptpassword", (req, res) => {
     res.send(decrypt(req.body));
 });
 
+app.post("/reprompt", async (req, res) => {
+    try {
+        const { user, pwd } = req.body;
+        if (!user || !pwd) return res.sendStatus(400);
+        const users = await query("SELECT * FROM users WHERE id=?", user);
+        if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
+        const foundUser = { ...users[0] };
+        const match = await bcrypt.compare(pwd, foundUser.password);
+        if (!match) return res.sendStatus(401); // incorrect password
+        res.send("Match");
+    } catch(err) {
+        res.sendStatus(500);
+    }
+});
+
 app.listen(process.env.APP_PORT, () => {
     console.log("Server is running");
 });

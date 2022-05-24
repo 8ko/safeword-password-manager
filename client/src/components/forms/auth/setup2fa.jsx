@@ -70,8 +70,8 @@ const SetUp2FA = () => {
                 Set up 2FA
             </Typography>
 
-            <Box sx={{ textAlign: 'center', alignItems: 'center', mb: 2 }}>
-                <FormControl fullWidth>
+            <Box sx={{ mb: 2 }}>
+                <FormControl fullWidth sx={{mb:1.5}}>
                     <InputLabel id="auth-type-label">Authentication Type</InputLabel>
                     <Select
                         defaultValue={1}
@@ -94,7 +94,7 @@ const SetUp2FA = () => {
                             fullWidth
                             required
                             id="outlined-name"
-                            label="Email address"
+                            label="Email Address"
                             placeholder
                             value={email}
                             onChange={handleChange}
@@ -113,7 +113,7 @@ const SetUp2FA = () => {
                             fullWidth
                             required
                             id="outlined-name"
-                            label="Phone number"
+                            label="Phone Number"
                             placeholder
                             value={authSMS}
                             onChange={handleChange}

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import jwt_decode from "jwt-decode";
 
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -14,6 +16,13 @@ import Typography from '@mui/material/Typography';
 const VaultList = ({ title, type, list, icon }) => {
     const navigate = useNavigate();
     const axiosPrivate = useAxiosPrivate();
+    const { auth } = useAuth();
+
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const user = decoded?.id || 0;
 
     const handleClick = (data) => {
         if (data.prompt) {
@@ -26,26 +35,23 @@ const VaultList = ({ title, type, list, icon }) => {
                 confirmButtonColor: '#318ce7',
                 confirmButtonText: 'Confirm',
                 showCancelButton: true,
-            }).then((result) => {
+            }).then(async (result) => {
                 if (!result.isDismissed) {
-                    axiosPrivate.post('/decryptpassword', {
-                        password: data.password,
-                        iv: data.iv,
-                    }).then((res) => {
-                        console.log(res.data);
-                        if (res.data == result.value) {
-                            navigate('/', { state: { data } });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'Incorrect master password.',
-                                icon: 'error',
-                                confirmButtonColor: '#318ce7',
-                                confirmButtonText: 'Okay',
-                                showCloseButton: true,
-                                closeButtonHtml: '&times;',
-                            });
-                        }
+                    await axiosPrivate.post('/reprompt', {
+                        user: user,
+                        pwd: result.value
+                    }).then(res => {
+                        navigate('/', { state: { data } });
+                    }).catch(err => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Incorrect master password.',
+                            icon: 'error',
+                            confirmButtonColor: '#318ce7',
+                            confirmButtonText: 'Okay',
+                            showCloseButton: true,
+                            closeButtonHtml: '&times;',
+                        });
                     });
                 }
             });

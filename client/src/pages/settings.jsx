@@ -13,6 +13,9 @@ import { styled } from '@mui/material/styles';
 
 import { useNavigate } from 'react-router-dom';
 import useLogout from '../hooks/useLogout';
+import useAuth from '../hooks/useAuth';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import jwt_decode from "jwt-decode";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     width: 45,
@@ -61,32 +64,53 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-const Set2FA = () => {
-    Swal.fire({
-        title: 'Set up 2FA',
-        input: 'password',
-        inputPlaceholder: '************',
-        text: 'Enter your master password to proceed:',
-        // inputValue: {values.masterpass},
-        showConfirmButton: true,
-        confirmButtonColor: '#318ce7',
-        confirmButtonText: 'Confirm',
-        showCancelButton: true,
-        width: '60%',
-    }).then((result) => {
-        //  if swal value === masterpassword {
-        //     navigate to /setup2fa
-        // }
-    });
-}
-
 export default function Settings() {
     const navigate = useNavigate();
     const logout = useLogout();
+    const axiosPrivate = useAxiosPrivate();
+    const { auth } = useAuth();
+
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const user = decoded?.id || 0;
 
     const colorMode = React.useContext(ColorModeContext);
-
     const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
+
+    const Set2FA = () => {
+        Swal.fire({
+            title: 'Set up 2FA',
+            input: 'password',
+            inputPlaceholder: '************',
+            text: 'Enter your master password to proceed:',
+            showConfirmButton: true,
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Confirm',
+            showCancelButton: true,
+            width: '60%',
+        }).then(async (result) => {
+            if (!result.isDismissed) {
+                await axiosPrivate.post('/reprompt', {
+                    user: user,
+                    pwd: result.value
+                }).then(res => {
+                    navigate('/setup2fa');
+                }).catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Incorrect master password.',
+                        icon: 'error',
+                        confirmButtonColor: '#318ce7',
+                        confirmButtonText: 'Okay',
+                        showCloseButton: true,
+                        closeButtonHtml: '&times;',
+                    });
+                });
+            }
+        });
+    }
 
     const handleThemeChange = (event) => {
         setDark(event.target.checked);
