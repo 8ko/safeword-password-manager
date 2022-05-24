@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -73,13 +73,21 @@ export default function Settings() {
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
-    
     const user = decoded?.id || 0;
 
     const colorMode = React.useContext(ColorModeContext);
     const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
+    const [tfaEnabled, set2FAEnabled] = useState(false);
 
-    const Set2FA = () => {
+    useEffect(() => {
+        axiosPrivate.get(`/tfa/${user}`).then(res => {
+            if (res.data === 'email' || res.data === 'sms') {
+                set2FAEnabled(true);
+            }
+        });
+    },[tfaEnabled,user,axiosPrivate])
+
+    const setup2FA = () => {
         Swal.fire({
             title: 'Set up 2FA',
             input: 'password',
@@ -97,6 +105,39 @@ export default function Settings() {
                     pwd: result.value
                 }).then(res => {
                     navigate('/setup2fa');
+                }).catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Incorrect master password.',
+                        icon: 'error',
+                        confirmButtonColor: '#318ce7',
+                        confirmButtonText: 'Okay',
+                        showCloseButton: true,
+                        closeButtonHtml: '&times;',
+                    });
+                });
+            }
+        });
+    }
+
+    const disable2FA = async () => {
+        Swal.fire({
+            title: 'Disable 2FA',
+            input: 'password',
+            inputPlaceholder: '************',
+            text: 'Enter your master password to proceed:',
+            showConfirmButton: true,
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Confirm',
+            showCancelButton: true,
+            width: '60%',
+        }).then(async (result) => {
+            if (!result.isDismissed) {
+                await axiosPrivate.post('/tfa/disable', {
+                    user: user,
+                    pwd: result.value
+                }).then(res => {
+                    window.location.reload();
                 }).catch(err => {
                     Swal.fire({
                         title: 'Error',
@@ -145,9 +186,17 @@ export default function Settings() {
 
             <Box sx={{ width: '100%', mb: 1.5 }}>
                 <Stack spacing={1}>
-                    <Button variant="outlined" onClick={Set2FA}>
-                        Set up 2FA
-                    </Button>
+                    {
+                        tfaEnabled ? (
+                        <Button variant="outlined" onClick={disable2FA}>
+                            Disable 2FA
+                        </Button>
+                        ) : (
+                        <Button variant="outlined" onClick={setup2FA}>
+                            Set up 2FA
+                        </Button>
+                        )
+                    }
                     <Button variant="outlined" onClick={() => navigate('/reset')}>
                         Reset Master Password
                     </Button>

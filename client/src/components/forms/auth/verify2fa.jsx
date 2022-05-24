@@ -1,52 +1,88 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from "sweetalert2";
-import { useNavigate } from 'react-router-dom';
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import useAuth from "../../../hooks/useAuth";
 
 import Box from "@mui/material/Box";
 import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
 
-import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Tooltip, Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import VpnKeyRoundedIcon from '@mui/icons-material/VpnKeyRounded';
 
 const Verify2FA = () => {
-    const { auth } = useAuth();
+    const errRef = useRef();
     const navigate = useNavigate();
+    const axiosPrivate = useAxiosPrivate();
+    const { setAuth } = useAuth();
+    const location = useLocation();
+    const email = location?.state?.email;
+    const accessToken = location?.state?.accessToken;
 
-    const email = auth?.email || '';
+    const [code, setCode] = useState('');
+    const [errMsg, setErrMsg] = useState('');
 
-    const [authType, setAuthType] = React.useState('');
-    const [code, setCode] = React.useState('');
+    useEffect(() => {
+        setErrMsg('');
+    }, [code]);
 
-    const handleChange = (event: SelectChangeEvent) => {
-        setAuthType(event.target.value);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        await axiosPrivate.post('/tfa/verify', {code}
+        ).then(res => {
+            if (email && accessToken) {
+                setAuth({ accessToken });
+                navigate('/');
+            } else {
+                Swal.fire({
+                    title: 'Success!',
+                    text: '2FA is now enabled.',
+                    icon: 'success',
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;',
+                }).then((result) => {
+                    navigate('/settings');
+                });
+            }
+        }).catch(err => {
+            if (!err?.response) {
+                setErrMsg('No server response');
+            } else if (err.response?.status === 400) {
+                setErrMsg('Invalid input');
+            } else if (err.response?.status === 401) {
+                setErrMsg('Invalid code');
+            } else {
+                setErrMsg('Verification failed');
+            }
+            errRef.current.focus();
+        })
     };
 
     return (
         <>
-            {/* <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p> */}
-            {/* <form onSubmit={handleSubmit}> */}
+            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+            <form onSubmit={handleSubmit}>
             <Typography variant="h4"
                 sx={{ textAlign: 'center', mb: 4 }}>
                 Verify 2FA
             </Typography>
 
             <Box sx={{ textAlign: 'center', alignItems: 'center', mb: 2 }}>
-
                 <Typography variant="subtitle2">
                     Enter the code that was sent to you.
                 </Typography>
-
                 <TextField
                     fullWidth
                     id="outlined-name"
                     label="Code"
+                    autoComplete="off"
                     value={code}
-                    onChange={handleChange}
+                    onChange={(e) => setCode(e.target.value)}
                     sx={{ mt: 2 }}
                     InputProps={{
                         startAdornment: (
@@ -56,7 +92,6 @@ const Verify2FA = () => {
                         ),
                     }}
                 />
-
             </Box>
 
             <Box sx={{ textAlign: 'center', mt: 3 }}>
@@ -68,7 +103,7 @@ const Verify2FA = () => {
                     Confirm
                 </Button>
             </Box>
-            {/* </form> */}
+            </form>
         </>
     )
 }

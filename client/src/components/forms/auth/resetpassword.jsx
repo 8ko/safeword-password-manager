@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { PwdRegex } from "../../../constants";
 import axios from "../../../api/axios";
 import useAuth from "../../../hooks/useAuth";
+import jwt_decode from "jwt-decode";
 
 import Box from "@mui/material/Box";
 import FormControl from '@mui/material/FormControl';
@@ -18,6 +19,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Tooltip, Typography } from '@mui/material';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 
+import Stack from '@mui/material/Stack';
+import { grey } from '@mui/material/colors';
+
 const RESET_URL = '/reset';
 
 const ResetPassword = () => {
@@ -27,7 +31,11 @@ const ResetPassword = () => {
     const errRef = useRef();
     const navigate = useNavigate();
 
-    const email = auth?.email || '';
+    const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined;
+    
+    const email = decoded?.email || '';
 
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
@@ -77,7 +85,7 @@ const ResetPassword = () => {
                 withCredentials: true
             }
         );
-        
+
         Swal.fire({
             title: 'A password reset link has been sent to your email.',
             text: 'Please click on the link that has been sent to your email.',
@@ -95,56 +103,70 @@ const ResetPassword = () => {
     return (
         <>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
-                <form onSubmit={handleSubmit}>
-                    <Typography variant="h4"
-                        sx={{ textAlign: 'center' }}>
-                        Reset Master Password
-                    </Typography>
+            <form onSubmit={handleSubmit}>
+                <Typography variant="h4"
+                    sx={{ textAlign: 'center' }}>
+                    Reset Master Password
+                </Typography>
 
-                    <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center'}}>
-                        <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
-                        <FormControl fullWidth variant="standard">
-                            <InputLabel htmlFor="standard-adornment-password">New Password</InputLabel>
-                            <Input
-                                required
-                                id="password"
-                                ref={userRef}
-                                autoComplete="off"
-                                label="New Password"
-                                placeholder="************"
-                                type={showPassword ? 'text' : 'password'}
-                                onChange={(e) => setPwd(e.target.value)}
-                                onFocus={() => setPwdFocus(true)}
-                                onBlur={() => setPwdFocus(false)}
-                                error={!pwdFocus && pwd && !validPwd ? true : false}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <Tooltip title="Toggle Visibility">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </InputAdornment>
-                                }
-                            />
-                            <MyFormHelperText />
-                        </FormControl>
-                    </Box>
+                <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center' }}>
+                    <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
+                    <FormControl fullWidth variant="standard">
+                        <InputLabel htmlFor="standard-adornment-password">New Password</InputLabel>
+                        <Input
+                            required
+                            id="password"
+                            ref={userRef}
+                            autoComplete="off"
+                            label="New Password"
+                            placeholder="************"
+                            type={showPassword ? 'text' : 'password'}
+                            onChange={(e) => setPwd(e.target.value)}
+                            onFocus={() => setPwdFocus(true)}
+                            onBlur={() => setPwdFocus(false)}
+                            error={!pwdFocus && pwd && !validPwd ? true : false}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <Tooltip title="Toggle Visibility">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </Tooltip>
+                                </InputAdornment>
+                            }
+                        />
+                        <MyFormHelperText />
+                    </FormControl>
+                </Box>
 
-                    <Box sx={{ textAlign: 'center', mt: 2 }}>
-                        <Button
-                            type="submit"
-                            color="primary"
-                            variant="outlined"
-                            disabled={!validPwd ? true : false}
-                        >
-                            Reset Password
-                        </Button>
-                    </Box>
-                </form>
+
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    justifyContent="center"
+                    sx={{
+                        textAlign: 'center',
+                        mt: 2
+                    }}>
+                    <Button
+                        type="submit"
+                        color="primary"
+                        variant="outlined"
+                        disabled={!validPwd ? true : false}
+                    >
+                        Reset
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{ color: grey['A700'], borderColor: grey['A700'] }}
+                    >
+                        Cancel
+                    </Button>
+                </Stack>
+        </form>
         </>
     )
 }

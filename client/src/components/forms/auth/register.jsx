@@ -16,10 +16,12 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Tooltip, Typography } from '@mui/material';
 
+import Grid from '@mui/material/Grid';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 const REGISTER_URL = '/register';
 
@@ -37,6 +39,10 @@ const Register = () => {
     const [pwd, setPwd] = useState(location.state?.pwd || '');
     const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
+
+    const [confirmPwd, setConfirmPwd] = useState(location.state?.confirmPwd || '');
+    const [matchPwd, setMatchPwd] = useState(false);
+    const [confirmPwdFocus, setConfirmPwdFocus] = useState(false);
 
     const [errMsg, setErrMsg] = useState('');
 
@@ -63,15 +69,20 @@ const Register = () => {
     }, [pwd]);
 
     useEffect(() => {
+        setMatchPwd(pwd === confirmPwd);
+    }, [pwd, confirmPwd]);
+
+    useEffect(() => {
         setErrMsg('');
-    }, [email, pwd]);
+    }, [email, pwd, confirmPwd]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         // if button enabled with JS hack
         const v1 = EmailRegex.test(email);
-        const v2 = PwdRegex.test(pwd); // u can space as password char???
-        if (!v1 || !v2) {
+        const v2 = PwdRegex.test(pwd);
+        const v3 = pwd === confirmPwd;
+        if (!v1 || !v2 || !v3) {
             setErrMsg("Invalid entry");
             return;
         }
@@ -118,15 +129,19 @@ const Register = () => {
         const helperText = () => {
             if (pwd && !validPwd) {
                 return (
-                    <FormHelperText component={'span'} error={!pwdFocus}>
-                        At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
+                    <FormHelperText error={!pwdFocus}>
+                        At least 12 characters, A-Z, a-z, 0-9, and !@#$%^*
                     </FormHelperText>
                 )
             } else {
-                return 'Avoid sharing your master password to anyone.';
+                return (
+                    <FormHelperText>
+                       
+                    </FormHelperText>
+                )
             }
         };
-        return <FormHelperText>{helperText()}</FormHelperText>;
+        return helperText();
     }
 
     return (
@@ -138,64 +153,117 @@ const Register = () => {
                         sx={{ textAlign: 'center', mb: 1 }}>
                         Create an Account
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
-                        <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
-                        <TextField
-                            InputLabelProps={{ required: false }}
-                            required
-                            id="email"
-                            ref={userRef}
-                            autoComplete="off"
-                            placeholder="user@email.com"
-                            label="Email"
-                            variant="standard"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            onFocus={() => setEmailFocus(true)}
-                            onBlur={() => setEmailFocus(false)}
-                            error={!emailFocus && email && !validEmail ? true : false}
-                            helperText={!emailFocus && email && !validEmail ? "Not valid email." : ''}
-                            fullWidth
-                        />
-                    </Box>
 
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3 }}>
-                        <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
-                        <FormControl fullWidth variant="standard">
-                            <InputLabel htmlFor="standard-adornment-password">Master Password</InputLabel>
-                            <Input
+                    <Grid container
+                        alignItems="flex-start"
+                        justifyContent="center"
+                        columnSpacing={5}
+                        rowSpacing={0.5}
+                    >
+                        <Grid item xs={1}>
+                            <AlternateEmailIcon sx={{ color: 'action.active', mt: 2.8 }} />
+                        </Grid>
+                        <Grid item xs={10}>
+                            <TextField
+                                InputLabelProps={{ required: false }}
                                 required
-                                id="password"
+                                id="email"
+                                ref={userRef}
                                 autoComplete="off"
-                                label="Master Password"
-                                placeholder="************"
-                                value={pwd}
-                                type={showPassword ? 'text' : 'password'}
-                                onChange={(e) => setPwd(e.target.value)}
-                                onFocus={() => setPwdFocus(true)}
-                                onBlur={() => setPwdFocus(false)}
-                                error={!pwdFocus && pwd && !validPwd ? true : false}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <Tooltip title="Toggle Visibility">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </InputAdornment>
-                                }
+                                placeholder="user@domain.com"
+                                label="Email"
+                                variant="standard"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                onFocus={() => setEmailFocus(true)}
+                                onBlur={() => setEmailFocus(false)}
+                                error={!emailFocus && email && !validEmail ? true : false}
+                                helperText={!emailFocus && email && !validEmail ? "Not valid email." : ''}
+                                fullWidth
                             />
-                            <MyFormHelperText />
-                        </FormControl>
-                    </Box>
+                        </Grid>
+                        <Grid item xs={1}>
+                            <KeyRoundedIcon sx={{ color: 'action.active', mt: 2.8 }} />
+                        </Grid>
+                        <Grid item xs={10}>
+                            <FormControl fullWidth variant="standard">
+                                <InputLabel htmlFor="standard-adornment-password">Master Password</InputLabel>
+                                <Input
+                                    required
+                                    id="password"
+                                    autoComplete="off"
+                                    label="Master Password"
+                                    placeholder="************"
+                                    value={pwd}
+                                    type={showPassword ? 'text' : 'password'}
+                                    onChange={(e) => setPwd(e.target.value)}
+                                    onFocus={() => setPwdFocus(true)}
+                                    onBlur={() => setPwdFocus(false)}
+                                    error={!pwdFocus && pwd && !validPwd ? true : false}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <Tooltip title="Toggle Visibility">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </InputAdornment>
+                                    }
+                                />
+                                <MyFormHelperText />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={1}>
+                            <CheckRoundedIcon sx={{ color: 'action.active', mt: 2.8 }} />
+                        </Grid>
+                        <Grid item xs={10}>
+                            <FormControl fullWidth variant="standard">
+                                <InputLabel htmlFor="standard-adornment-password">Confirm Password</InputLabel>
+                                <Input
+                                    required
+                                    id="confirm-password"
+                                    autoComplete="off"
+                                    label="Confirm Password"
+                                    placeholder="************"
+                                    value={confirmPwd}
+                                    type={showPassword ? 'text' : 'password'}
+                                    onChange={(e) => setConfirmPwd(e.target.value)}
+                                    onFocus={() => setConfirmPwdFocus(true)}
+                                    onBlur={() => setConfirmPwdFocus(false)}
+                                    error={!confirmPwdFocus && confirmPwd && !matchPwd ? true : false}
+                                    helperText={!confirmPwdFocus && confirmPwd && !matchPwd ? "Password does not match." : ''}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <Tooltip title="Toggle Visibility">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </InputAdornment>
+                                    }
+                                />
+                                {
+                                    (!confirmPwdFocus && confirmPwd && !matchPwd &&
+                                        <FormHelperText component={'span'} error={true}>
+                                            Password does not match
+                                        </FormHelperText>
+                                    )
+                                }
+                            </FormControl>
+                        </Grid>
+                    </Grid>
 
                     <Box sx={{
                         textAlign: 'center',
                         alignItems: 'center',
-                        lineHeight: '12px'
+                        lineHeight: '12px',
+                        mt: 3
                     }}>
                         <Typography variant="overline" style={{ lineHeight: 0 }} >
                             <Checkbox
@@ -206,7 +274,7 @@ const Register = () => {
                                 inputProps={{ 'aria-label': 'controlled' }}
                                 style={{ transform: "scale(0.8)", height: 20 }}
                             />
-                            I agree to the <Link to="/terms" state={{email,pwd}} style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" state={{email,pwd}} style={{ textDecoration: 'none' }}>Privacy Policy</Link>
+                            I agree to the <Link to="/terms" state={{ email, pwd }} style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" state={{ email, pwd }} style={{ textDecoration: 'none' }}>Privacy Policy</Link>
                         </Typography>
                     </Box>
 
@@ -214,7 +282,7 @@ const Register = () => {
                         <Button
                             type="submit"
                             variant="outlined"
-                            disabled={!validEmail || !agreeToc || !validPwd ? true : false}
+                            disabled={!validEmail || !agreeToc || !validPwd || !matchPwd ? true : false}
                         >
                             Sign Up
                         </Button>

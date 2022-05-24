@@ -16,6 +16,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Tooltip, Typography } from '@mui/material';
 
+import Grid from '@mui/material/Grid';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 
@@ -58,10 +59,15 @@ const Login = () => {
             // const id = response?.data?.id;
             // const hashedPassword = response?.data?.password;
             const accessToken = response?.data?.accessToken;
-            setAuth({ email, accessToken });
+            const tfa = response?.data?.tfa;
             setEmail('');
             setPwd('');
-            navigate('/');
+
+            if (tfa === 'email' || tfa === 'sms') {
+                navigate('/verify2fa', { state: { email, accessToken }, replace:true})
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No server response');
@@ -87,55 +93,63 @@ const Login = () => {
                         sx={{ textAlign: 'center', mb: 1 }}>
                         Unlock your vault
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 0.5 }}>
-                        <AlternateEmailIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
-                        <TextField
-                            required
-                            fullWidth
-                            id="email"
-                            value={email}
-                            ref={userRef}
-                            autoComplete="off"
-                            placeholder="user@email.com"
-                            label="Email"
-                            variant="standard"
-                            onChange={(e) => setEmail(e.target.value)}
-                            InputLabelProps={{ required: false }}
-                        />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 1 }}>
-                        <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, my: 0.5 }} />
-                        <FormControl fullWidth variant="standard">
-                            <InputLabel htmlFor="standard-adornment-password">Master Password</InputLabel>
-                            <Input
-                                id="password"
-                                value={pwd}
-                                label="Master Password"
-                                placeholder="************"
-                                onChange={(e) => setPwd(e.target.value)}
-                                type={showPassword ? 'text' : 'password'}
+                    <Grid container
+                        alignItems="flex-start"
+                        justifyContent="center"
+                        columnSpacing={5}
+                        rowSpacing={0.5}
+                    >
+                        <Grid item xs={1}>
+                            <AlternateEmailIcon sx={{ color: 'action.active', mt: 2.8 }} />
+                        </Grid>
+                        <Grid item xs={10}>
+                            <TextField
                                 required
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <Tooltip title="Toggle Visibility">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                onClick={handleClickShowPassword}
-                                            >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </InputAdornment>
-                                }
+                                fullWidth
+                                id="email"
+                                value={email}
+                                ref={userRef}
+                                autoComplete="off"
+                                placeholder="user@domain.com"
+                                label="Email"
+                                variant="standard"
+                                onChange={(e) => setEmail(e.target.value)}
+                                InputLabelProps={{ required: false }}
                             />
-                        </FormControl>
-                    </Box>
-
-                    <Typography variant="subtitle2" sx={{ textAlign: 'right' }}>
+                        </Grid>
+                        <Grid item xs={1}>
+                            <KeyRoundedIcon sx={{ color: 'action.active', mt: 2.8, mb: 1 }} />
+                        </Grid>
+                        <Grid item xs={10}>
+                            <FormControl fullWidth variant="standard">
+                                <InputLabel htmlFor="standard-adornment-password">Master Password</InputLabel>
+                                <Input
+                                    id="password"
+                                    value={pwd}
+                                    label="Master Password"
+                                    placeholder="************"
+                                    onChange={(e) => setPwd(e.target.value)}
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <Tooltip title="Toggle Visibility">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </InputAdornment>
+                                    }
+                                />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <Typography variant="subtitle2" sx={{ textAlign: 'right', mr: 2 }}>
                         <Link to="/forgotpassword" style={{ textDecoration: 'none' }}>Forgot password?</Link>
                     </Typography>
-
                     <Box sx={{ textAlign: 'center', mt: 3, }}>
                         <Button type="submit" color="primary" variant="outlined">
                             Login

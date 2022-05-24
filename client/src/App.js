@@ -86,6 +86,7 @@ function App() {
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/verifiedemail" element={<VerifiedEmail />} />
+                <Route path="/verify2fa" element={<Verify2FA />} />
                 <Route element={<PersistLogin />}>
                   <Route element={<RequireAuth />}>
                     <Route path="/" element={<Vault />} />
@@ -94,7 +95,6 @@ function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/reset" element={<ResetPassword />} />
                     <Route path="/setup2fa" element={<SetUp2FA />} />
-                    <Route path="/verify2fa" element={<Verify2FA />} />
                     <Route path="/emptyvault" element={<EmptyVault />} />
                   </Route>
                 </Route>
