@@ -61,20 +61,6 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-const SwalTest = () => {
-    Swal.fire({
-        title: 'Password Reprompt',
-        input: 'password',
-        inputPlaceholder: '************',
-        text: 'Enter your master password to proceed:',
-        // inputValue: {values.masterpass},
-        showConfirmButton: true,
-        confirmButtonColor: '#318ce7',
-        confirmButtonText: 'Confirm',
-        showCancelButton: true,
-    });
-}
-
 const Set2FA = () => {
     Swal.fire({
         title: 'Set up 2FA',
@@ -143,9 +129,6 @@ export default function Settings() {
                     </Button>
                     <Button variant="outlined" onClick={() => navigate('/faq')}>
                         FAQs
-                    </Button>
-                    <Button variant="outlined" onClick={SwalTest}>
-                        Reprompt SWAL Test
                     </Button>
                     <Button variant="outlined" onClick={signOut}>
                         Logout
