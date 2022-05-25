@@ -7,6 +7,10 @@ const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const nodemailer = require("nodemailer");
+const itexmo = require("./itexmo")({
+    apiCode: process.env.ITEXMO_API_KEY,
+    apiPwd: process.env.ITEXMO_PASSWORD
+});
 const saltRounds = 10;
 
 const { encrypt, decrypt } = require("./EncryptionHandler");
@@ -157,31 +161,41 @@ app.post("/auth", async (req, res) => {
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '5m' }
             );
-            const refreshToken = jwt.sign(
-                {
-                    "id": foundUser.id,
-                    "email": foundUser.email,
-                    "password": foundUser.password
-                },
-                process.env.REFRESH_TOKEN_SECRET,
-                { expiresIn: '1d' }
-            );
-            // Saving refreshToken with current user
-            await query("UPDATE users SET refresh_token=? WHERE id=?", [refreshToken, foundUser.id]);
 
             if (foundUser.tfa) {
                 const code = parseInt(Math.random() * (999999 - 100000) + 100000).toString();
                 await query("UPDATE users SET tfa_code=? WHERE id=?", [code, foundUser.id]);
-                transporter.sendMail({
-                    from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_ADDRESS}>`,
-                    to: foundUser.email,
-                    subject: '[SafeWord] Please verify your device',
-                    html: `Please input this code in the SafeWord app to verify your login: <b>${code}</b><br>Do not share this code with anyone.`
-                });
-            }
 
-            // Creates Secure Cookie with refresh token
-            res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+                if (foundUser.tfa === 'email') {
+                    transporter.sendMail({
+                        from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_ADDRESS}>`,
+                        to: foundUser.email,
+                        subject: '[SafeWord] Please verify your device',
+                        html: `Please input this code in the SafeWord app to verify your login: <b>${code}</b>
+                        <br>Do not share this code with anyone. If this request did not come from you, change your account password immediately
+                        to prevent further unauthorized access.`
+                    });
+                } else if (foundUser.tfa === 'phone') {
+                    itexmo.send({
+                        to: auth,
+                        body: `Please input this code in the SafeWord app to verify your login: ${code}`
+                    });
+                }
+            } else {
+                const refreshToken = jwt.sign(
+                    {
+                        "id": foundUser.id,
+                        "email": foundUser.email,
+                        "password": foundUser.password
+                    },
+                    process.env.REFRESH_TOKEN_SECRET,
+                    { expiresIn: '1d' }
+                );
+                // Saving refreshToken with current user
+                await query("UPDATE users SET refresh_token=? WHERE id=?", [refreshToken, foundUser.id]);
+                // Creates Secure Cookie with refresh token
+                res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+            }
             
             // Send access token to user
             res.send({ tfa: foundUser.tfa, accessToken });
@@ -202,6 +216,23 @@ app.post("/tfa/verify", async (req, res) => {
         const users = await query("SELECT * FROM users WHERE tfa_code=?", code);
         if (!(users.length > 0)) return res.sendStatus(401);
         await query("UPDATE users SET tfa_code='' WHERE tfa_code=?", [code]);
+        const foundUser = { ...users[0] };
+        if (!foundUser.email_verified_at) return res.sendStatus(403); // email not verified
+
+        const refreshToken = jwt.sign(
+            {
+                "id": foundUser.id,
+                "email": foundUser.email,
+                "password": foundUser.password
+            },
+            process.env.REFRESH_TOKEN_SECRET,
+            { expiresIn: '1d' }
+        );
+        // Saving refreshToken with current user
+        await query("UPDATE users SET refresh_token=? WHERE id=?", [refreshToken, foundUser.id]);
+        // Creates Secure Cookie with refresh token
+        res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+
         res.send("verified");
     } catch(err) {
         res.sendStatus(500);
@@ -375,9 +406,9 @@ app.post("/reprompt", async (req, res) => {
 
 app.post("/tfa", async (req, res) => {
     try {
-        const { auth, type } = req.body;
-        if (!auth || !type) return res.sendStatus(400);
-        const users = await query(`SELECT * FROM users WHERE ${type}=?`, auth);
+        const { user, auth, type } = req.body;
+        if (!user || !auth || !type) return res.sendStatus(400);
+        const users = await query("SELECT * FROM users WHERE id=?", user);
         if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
         const foundUser = { ...users[0] };
         const code = parseInt(Math.random() * (999999 - 100000) + 100000).toString();
@@ -388,10 +419,18 @@ app.post("/tfa", async (req, res) => {
                 from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_ADDRESS}>`,
                 to: auth,
                 subject: '[SafeWord] Please verify your device',
-                html: `Please input this code in the SafeWord app to verify your login: <b>${code}</b><br>Do not share this code with anyone.`
+                html: `Please input this code in the SafeWord app to verify your login: <b>${code}</b>
+                <br>Do not share this code with anyone. If this request did not come from you, change your account password immediately
+                to prevent further unauthorized access.`
             });
-        } else if (type === 'sms') {
-            // send sms code
+        } else if (type === 'phone') {
+            await query("UPDATE users SET phone=? WHERE id=?", [auth, foundUser.id]);
+            itexmo.send({
+                to: auth,
+                body: `Please input this code in the SafeWord app to verify your login: ${code}`
+            }).then(mssg => {
+                // console.log(mssg);
+            });
         }
 
         res.send("success");
@@ -405,7 +444,8 @@ app.get("/tfa/:id", async (req, res) => {
         const users = await query("SELECT * FROM users WHERE id=?", req.params.id);
         if (!(users.length > 0)) return res.sendStatus(401);
         const foundUser = { ...users[0] };
-        res.send(foundUser.tfa);
+        const type = foundUser.tfa && !foundUser.tfa_code ? foundUser.tfa : '';
+        res.send(type);
     } catch(err) {
         res.sendStatus(500);
     }

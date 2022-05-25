@@ -66,6 +66,7 @@ const Login = () => {
             if (tfa === 'email' || tfa === 'sms') {
                 navigate('/verify2fa', { state: { email, accessToken }, replace:true})
             } else {
+                setAuth({ accessToken });
                 navigate('/');
             }
         } catch (err) {

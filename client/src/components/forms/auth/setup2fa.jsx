@@ -31,6 +31,7 @@ const SetUp2FA = () => {
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
+    const user = decoded?.id || '';
     const email = decoded?.email || '';
 
     const [authType, setAuthType] = useState('email');
@@ -45,12 +46,20 @@ const SetUp2FA = () => {
 
         if (authType === 'email' && EmailRegex.test(email)) {
             await axiosPrivate.post('/tfa', {
+                user: user,
                 auth: email,
                 type: authType
             }).then(res => {
                 navigate('/verify2fa');
             });
-        } else if (authType === 'sms' && PhoneRegex.test(phone)) {
+        } else if (authType === 'phone' && PhoneRegex.test(phone)) {
+            await axiosPrivate.post('/tfa', {
+                user: user,
+                auth: phone,
+                type: authType
+            }).then(res => {
+                navigate('/verify2fa');
+            });
         } else {
             Swal.fire({
                 title: 'Error',
@@ -87,7 +96,7 @@ const SetUp2FA = () => {
                         sx={{ mb: 1 }}
                     >
                         <MenuItem value={'email'}>Email Address</MenuItem>
-                        <MenuItem value={'sms'}>Phone Number</MenuItem>
+                        <MenuItem value={'phone'}>Phone Number</MenuItem>
                     </Select>
                 </FormControl>
                 {
@@ -109,7 +118,7 @@ const SetUp2FA = () => {
                             }}
                         />
                     )
-                    || (authType === 'sms' &&
+                    || (authType === 'phone' &&
                         <TextField
                             fullWidth
                             required

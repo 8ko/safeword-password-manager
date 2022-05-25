@@ -81,7 +81,7 @@ export default function Settings() {
 
     useEffect(() => {
         axiosPrivate.get(`/tfa/${user}`).then(res => {
-            if (res.data === 'email' || res.data === 'sms') {
+            if (res.data === 'email' || res.data === 'phone') {
                 set2FAEnabled(true);
             }
         });
@@ -137,7 +137,7 @@ export default function Settings() {
                     user: user,
                     pwd: result.value
                 }).then(res => {
-                    window.location.reload();
+                    set2FAEnabled(false);
                 }).catch(err => {
                     Swal.fire({
                         title: 'Error',

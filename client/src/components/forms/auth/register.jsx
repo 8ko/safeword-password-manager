@@ -234,7 +234,6 @@ const Register = () => {
                                     onFocus={() => setConfirmPwdFocus(true)}
                                     onBlur={() => setConfirmPwdFocus(false)}
                                     error={!confirmPwdFocus && confirmPwd && !matchPwd ? true : false}
-                                    helperText={!confirmPwdFocus && confirmPwd && !matchPwd ? "Password does not match." : ''}
                                     endAdornment={
                                         <InputAdornment position="end">
                                             <Tooltip title="Toggle Visibility">
@@ -274,7 +273,7 @@ const Register = () => {
                                 inputProps={{ 'aria-label': 'controlled' }}
                                 style={{ transform: "scale(0.8)", height: 20 }}
                             />
-                            I agree to the <Link to="/terms" state={{ email, pwd }} style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" state={{ email, pwd }} style={{ textDecoration: 'none' }}>Privacy Policy</Link>
+                            I agree to the <Link to="/terms" state={{ email, pwd, confirmPwd }} style={{ textDecoration: 'none' }}>Terms & Conditions</Link> and <Link to="/privacy" state={{ email, pwd, confirmPwd }} style={{ textDecoration: 'none' }}>Privacy Policy</Link>
                         </Typography>
                     </Box>
 

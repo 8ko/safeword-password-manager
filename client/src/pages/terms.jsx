@@ -14,6 +14,7 @@ const TermsAndConditions = () => {
     const location = useLocation();
     const email = location?.state?.email || '';
     const pwd = location?.state?.pwd || '';
+    const confirmPwd = location?.state?.confirmPwd || '';
 
     return (
         <Box sx={{ textAlign: 'center', overflowY: 'hidden' }}>
@@ -32,7 +33,7 @@ const TermsAndConditions = () => {
                 </Typography>
             </Box>
             <Box sx={{ mt: 2 }} style={{ marginLeft: -25 }}>
-                <Button variant="outlined" onClick={() => navigate(auth?.accessToken?-1:'/register', { state: { email, pwd }, replace:true})}>
+                <Button variant="outlined" onClick={() => navigate(auth?.accessToken?-1:'/register', { state: { email, pwd, confirmPwd }, replace:true})}>
                     Back
                 </Button>
             </Box>

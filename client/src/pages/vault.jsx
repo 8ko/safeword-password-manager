@@ -117,23 +117,35 @@ const Vault = (props) => {
 
     return (
         <>
-            <Box sx={{ mb: 4 }}>
-                <h2>Item Information</h2>
-            </Box>
-            { safeForm() }
-            <Stack direction="row" spacing={1}>
-                <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
-                    Update
-                </Button>
-                <Button sx={{ display: 'flex', alignItems: 'flex-start' }} variant="outlined" color="error" onClick={() => child.current.deleteItem()} startIcon={<DeleteRoundedIcon />}>
-                    Delete
-                </Button>
-            </Stack>
-            <Box sx={{ mt: 1 }}>
-                <Typography variant="caption">
-                    Updated: { getLastUpdate() }
-                </Typography>
-            </Box>
+            {
+                (defaultItem.length || lastItem.length || state.data) && (
+                    <Box sx={{ mb: 4 }}>
+                        <h2>Item Information</h2>
+                    </Box>
+                )
+            }
+            {safeForm()}
+            {
+                (defaultItem.length || lastItem.length || state.data) && (
+                    <Stack direction="row" spacing={1}>
+                        <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
+                            Update
+                        </Button>
+                        <Button sx={{ display: 'flex', alignItems: 'flex-start' }} variant="outlined" color="error" onClick={() => child.current.deleteItem()} startIcon={<DeleteRoundedIcon />}>
+                            Delete
+                        </Button>
+                    </Stack>
+                )
+            }
+            {
+                (defaultItem.length || lastItem.length || state.data) && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="caption">
+                            Updated: {getLastUpdate()}
+                        </Typography>
+                    </Box>
+                )
+            }
         </>
     );
 }
