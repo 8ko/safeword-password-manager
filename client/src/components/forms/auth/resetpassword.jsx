@@ -162,6 +162,7 @@ const ResetPassword = () => {
                     <Button
                         variant="outlined"
                         sx={{ color: grey['A700'], borderColor: grey['A700'] }}
+                        onClick={() => navigate(-1)}
                     >
                         Cancel
                     </Button>
