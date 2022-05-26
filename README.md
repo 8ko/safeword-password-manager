@@ -1,2 +1,2 @@
-# safeword-password-manager
-4th yr Thesis under construction. A chrome extension password manager.
+# SafeWord
+A chrome extension password manager developed in React (client) and Node.js (server).
