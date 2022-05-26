@@ -16,11 +16,13 @@ import VaultList from './vaultlist';
 import { VaultItemTypes } from '../constants';
 
 import useAuth from '../hooks/useAuth';
+import useVault from '../hooks/useVault';
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const Sidebar = (width) => {
 
     const { auth, setAuth } = useAuth();
+    const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
     const location = useLocation();
@@ -53,7 +55,7 @@ const Sidebar = (width) => {
             }
         }
         getItems();
-    }, [location]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>

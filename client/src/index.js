@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { AuthProvider } from './context/AuthProvider'
+import { VaultProvider } from './context/VaultProvider'
 // import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 import App from './App';
 
@@ -13,9 +14,9 @@ import App from './App';
 ReactDOM.render(
   <React.StrictMode>
     <AuthProvider>
-      {/* <Router> */}
+      <VaultProvider>
         <App />
-      {/* </Router> */}
+      </VaultProvider>
     </AuthProvider>
   </React.StrictMode>,
   document.getElementById('root')

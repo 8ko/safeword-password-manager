@@ -16,7 +16,6 @@ import Settings from "./pages/settings";
 import EmptyVault from "./pages/emptyvault";
 import TermsAndConditions from "./pages/terms";
 import PrivacyPolicy from "./pages/privacy";
-import VerifiedEmail from "./pages/verifiedemail";
 import FAQ from "./pages/faq";
 
 import BottomNav from "./components/bottomnav";
@@ -74,8 +73,8 @@ function App() {
           <CssBaseline />
           { isDark ? <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" /> : <></> }
           <Box sx={{ display: 'flex' }}>
-            {auth?.accessToken ? <Appbar /> : <AppbarGuest />}
-            {auth?.accessToken ? <Sidebar width={180} /> : <></>}
+            { auth?.accessToken ? <Appbar /> : <AppbarGuest /> }
+            { auth?.accessToken ? <Sidebar width={180} /> : <></> }
             <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
               <Toolbar />
               <Routes>
@@ -85,7 +84,6 @@ function App() {
                 <Route path="/terms" element={<TermsAndConditions />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/faq" element={<FAQ />} />
-                <Route path="/verifiedemail" element={<VerifiedEmail />} />
                 <Route path="/verify2fa" element={<Verify2FA />} />
                 <Route element={<PersistLogin />}>
                   <Route element={<RequireAuth />}>
@@ -101,7 +99,7 @@ function App() {
               </Routes>
             </Box>
           </Box>
-          {auth?.accessToken ? <BottomNav /> : <></>}
+          { auth?.accessToken ? <BottomNav /> : <></> }
         </ThemeProvider>
       </ColorModeContext.Provider>
     </div>
