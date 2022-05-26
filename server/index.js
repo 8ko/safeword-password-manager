@@ -177,7 +177,7 @@ app.post("/auth", async (req, res) => {
                     });
                 } else if (foundUser.tfa === 'phone') {
                     itexmo.send({
-                        to: auth,
+                        to: foundUser.phone,
                         body: `Please input this code in the SafeWord app to verify your login: ${code}`
                     });
                 }
