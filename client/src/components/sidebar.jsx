@@ -1,6 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
 import jwt_decode from "jwt-decode";
 
 import Drawer from '@mui/material/Drawer';
@@ -21,41 +20,27 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const Sidebar = (width) => {
 
-    const { auth, setAuth } = useAuth();
+    const { auth } = useAuth();
     const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const [loginList, setLoginList] = useState([]);
-    const [cardList, setCardList] = useState([]);
-    const [noteList, setNoteList] = useState([]);
 
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
-    
     const user = decoded?.id || 0;
 
     useEffect(() => {
-        const getItems = async () => {
-            try {
-                await axiosPrivate.post('/showlogins', {user}).then((res) => {
-                    setLoginList(res.data);
+        let isMounted = true;
+        const getData = async () => {
+            if (isMounted) {
+                await axiosPrivate.get(`/vault/${user}`).then((res) => {
+                    setVault(res.data);
                 });
-                await axiosPrivate.post('/showcards', {user}).then((res) => {
-                    setCardList(res.data);
-                });
-                await axiosPrivate.post('/shownotes', {user}).then((res) => {
-                    setNoteList(res.data);
-                });
-            } catch (err) {
-                setAuth({});
-                navigate('/login', { state: { from: location }, replace:true });
             }
-        }
-        getItems();
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        };
+        getData();
+        return () => isMounted = false;
+    },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>
@@ -69,11 +54,11 @@ const Sidebar = (width) => {
             >
                 <Toolbar />
                 <Box sx={{ overflow: 'auto' }}>
-                <VaultList title="Logins" type={VaultItemTypes.Login} list={loginList} icon={<LanguageRoundedIcon />} />
+                <VaultList title="Logins" type={VaultItemTypes.Login} list={vault?.logins || []} icon={<LanguageRoundedIcon />} />
                 <Divider />
-                <VaultList title="Cards" type={VaultItemTypes.Card} list={cardList} icon={<CreditCardIcon />} />
+                <VaultList title="Cards" type={VaultItemTypes.Card} list={vault?.cards || []} icon={<CreditCardIcon />} />
                 <Divider />
-                <VaultList title="Notes" type={VaultItemTypes.Note} list={noteList} icon={<ArticleRoundedIcon />} />
+                <VaultList title="Notes" type={VaultItemTypes.Note} list={vault?.notes || []}icon={<ArticleRoundedIcon />} />
                 </Box>
             </Drawer>
         </>

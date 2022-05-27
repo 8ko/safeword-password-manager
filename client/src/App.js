@@ -67,42 +67,42 @@ function App() {
 
   return (
     <Router>
-    <div className="App">
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={isDark ? dark : light}>
-          <CssBaseline />
-          { isDark ? <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" /> : <></> }
-          <Box sx={{ display: 'flex' }}>
-            { auth?.accessToken ? <Appbar /> : <AppbarGuest /> }
-            { auth?.accessToken ? <Sidebar width={180} /> : <></> }
-            <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
-              <Toolbar />
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgotpassword" element={<ForgotPassword />} />
-                <Route path="/terms" element={<TermsAndConditions />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/verify2fa" element={<Verify2FA />} />
-                <Route element={<PersistLogin />}>
-                  <Route element={<RequireAuth />}>
-                    <Route path="/" element={<Vault />} />
-                    <Route path="/additem" element={<AddItem />} />
-                    <Route path="/generator" element={<Generator />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/reset" element={<ResetPassword />} />
-                    <Route path="/setup2fa" element={<SetUp2FA />} />
-                    <Route path="/emptyvault" element={<EmptyVault />} />
+      <div className="App">
+        <ColorModeContext.Provider value={colorMode}>
+          <ThemeProvider theme={isDark ? dark : light}>
+            <CssBaseline />
+            { isDark ? <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" /> : <></> }
+            <Box sx={{ display: 'flex' }}>
+              { auth?.accessToken ? <Appbar /> : <AppbarGuest /> }
+              { auth?.accessToken ? <Sidebar width={180} /> : <></> }
+              <Box component="main" sx={{ flexGrow: 1, p: 4, mb: 7 }}>
+                <Toolbar />
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgotpassword" element={<ForgotPassword />} />
+                  <Route path="/terms" element={<TermsAndConditions />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/verify2fa" element={<Verify2FA />} />
+                  <Route element={<PersistLogin />}>
+                    <Route element={<RequireAuth />}>
+                      <Route path="/" element={<Vault />} />
+                      <Route path="/additem" element={<AddItem />} />
+                      <Route path="/generator" element={<Generator />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/reset" element={<ResetPassword />} />
+                      <Route path="/setup2fa" element={<SetUp2FA />} />
+                      <Route path="/emptyvault" element={<EmptyVault />} />
+                    </Route>
                   </Route>
-                </Route>
-              </Routes>
+                </Routes>
+              </Box>
             </Box>
-          </Box>
-          { auth?.accessToken ? <BottomNav /> : <></> }
-        </ThemeProvider>
-      </ColorModeContext.Provider>
-    </div>
+            { auth?.accessToken ? <BottomNav /> : <></> }
+          </ThemeProvider>
+        </ColorModeContext.Provider>
+      </div>
     </Router>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import jwt_decode from "jwt-decode";
 
@@ -16,6 +17,7 @@ import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 
 import useAuth from '../../hooks/useAuth';
+import useVault from '../../hooks/useVault';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const ADD_URL = '/addnote';
@@ -25,7 +27,9 @@ const DELETE_URL = '/deletenote';
 const SafeNote = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
+    const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -90,8 +94,7 @@ const SafeNote = forwardRef((props, ref) => {
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: true,
-                    closeButtonHtml: '&times;',
-                    timer: 5000
+                    closeButtonHtml: '&times;'
                 }).then((result) => {
                     window.location.reload();
                 });
@@ -115,7 +118,7 @@ const SafeNote = forwardRef((props, ref) => {
                 title: values.title,
                 note: values.note,
                 prompt: values.prompt
-            }).then(() => {
+            }).then((res) => {
                 Swal.fire({
                     title: 'Success!',
                     text: 'Note has been updated.',
@@ -123,10 +126,11 @@ const SafeNote = forwardRef((props, ref) => {
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: 'true',
-                    closeButtonHtml: '&times;',
-                    timer: 5000
-                }).then((result) => {
-                    props.onUpdate(values);
+                    closeButtonHtml: '&times;'
+                }).then(() => {
+                    const data = { ...res.data, type: VaultItemTypes.Note };
+                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? res.data : item))});
+                    navigate('/', { state: { data } });
                 });
             });
         },
@@ -141,10 +145,10 @@ const SafeNote = forwardRef((props, ref) => {
                         confirmButtonColor: '#318ce7',
                         confirmButtonText: 'Okay',
                         showCloseButton: 'true',
-                        closeButtonHtml: '&times;',
-                        timer: 5000
+                        closeButtonHtml: '&times;'
                     }).then((result) => {
                         props.onDelete();
+                        setVault({...vault, notes: vault.notes.filter((item) => item.id !== values.id )});
                     });
                 });
         },
