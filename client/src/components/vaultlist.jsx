@@ -1,8 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import useAuth from '../hooks/useAuth';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import jwt_decode from "jwt-decode";
 
 import List from '@mui/material/List';
@@ -13,15 +11,17 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
+import useAuth from '../hooks/useAuth';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+
 const VaultList = ({ title, type, list, icon }) => {
     const navigate = useNavigate();
-    const axiosPrivate = useAxiosPrivate();
     const { auth } = useAuth();
+    const axiosPrivate = useAxiosPrivate();
 
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
-    
     const user = decoded?.id || 0;
 
     const handleClick = (data) => {
@@ -74,7 +74,7 @@ const VaultList = ({ title, type, list, icon }) => {
                 {list.map((data, key) => (
                     <ListItem
                         key={data.id}
-                        onClick={() => handleClick({ ...data, type: type })}
+                        onClick={() => handleClick({ ...data, type })}
                         disablePadding
                         disableGutters
                     >

@@ -1,4 +1,5 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import jwt_decode from "jwt-decode";
 
@@ -22,6 +23,7 @@ import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 
 import useAuth from "../../hooks/useAuth";
+import useVault from '../../hooks/useVault';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const ADD_URL = '/addlogin';
@@ -35,7 +37,9 @@ const HIBP_PWD_URL = '/hibp/password';
 const SafeLogin = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
+    const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -188,8 +192,7 @@ const SafeLogin = forwardRef((props, ref) => {
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: true,
-                    closeButtonHtml: '&times;',
-                    timer: 5000
+                    closeButtonHtml: '&times;'
                 }).then((result) => {
                     window.location.reload();
                 });
@@ -224,10 +227,11 @@ const SafeLogin = forwardRef((props, ref) => {
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: 'true',
-                    closeButtonHtml: '&times;',
-                    timer: 5000
-                }).then((result) => {
-                    props.onUpdate(values);
+                    closeButtonHtml: '&times;'
+                }).then(() => {
+                    const data = { ...res.data, type: VaultItemTypes.Login };
+                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? res.data : item))});
+                    navigate('/', { state: { data } });
                 });
             });
         },
@@ -242,10 +246,10 @@ const SafeLogin = forwardRef((props, ref) => {
                         confirmButtonColor: '#318ce7',
                         confirmButtonText: 'Okay',
                         showCloseButton: 'true',
-                        closeButtonHtml: '&times;',
-                        timer: 5000
+                        closeButtonHtml: '&times;'
                     }).then((result) => {
                         props.onDelete();
+                        setVault({...vault, logins: vault.logins.filter((item) => item.id !== values.id )});
                     });
                 });
         },

@@ -263,29 +263,15 @@ app.post("/hibp/password", async (req, res) => {
     });
 });
 
-app.post("/showlogins", async (req, res) => {
+app.get("/vault/:id", async (req, res) => {
     try {
-        const result = await query("SELECT * FROM logins WHERE user=?", req.body.user);
-        res.send(result);
+        const user = req.params.id;
+        const logins = await query("SELECT * FROM logins WHERE user=?", user);
+        const cards = await query("SELECT * FROM cards WHERE user=?", user);
+        const notes = await query("SELECT * FROM notes WHERE user=?", user);
+        res.send({ logins, cards, notes });
     } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.post("/showcards", async (req, res) => {
-    try {
-        const result = await query("SELECT * FROM cards WHERE user=?", req.body.user);
-        res.send(result);
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.post("/shownotes", async (req, res) => {
-    try {
-        const result = await query("SELECT * FROM notes WHERE user=?", req.body.user);
-        res.send(result);
-    } catch (err) {
+        console.error(err);
         res.sendStatus(500);
     }
 });
@@ -327,7 +313,8 @@ app.post("/updatelogin/:id", async (req, res) => {
     const hashedPassword = encrypt(password);
     try {
         await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=? WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id]);
-        res.send("success");
+        const logins = await query("SELECT * FROM logins WHERE id=?", id);
+        res.send(logins[0]);
     } catch (err) {
         res.sendStatus(500);
     }
@@ -338,7 +325,8 @@ app.post("/updatecard/:id", async (req, res) => {
     const { title, name, number, month, year, cvv, note, prompt } = req.body;
     try {
         await query("UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=? WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id]);
-        res.send("success");
+        const cards = await query("SELECT * FROM cards WHERE id=?", id);
+        res.send(cards[0]);
     } catch (err) {
         res.sendStatus(500);
     }
@@ -349,7 +337,8 @@ app.post("/updatenote/:id", async (req, res) => {
     const { title, note, prompt } = req.body;
     try {
         await query("UPDATE notes SET title=?, note=?, prompt=? WHERE id=?", [title, note, prompt, id]);
-        res.send("success");
+        const notes = await query("SELECT * FROM notes WHERE id=?", id);
+        res.send(notes[0]);
     } catch (err) {
         res.sendStatus(500);
     }

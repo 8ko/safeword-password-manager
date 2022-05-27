@@ -1,4 +1,5 @@
 import React, { useImperativeHandle, forwardRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import jwt_decode from "jwt-decode";
 
@@ -22,6 +23,7 @@ import { VaultItemTypes } from '../../constants';
 import validateSafeForm from './validateSafeForm';
 
 import useAuth from '../../hooks/useAuth';
+import useVault from '../../hooks/useVault';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const ADD_URL = '/addcard';
@@ -31,7 +33,9 @@ const DELETE_URL = '/deletecard';
 const SafeCard = forwardRef((props, ref) => {
 
     const { auth } = useAuth();
+    const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -111,8 +115,7 @@ const SafeCard = forwardRef((props, ref) => {
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: true,
-                    closeButtonHtml: '&times;',
-                    timer: 5000
+                    closeButtonHtml: '&times;'
                 }).then((result) => {
                     window.location.reload();
                 });
@@ -141,7 +144,7 @@ const SafeCard = forwardRef((props, ref) => {
                 cvv: values.cvv,
                 note: values.note,
                 prompt: values.prompt
-            }).then(() => {
+            }).then((res) => {
                 Swal.fire({
                     title: 'Success!',
                     text: 'Card has been updated.',
@@ -149,10 +152,11 @@ const SafeCard = forwardRef((props, ref) => {
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: 'true',
-                    closeButtonHtml: '&times;',
-                    timer: 5000
-                }).then((result) => {
-                    props.onUpdate(values);
+                    closeButtonHtml: '&times;'
+                }).then(() => {
+                    const data = { ...res.data, type: VaultItemTypes.Card };
+                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? res.data : item))});
+                    navigate('/', { state: { data } });
                 });
             });
         },
@@ -167,10 +171,10 @@ const SafeCard = forwardRef((props, ref) => {
                         confirmButtonColor: '#318ce7',
                         confirmButtonText: 'Okay',
                         showCloseButton: 'true',
-                        closeButtonHtml: '&times;',
-                        timer: 5000
+                        closeButtonHtml: '&times;'
                     }).then((result) => {
                         props.onDelete();
+                        setVault({...vault, cards: vault.cards.filter((item) => item.id !== values.id )});
                     });
                 });
         },

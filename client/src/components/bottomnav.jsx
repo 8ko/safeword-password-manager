@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import Paper from '@mui/material/Paper';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -10,7 +10,12 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
 
 const BottomNav = () => {
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = useState(0);
+    const location = useLocation();
+
+    useEffect(() => {
+        setValue(location.pathname);
+    },[location])
 
     return (
         <>
@@ -21,13 +26,10 @@ const BottomNav = () => {
                     color="primary"
                     showLabels
                     value={value}
-                    onChange={(event, newValue) => {
-                        setValue(newValue);
-                    }}
                 >
-                    <BottomNavigationAction component={Link} to="/" label="Vault" value="vault" icon={<LockRoundedIcon />} />
-                    <BottomNavigationAction component={Link} to="/generator" label="Generator" value="generator" icon={<CachedRoundedIcon />} />
-                    <BottomNavigationAction component={Link} to="/settings" label="Settings" value="settings" icon={<SettingsIcon />} />
+                    <BottomNavigationAction component={Link} to="/" label="Vault" value="/" icon={<LockRoundedIcon />} />
+                    <BottomNavigationAction component={Link} to="/generator" label="Generator" value="/generator" icon={<CachedRoundedIcon />} />
+                    <BottomNavigationAction component={Link} to="/settings" label="Settings" value="/settings" icon={<SettingsIcon />} />
                 </BottomNavigation>
             </Paper>
         </>
