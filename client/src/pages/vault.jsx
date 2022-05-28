@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import { format } from 'date-fns';
 
@@ -24,39 +24,41 @@ const Vault = () => {
     const state = location.state || {};
 
     const [didDelete, setDidDelete] = useState(false);
-    const defaultItem = 
-        vault?.logins?.length ? { ...vault.logins[0], type: VaultItemTypes.Login } :
-        vault?.cards?.length ? { ...vault.cards[0], type: VaultItemTypes.Cards } :
-        vault?.notes?.length ? { ...vault.notes[0], type: VaultItemTypes.Notes } :
-        [];
+    const [defaultItem, setDefaultItem] = useState();
+    
+    useEffect(() => {
+        if (!state.data) {
+            setDefaultItem(
+                vault?.logins?.length ? { ...vault.logins[0], type: VaultItemTypes.Login } :
+                vault?.cards?.length ? { ...vault.cards[0], type: VaultItemTypes.Cards } :
+                vault?.notes?.length ? { ...vault.notes[0], type: VaultItemTypes.Notes } :
+                undefined
+            );
+        }
+    },[vault]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const safeForm = () => {
-        var data = [];
-        var type = 0;
+        var data = {};
 
         if (state.data && !didDelete) {
             data = state.data;
-            type = state.data.type;
         } else if (!didDelete) {
             data = defaultItem;
-            type = defaultItem.type;
         }
 
-        if (type === VaultItemTypes.Login) {
+        if (data.type === VaultItemTypes.Login) {
             return <SafeLogin ref={child} prop1={data} onDelete={() => setDidDelete(true)} />
-        } else if (type === VaultItemTypes.Card) {
+        } else if (data.type === VaultItemTypes.Card) {
             return <SafeCard ref={child} prop1={data} onDelete={() => setDidDelete(true)} />
-        } else if (type === VaultItemTypes.Note) {
+        } else if (data.type === VaultItemTypes.Note) {
             return <SafeNote ref={child} prop1={data} onDelete={() => setDidDelete(true)} />
-        } else if (!didDelete) {
-            return <EmptyVault />;
         } else {
             return <></>
         }
     }
 
     const getLastUpdate = () => {
-        var data = [];
+        var data = {};
         if (state.data && !didDelete) {
             data = state.data;
         } else if (!didDelete) {
@@ -91,7 +93,7 @@ const Vault = () => {
     }
 
     return (
-        <>{ ((defaultItem || state.data) && !didDelete) && showVaultItem() }</>
+        <>{ ((defaultItem || state.data) && !didDelete) ? showVaultItem() : <EmptyVault /> }</>
     )
 }
 
