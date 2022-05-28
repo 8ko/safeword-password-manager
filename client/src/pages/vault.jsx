@@ -93,7 +93,7 @@ const Vault = () => {
     }
 
     return (
-        <>{ ((defaultItem || state.data) && !didDelete) ? showVaultItem() : <EmptyVault /> }</>
+        <>{ ((defaultItem || state.data) && !didDelete) ? showVaultItem() : didDelete ? <></> : <EmptyVault /> }</>
     )
 }
 
