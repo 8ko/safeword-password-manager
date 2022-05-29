@@ -18,7 +18,7 @@ const FAQ = () => {
             <Box sx={{
                 mt: 2,
                 width: '95%',
-                height: 300,
+                height: 350,
                 overflow: 'auto',
                 p: 2,
                 textAlign: 'justify',
@@ -69,7 +69,7 @@ const FAQ = () => {
                         whiteSpace: 'pre-line',
                         lineHeight: '16px'
                     }}>
-                    No, all sensitive information are stored in encrypted form. The master password is hashed via Bcrypt. For more information, please read the <Link to="/privacy" style={{ textDecoration: 'none' }}>Privacy Policy</Link>.
+                    No, all sensitive information are stored in encrypted form. For more information, please read the <Link to="/privacy" style={{ textDecoration: 'none' }}>Privacy Policy</Link>.
                 </Typography>
                 <Typography paragraph
                     variant="h6"

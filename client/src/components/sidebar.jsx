@@ -60,6 +60,7 @@ const Sidebar = (width) => {
                 <Divider />
                 <VaultList title="Notes" type={VaultItemTypes.Note} list={vault?.notes || []}icon={<ArticleRoundedIcon />} />
                 </Box>
+                <Toolbar />
             </Drawer>
         </>
     );
