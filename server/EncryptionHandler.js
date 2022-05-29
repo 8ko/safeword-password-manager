@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const secret = "pppppppppppppppppppppppppppppppp";
+const secret = process.env.SECRET_KEY;
 
 const encrypt = (password) => {
   const iv = Buffer.from(crypto.randomBytes(16));
