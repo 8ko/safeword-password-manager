@@ -29,7 +29,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 const ADD_URL = '/addlogin';
 const UPDATE_URL = '/updatelogin';
 const DELETE_URL = '/deletelogin';
-const DECRYPT_URL = '/decryptpassword';
+const DECRYPT_URL = '/decrypt';
 
 const HIBP_ACC_URL = '/hibp/account';
 const HIBP_PWD_URL = '/hibp/password';
@@ -50,7 +50,6 @@ const SafeLogin = forwardRef((props, ref) => {
         website: '',
         note: '',
         prompt: false,
-        iv: '',
         showPassword: false,
         decrypted: false
     });
@@ -141,8 +140,7 @@ const SafeLogin = forwardRef((props, ref) => {
         if (props.prop1 && props.prop1.password) {
             // decrypt password upon render
             axiosPrivate.post(DECRYPT_URL, {
-                password: props.prop1.password,
-                iv: props.prop1.iv,
+                data: props.prop1.password
             }).then((res) => {
                 // update props with decrypted password
                 setValues({

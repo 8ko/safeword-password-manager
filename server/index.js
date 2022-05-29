@@ -278,10 +278,11 @@ app.get("/vault/:id", async (req, res) => {
 });
 
 app.post("/addlogin", async (req, res) => {
-    const { user, title, username, password, website, note, prompt, iv } = req.body;
-    const hashedPassword = encrypt(password);
     try {
-        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, user) VALUES (?,?,?,?,?,?,?,?)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, user]);
+        const { user, title, username, password, website, note, prompt } = req.body;
+        const encrypted = encrypt(password);
+        const data = encrypted.iv.concat(encrypted.data);
+        await query("INSERT INTO logins (title, username, password, website, note, prompt, user) VALUES (?,?,?,?,?,?,?)", [title, username, data, website, note, prompt, user]);
         res.send("success");
     } catch (err) {
         res.sendStatus(500);
@@ -375,10 +376,6 @@ app.delete("/deletenote/:id", async (req, res) => {
     }
 });
 
-app.post("/decryptpassword", (req, res) => {
-    res.send(decrypt(req.body));
-});
-
 app.post("/reprompt", async (req, res) => {
     try {
         const { user, pwd } = req.body;
@@ -454,6 +451,12 @@ app.post("/tfa/disable", async (req, res) => {
         console.error(err);
         res.sendStatus(500);
     }
+});
+
+app.post("/decrypt", (req, res) => {
+    const data = req.body.data;
+    const encrypted = { iv: data.slice(0, 32), data: data.slice(32) };
+    res.send(decrypt(encrypted));
 });
 
 app.listen(process.env.APP_PORT, () => {
