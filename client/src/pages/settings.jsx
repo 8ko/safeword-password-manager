@@ -96,8 +96,7 @@ export default function Settings() {
             showConfirmButton: true,
             confirmButtonColor: '#318ce7',
             confirmButtonText: 'Confirm',
-            showCancelButton: true,
-            width: '60%',
+            showCancelButton: true
         }).then(async (result) => {
             if (!result.isDismissed) {
                 await axiosPrivate.post('/reprompt', {
@@ -129,8 +128,7 @@ export default function Settings() {
             showConfirmButton: true,
             confirmButtonColor: '#318ce7',
             confirmButtonText: 'Confirm',
-            showCancelButton: true,
-            width: '60%',
+            showCancelButton: true
         }).then(async (result) => {
             if (!result.isDismissed) {
                 await axiosPrivate.post('/tfa/disable', {
@@ -138,6 +136,38 @@ export default function Settings() {
                     pwd: result.value
                 }).then(res => {
                     set2FAEnabled(false);
+                }).catch(err => {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Incorrect master password.',
+                        icon: 'error',
+                        confirmButtonColor: '#318ce7',
+                        confirmButtonText: 'Okay',
+                        showCloseButton: true,
+                        closeButtonHtml: '&times;',
+                    });
+                });
+            }
+        });
+    }
+
+    const resetPwd = () => {
+        Swal.fire({
+            title: 'Reset Master Password',
+            input: 'password',
+            inputPlaceholder: '************',
+            text: 'Enter your master password to proceed:',
+            showConfirmButton: true,
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Confirm',
+            showCancelButton: true
+        }).then(async (result) => {
+            if (!result.isDismissed) {
+                await axiosPrivate.post('/reprompt', {
+                    user: user,
+                    pwd: result.value
+                }).then(res => {
+                    navigate('/reset');
                 }).catch(err => {
                     Swal.fire({
                         title: 'Error',
@@ -197,7 +227,7 @@ export default function Settings() {
                         </Button>
                         )
                     }
-                    <Button variant="outlined" onClick={() => navigate('/reset')}>
+                    <Button variant="outlined" onClick={resetPwd}>
                         Reset Master Password
                     </Button>
                     <Button variant="outlined" onClick={() => navigate('/faq')}>
