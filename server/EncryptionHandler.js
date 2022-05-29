@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const secret = process.env.SECRET_KEY;
+const secret = process.env.AES_SECRET_KEY; // require('crypto').randomBytes(16).toString('hex')
 
 const encrypt = (password) => {
   const iv = Buffer.from(crypto.randomBytes(16));
