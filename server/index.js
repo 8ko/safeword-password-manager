@@ -204,7 +204,6 @@ app.post("/auth", async (req, res) => {
             res.sendStatus(401);
         }
     } catch (err) {
-        console.log(err);
         res.sendStatus(500);
     }
 });
@@ -417,8 +416,6 @@ app.post("/tfa", async (req, res) => {
             itexmo.send({
                 to: auth,
                 body: `Please input this code in the SafeWord app to verify your login: ${code}`
-            }).then(mssg => {
-                // console.log(mssg);
             });
         }
 
