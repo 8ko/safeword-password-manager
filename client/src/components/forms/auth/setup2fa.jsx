@@ -34,7 +34,7 @@ const SetUp2FA = () => {
     const user = decoded?.id || '';
     const email = decoded?.email || '';
 
-    const [authType, setAuthType] = useState('email');
+    const [authType, setAuthType] = useState('phone');
     const [phone, setPhone] = useState('');
 
     const handleChange = (event: SelectChangeEvent) => {
