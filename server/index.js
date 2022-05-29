@@ -1,24 +1,26 @@
 require('dotenv').config();
-const express = require("express");
+const express = require('express');
 const app = express();
-const mysql = require("mysql");
-const util = require("util");
-const cors = require("cors");
+const mysql = require('mysql');
+const util = require('util');
+const cors = require('cors');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+
+const { encrypt, decrypt } = require('./EncryptionHandler');
 const bcrypt = require('bcrypt');
-const nodemailer = require("nodemailer");
-const itexmo = require("./itexmo")({
-    apiCode: process.env.ITEXMO_API_KEY,
-    apiPwd: process.env.ITEXMO_PASSWORD
-});
 const saltRounds = 10;
 
-const { encrypt, decrypt } = require("./EncryptionHandler");
-const verifyJWT = require("./middleware/verifyJWT");
-const cookieParser = require("cookie-parser");
-const corsOptions = require("./config/corsOptions");
-const credentials = require("./middleware/credentials");
+const cookieParser = require('cookie-parser');
+const corsOptions = require('./config/corsOptions');
+const credentials = require('./middleware/credentials');
+const verifyJWT = require('./middleware/verifyJWT');
+
 const hibp = require('hibp');
+const itexmo = require('itexmo-node')({
+    apiCode: process.env.ITEXMO_API_KEY,
+    password: process.env.ITEXMO_PASSWORD
+});
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
