@@ -155,7 +155,7 @@ const SafeCard = forwardRef((props, ref) => {
                     closeButtonHtml: '&times;'
                 }).then(() => {
                     const data = { ...res.data, type: VaultItemTypes.Card };
-                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? res.data : item))});
+                    setVault({...vault, cards: vault.cards.map((item) => (item.id === values.id ? res.data : item))});
                     navigate('/', { state: { data } });
                 });
             });

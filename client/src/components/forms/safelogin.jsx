@@ -228,7 +228,7 @@ const SafeLogin = forwardRef((props, ref) => {
                     closeButtonHtml: '&times;'
                 }).then(() => {
                     const data = { ...res.data, type: VaultItemTypes.Login };
-                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? res.data : item))});
+                    setVault({...vault, logins: vault.logins.map((item) => (item.id === values.id ? res.data : item))});
                     navigate('/', { state: { data } });
                 });
             });
