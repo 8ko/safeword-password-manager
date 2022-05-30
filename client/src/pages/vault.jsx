@@ -31,8 +31,8 @@ const Vault = () => {
         if (!state.data) {
             setDefaultItem(
                 vault?.logins?.length ? { ...vault.logins[0], type: VaultItemTypes.Login } :
-                vault?.cards?.length ? { ...vault.cards[0], type: VaultItemTypes.Cards } :
-                vault?.notes?.length ? { ...vault.notes[0], type: VaultItemTypes.Notes } :
+                vault?.cards?.length ? { ...vault.cards[0], type: VaultItemTypes.Card } :
+                vault?.notes?.length ? { ...vault.notes[0], type: VaultItemTypes.Note } :
                 undefined
             );
         }
@@ -48,7 +48,7 @@ const Vault = () => {
             showCloseButton: true,
             closeButtonHtml: '&times;',
             showCancelButton: true,
-        }).then(async (result) => {
+        }).then((result) => {
             if (!result.isDismissed) {
                 child.current.deleteItem();
             }
