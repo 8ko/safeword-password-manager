@@ -29,12 +29,19 @@ const Vault = () => {
     
     useEffect(() => {
         if (!state.data) {
-            setDefaultItem(
-                vault?.logins?.length ? { ...vault.logins[0], type: VaultItemTypes.Login } :
-                vault?.cards?.length ? { ...vault.cards[0], type: VaultItemTypes.Card } :
-                vault?.notes?.length ? { ...vault.notes[0], type: VaultItemTypes.Note } :
-                undefined
-            );
+            var item;
+            if (vault?.logins?.length) {
+                item = vault.logins.find(e => !e.prompt);
+                if (item) setDefaultItem({...item,type:VaultItemTypes.Login});
+            }
+            if (!item && vault?.cards?.length) {
+                item = vault.cards.find(e => !e.prompt);
+                if (item) setDefaultItem({...item,type:VaultItemTypes.Card});
+            }
+            if (!item && vault?.notes?.length) {
+                item = vault.notes.find(e => !e.prompt);
+                if (item) setDefaultItem({...item,type:VaultItemTypes.Note});
+            }
         }
     },[vault]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -111,7 +118,15 @@ const Vault = () => {
     }
 
     return (
-        <>{ ((defaultItem || state.data) && !didDelete) ? showVaultItem() : didDelete ? <></> : <EmptyVault /> }</>
+        <>
+            {
+                ((defaultItem || state.data) && !didDelete)
+                ? showVaultItem() 
+                : didDelete || !defaultItem
+                ? <></>
+                : <EmptyVault />
+            }
+        </>
     )
 }
 
