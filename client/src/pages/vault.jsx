@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import { format } from 'date-fns';
+import Swal from 'sweetalert2';
 
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -36,6 +37,23 @@ const Vault = () => {
             );
         }
     },[vault]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleDelete = () => {
+        Swal.fire({
+            title: 'Confirm Deletion',
+            text: 'Are you sure you want to delete?',
+            icon: 'warning',
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Yes',
+            showCloseButton: true,
+            closeButtonHtml: '&times;',
+            showCancelButton: true,
+        }).then(async (result) => {
+            if (!result.isDismissed) {
+                child.current.deleteItem();
+            }
+        });
+    }
 
     const safeForm = () => {
         var data = {};
@@ -79,7 +97,7 @@ const Vault = () => {
                     <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
                         Update
                     </Button>
-                    <Button sx={{ display: 'flex', alignItems: 'flex-start' }} variant="outlined" color="error" onClick={() => child.current.deleteItem()} startIcon={<DeleteRoundedIcon />}>
+                    <Button sx={{ display: 'flex', alignItems: 'flex-start' }} variant="outlined" color="error" onClick={handleDelete} startIcon={<DeleteRoundedIcon />}>
                         Delete
                     </Button>
                 </Stack>
