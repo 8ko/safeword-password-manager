@@ -45,6 +45,10 @@ const Vault = () => {
         }
     },[vault]) // eslint-disable-line react-hooks/exhaustive-deps
 
+    useEffect(() => {
+        setDidDelete(false);
+    },[state.data])
+
     const handleDelete = () => {
         Swal.fire({
             title: 'Confirm Deletion',
