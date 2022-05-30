@@ -186,13 +186,14 @@ const SafeLogin = forwardRef((props, ref) => {
                     title: 'Success!',
                     text: 'Password has been added to your vault.',
                     icon: 'success',
-                    // showConfirmButton: false,
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: true,
                     closeButtonHtml: '&times;'
                 }).then((result) => {
-                    window.location.reload();
+                    const data = { ...res.data, type: VaultItemTypes.Login };
+                    vault.logins.push(data);
+                    navigate('/', { state: { data } });
                 });
             });
         },
