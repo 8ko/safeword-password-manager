@@ -1,24 +1,26 @@
 require('dotenv').config();
-const express = require("express");
+const express = require('express');
 const app = express();
-const mysql = require("mysql");
-const util = require("util");
-const cors = require("cors");
+const mysql = require('mysql');
+const util = require('util');
+const cors = require('cors');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+
+const { encrypt, decrypt } = require('./EncryptionHandler');
 const bcrypt = require('bcrypt');
-const nodemailer = require("nodemailer");
-const itexmo = require("./itexmo")({
-    apiCode: process.env.ITEXMO_API_KEY,
-    apiPwd: process.env.ITEXMO_PASSWORD
-});
 const saltRounds = 10;
 
-const { encrypt, decrypt } = require("./EncryptionHandler");
-const verifyJWT = require("./middleware/verifyJWT");
-const cookieParser = require("cookie-parser");
-const corsOptions = require("./config/corsOptions");
-const credentials = require("./middleware/credentials");
+const cookieParser = require('cookie-parser');
+const corsOptions = require('./config/corsOptions');
+const credentials = require('./middleware/credentials');
+const verifyJWT = require('./middleware/verifyJWT');
+
 const hibp = require('hibp');
+const itexmo = require('itexmo-node')({
+    apiCode: process.env.ITEXMO_API_KEY,
+    password: process.env.ITEXMO_PASSWORD
+});
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
@@ -204,7 +206,6 @@ app.post("/auth", async (req, res) => {
             res.sendStatus(401);
         }
     } catch (err) {
-        console.log(err);
         res.sendStatus(500);
     }
 });
@@ -277,10 +278,11 @@ app.get("/vault/:id", async (req, res) => {
 });
 
 app.post("/addlogin", async (req, res) => {
-    const { user, title, username, password, website, note, prompt, iv } = req.body;
-    const hashedPassword = encrypt(password);
     try {
-        await query("INSERT INTO logins (title, username, password, website, note, prompt, iv, user) VALUES (?,?,?,?,?,?,?,?)", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, user]);
+        const { user, title, username, password, website, note, prompt } = req.body;
+        const encrypted = encrypt(password);
+        const data = encrypted.iv.concat(encrypted.data);
+        await query("INSERT INTO logins (title, username, password, website, note, prompt, user) VALUES (?,?,?,?,?,?,?)", [title, username, data, website, note, prompt, user]);
         res.send("success");
     } catch (err) {
         res.sendStatus(500);
@@ -374,10 +376,6 @@ app.delete("/deletenote/:id", async (req, res) => {
     }
 });
 
-app.post("/decryptpassword", (req, res) => {
-    res.send(decrypt(req.body));
-});
-
 app.post("/reprompt", async (req, res) => {
     try {
         const { user, pwd } = req.body;
@@ -417,8 +415,6 @@ app.post("/tfa", async (req, res) => {
             itexmo.send({
                 to: auth,
                 body: `Please input this code in the SafeWord app to verify your login: ${code}`
-            }).then(mssg => {
-                // console.log(mssg);
             });
         }
 
@@ -455,6 +451,12 @@ app.post("/tfa/disable", async (req, res) => {
         console.error(err);
         res.sendStatus(500);
     }
+});
+
+app.post("/decrypt", (req, res) => {
+    const data = req.body.data;
+    const encrypted = { iv: data.slice(0, 32), data: data.slice(32) };
+    res.send(decrypt(encrypted));
 });
 
 app.listen(process.env.APP_PORT, () => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from "react-router-dom";
 import { format } from 'date-fns';
+import Swal from 'sweetalert2';
 
 import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -28,14 +29,42 @@ const Vault = () => {
     
     useEffect(() => {
         if (!state.data) {
-            setDefaultItem(
-                vault?.logins?.length ? { ...vault.logins[0], type: VaultItemTypes.Login } :
-                vault?.cards?.length ? { ...vault.cards[0], type: VaultItemTypes.Cards } :
-                vault?.notes?.length ? { ...vault.notes[0], type: VaultItemTypes.Notes } :
-                undefined
-            );
+            var item;
+            if (vault?.logins?.length) {
+                item = vault.logins.find(e => !e.prompt);
+                if (item) setDefaultItem({...item,type:VaultItemTypes.Login});
+            }
+            if (!item && vault?.cards?.length) {
+                item = vault.cards.find(e => !e.prompt);
+                if (item) setDefaultItem({...item,type:VaultItemTypes.Card});
+            }
+            if (!item && vault?.notes?.length) {
+                item = vault.notes.find(e => !e.prompt);
+                if (item) setDefaultItem({...item,type:VaultItemTypes.Note});
+            }
         }
     },[vault]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        setDidDelete(false);
+    },[state.data])
+
+    const handleDelete = () => {
+        Swal.fire({
+            title: 'Confirm Deletion',
+            text: 'Are you sure you want to delete?',
+            icon: 'warning',
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Yes',
+            showCloseButton: true,
+            closeButtonHtml: '&times;',
+            showCancelButton: true,
+        }).then((result) => {
+            if (!result.isDismissed) {
+                child.current.deleteItem();
+            }
+        });
+    }
 
     const safeForm = () => {
         var data = {};
@@ -79,7 +108,7 @@ const Vault = () => {
                     <Button variant="outlined" onClick={() => child.current.updateItem()} startIcon={<UpdateRoundedIcon />}>
                         Update
                     </Button>
-                    <Button sx={{ display: 'flex', alignItems: 'flex-start' }} variant="outlined" color="error" onClick={() => child.current.deleteItem()} startIcon={<DeleteRoundedIcon />}>
+                    <Button sx={{ display: 'flex', alignItems: 'flex-start' }} variant="outlined" color="error" onClick={handleDelete} startIcon={<DeleteRoundedIcon />}>
                         Delete
                     </Button>
                 </Stack>
@@ -93,7 +122,15 @@ const Vault = () => {
     }
 
     return (
-        <>{ ((defaultItem || state.data) && !didDelete) ? showVaultItem() : didDelete ? <></> : <EmptyVault /> }</>
+        <>
+            {
+                ((defaultItem || state.data) && !didDelete)
+                ? showVaultItem() 
+                : didDelete || !defaultItem
+                ? <></>
+                : <EmptyVault />
+            }
+        </>
     )
 }
 

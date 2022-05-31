@@ -7,4 +7,4 @@ const allowedOrigins = [
     'chrome-extension://lnkkdchojjmghlldjlpnfiifmoilbbkf'
 ];
 
-module.exports = allowedOrigins;
+module.exports = allowedOrigins

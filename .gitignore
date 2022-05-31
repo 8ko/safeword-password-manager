@@ -7,4 +7,5 @@
 
 # misc
 /client/.eslintcache
+/client/.env
 /server/.env

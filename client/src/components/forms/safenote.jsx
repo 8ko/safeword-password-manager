@@ -90,13 +90,14 @@ const SafeNote = forwardRef((props, ref) => {
                     title: 'Success!',
                     text: 'Note has been added to your vault.',
                     icon: 'success',
-                    // showConfirmButton: false,
                     confirmButtonColor: '#318ce7',
                     confirmButtonText: 'Okay',
                     showCloseButton: true,
                     closeButtonHtml: '&times;'
-                }).then((result) => {
-                    window.location.reload();
+                }).then(() => {
+                    const data = { ...res.data, type: VaultItemTypes.Note };
+                    vault.notes.push(data);
+                    navigate('/', { state: { data } });
                 });
             });
         },
@@ -159,7 +160,7 @@ const SafeNote = forwardRef((props, ref) => {
             <Box
                 component="form"
                 noValidate
-                autoComplete="on"
+                autoComplete="off"
                 sx={{ mb: 1.5 }}
             >
                 <TextField

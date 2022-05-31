@@ -1,18 +1,18 @@
 const crypto = require("crypto");
-const secret = "pppppppppppppppppppppppppppppppp";
+const secret = process.env.AES_SECRET_KEY; // require('crypto').randomBytes(16).toString('hex')
 
 const encrypt = (password) => {
   const iv = Buffer.from(crypto.randomBytes(16));
   const cipher = crypto.createCipheriv("aes-256-ctr", Buffer.from(secret), iv);
 
-  const encryptedPassword = Buffer.concat([
+  const encryptedData = Buffer.concat([
     cipher.update(password),
     cipher.final(),
   ]);
 
   return {
     iv: iv.toString("hex"),
-    password: encryptedPassword.toString("hex"),
+    data: encryptedData.toString("hex"),
   };
 };
 
@@ -23,12 +23,12 @@ const decrypt = (encryption) => {
     Buffer.from(encryption.iv, "hex")
   );
 
-  const decryptedPassword = Buffer.concat([
-    decipher.update(Buffer.from(encryption.password, "hex")),
+  const decryptedData = Buffer.concat([
+    decipher.update(Buffer.from(encryption.data, "hex")),
     decipher.final(),
   ]);
 
-  return decryptedPassword.toString();
+  return decryptedData.toString();
 };
 
 module.exports = { encrypt, decrypt };

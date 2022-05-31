@@ -24,8 +24,6 @@ const Search = styled('div')(({ theme }) => ({
   '&:hover': {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  paddingLeft: 10,
-  paddingRight: 10,
   width: '100%',
 }));
 
@@ -56,43 +54,60 @@ const Appbar = () => {
     setData(arr);
   },[vault])
 
-  const handleOnSearch = (e) => {
-    if (e.target.innerHTML) {
-      const item = data.find((item)=>item.title === e.target.innerHTML);
-      if (!item) return;
-      if (item.prompt) {
-        Swal.fire({
-          title: 'Password Reprompt',
-          input: 'password',
-          inputPlaceholder: '************',
-          text: 'Enter your master password to proceed:',
-          showConfirmButton: true,
-          confirmButtonColor: '#318ce7',
-          confirmButtonText: 'Confirm',
-          showCancelButton: true,
-        }).then(async (result) => {
-            if (!result.isDismissed) {
-                await axiosPrivate.post('/reprompt', {
-                    user: user,
-                    pwd: result.value
-                }).then(res => {
-                  navigate('/', { state: { data:item } });
-                }).catch(err => {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Incorrect master password.',
-                        icon: 'error',
-                        confirmButtonColor: '#318ce7',
-                        confirmButtonText: 'Okay',
-                        showCloseButton: true,
-                        closeButtonHtml: '&times;',
-                    });
-                });
-            }
+  const openVaultItem = (title) => {
+    if (!title) return;
+    const item = data.find((item)=>item.title === title);
+    if (!item) {
+      return Swal.fire({
+        title: 'Not Found',
+        text: 'No such item found in your vault.',
+        icon: 'error',
+        confirmButtonColor: '#318ce7',
+        confirmButtonText: 'Okay',
+        showCloseButton: true,
+        closeButtonHtml: '&times;',
+      });
+    }
+    if (!item.prompt) return navigate('/', { state: { data:item } });
+    Swal.fire({
+      title: 'Password Reprompt',
+      input: 'password',
+      inputPlaceholder: '************',
+      text: 'Enter your master password to proceed:',
+      showConfirmButton: true,
+      confirmButtonColor: '#318ce7',
+      confirmButtonText: 'Confirm',
+      showCancelButton: true,
+    }).then(async (result) => {
+      if (!result.isDismissed) {
+        await axiosPrivate.post('/reprompt', {
+          user: user,
+          pwd: result.value
+        }).then(res => {
+          navigate('/', { state: { data:item } });
+        }).catch(err => {
+          Swal.fire({
+            title: 'Error',
+            text: 'Incorrect master password.',
+            icon: 'error',
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Okay',
+            showCloseButton: true,
+            closeButtonHtml: '&times;',
+          });
         });
-      } else {
-        navigate('/', { state: { data:item } });
       }
+    });
+  }
+
+  const handleOnSearch = (event, value) => {
+    openVaultItem(value);
+  }
+
+  const handleSubmit = (e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      openVaultItem(e.target.value);
     }
   }
 
@@ -121,11 +136,12 @@ const Appbar = () => {
                   {...params}
                   variant="standard"
                   sx={{ input: { color: grey['A200'] } }}
-                  placeholder="Search vault..."
+                  placeholder="Search vault"
+                  onKeyDown={handleSubmit}
                   InputProps={{
                     ...params.InputProps,
                     startAdornment: (
-                      <InputAdornment position="start">
+                      <InputAdornment position="start" sx={{mx:1}}>
                         <SearchIcon sx={{ color: grey['A200'] }} />
                       </InputAdornment>
                     ),

@@ -11,12 +11,9 @@ import CachedIcon from '@mui/icons-material/Cached';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
-
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
-import MuiInput from '@mui/material/Input';
-import { styled } from '@mui/material/styles';
 
 import Checkbox from '@mui/material/Checkbox';
 import { Tooltip } from '@mui/material';
@@ -81,22 +78,9 @@ const Generator = forwardRef((props, ref) => {
     }
 
     // slider
-    const Input = styled(MuiInput)`width: 42px;`;
-    const [value, setValue] = React.useState(PASSWORD_MIN);
     const handleSliderChange = (event, newValue) => {
-        generatePassword({...values, length: newValue});
-    };
-
-    const handleInputChange = (event) => {
-        setValue(event.target.value === '' ? '' : Number(event.target.value));
-        generatePassword({...values, length: event.target.value});
-    };
-
-    const handleBlur = () => {
-        if (value < PASSWORD_MIN) {
-            setValue(PASSWORD_MIN);
-        } else if (value > PASSWORD_MAX) {
-            setValue(PASSWORD_MAX);
+        if (values.length !== newValue) {
+            generatePassword({...values, length: newValue});
         }
     };
 
@@ -158,19 +142,9 @@ const Generator = forwardRef((props, ref) => {
                         />
                     </Grid>
                     <Grid item>
-                        <Input
-                            value={values.length}
-                            size="small"
-                            onChange={handleInputChange}
-                            onBlur={handleBlur}
-                            inputProps={{
-                                step: 2,
-                                min: PASSWORD_MIN,
-                                max: PASSWORD_MAX,
-                                type: 'number',
-                                'aria-labelledby': 'input-slider',
-                            }}
-                        />
+                        <Typography sx={{mr:1}}>
+                            {values.length}
+                        </Typography>
                     </Grid>
                 </Grid>
             </Box>
