@@ -65,7 +65,7 @@ const ResetPassword = () => {
             if (pwd && !validPwd) {
                 return (
                     <FormHelperText component={'span'} error={!pwdFocus}>
-                        At least 8 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
+                        At least 12 characters, contain A-Z, a-z, 0-9, and !@#$%^*.
                     </FormHelperText>
                 )
             } else {

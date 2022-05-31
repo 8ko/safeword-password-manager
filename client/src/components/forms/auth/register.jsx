@@ -130,7 +130,7 @@ const Register = () => {
             if (pwd && !validPwd) {
                 return (
                     <FormHelperText error={!pwdFocus}>
-                        At least 8 characters, A-Z, a-z, 0-9, and !@#$%^*
+                        At least 12 characters, A-Z, a-z, 0-9, and !@#$%^*
                     </FormHelperText>
                 )
             } else {
