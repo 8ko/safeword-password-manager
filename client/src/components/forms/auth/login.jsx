@@ -56,8 +56,8 @@ const Login = () => {
             );
             // console.log(response.data);
             const accessToken = response?.data?.accessToken;
-            // setEmail('');
-            // setPwd('');
+            setEmail('');
+            setPwd('');
 
             if (response?.data?.tfa) {
                 navigate('/verify2fa', { state: { email, accessToken }, replace:true})

@@ -97,6 +97,7 @@ const Register = () => {
             // clear input fields
             setEmail('');
             setPwd('');
+            setConfirmPwd('');
 
             Swal.fire({
                 title: 'A verification link has been sent to your email.',
