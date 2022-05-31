@@ -160,7 +160,7 @@ const SafeNote = forwardRef((props, ref) => {
             <Box
                 component="form"
                 noValidate
-                autoComplete="on"
+                autoComplete="off"
                 sx={{ mb: 1.5 }}
             >
                 <TextField

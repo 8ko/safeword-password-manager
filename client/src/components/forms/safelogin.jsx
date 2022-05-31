@@ -276,6 +276,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 <OutlinedInput
                     id="username"
                     label="Username or Email"
+                    autoComplete="off"
                     value={values.username}
                     onChange={handleChange('username')}
                     endAdornment={
