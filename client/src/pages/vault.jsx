@@ -75,11 +75,11 @@ const Vault = () => {
             data = defaultItem;
         }
 
-        if (data.type === VaultItemTypes.Login) {
+        if (data?.type === VaultItemTypes.Login) {
             return <SafeLogin ref={child} prop1={data} onDelete={() => setDidDelete(true)} />
-        } else if (data.type === VaultItemTypes.Card) {
+        } else if (data?.type === VaultItemTypes.Card) {
             return <SafeCard ref={child} prop1={data} onDelete={() => setDidDelete(true)} />
-        } else if (data.type === VaultItemTypes.Note) {
+        } else if (data?.type === VaultItemTypes.Note) {
             return <SafeNote ref={child} prop1={data} onDelete={() => setDidDelete(true)} />
         } else {
             return <></>
@@ -126,7 +126,7 @@ const Vault = () => {
             {
                 ((defaultItem || state.data) && !didDelete)
                 ? showVaultItem() 
-                : didDelete || !defaultItem
+                : (didDelete && !defaultItem) || (vault?.logins?.length || vault?.notes?.length || vault?.cards?.length)
                 ? <></>
                 : <EmptyVault />
             }
