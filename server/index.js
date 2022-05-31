@@ -157,6 +157,7 @@ app.post("/auth", async (req, res) => {
             const accessToken = jwt.sign(
                 {
                     "id": foundUser.id,
+                    "email": foundUser.email,
                     "password": foundUser.password
                 },
                 process.env.ACCESS_TOKEN_SECRET,
@@ -186,6 +187,7 @@ app.post("/auth", async (req, res) => {
                 const refreshToken = jwt.sign(
                     {
                         "id": foundUser.id,
+                        "email": foundUser.email,
                         "password": foundUser.password
                     },
                     process.env.REFRESH_TOKEN_SECRET,
@@ -221,6 +223,7 @@ app.post("/tfa/verify", async (req, res) => {
         const refreshToken = jwt.sign(
             {
                 "id": foundUser.id,
+                "email": foundUser.email,
                 "password": foundUser.password
             },
             process.env.REFRESH_TOKEN_SECRET,
