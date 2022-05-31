@@ -76,7 +76,7 @@ export default function Settings() {
     const user = decoded?.id || 0;
 
     const colorMode = React.useContext(ColorModeContext);
-    const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
+    const [isDark, setDark] = useState(Boolean(JSON.parse(localStorage.getItem('darkMode'))));
     const [tfaEnabled, set2FAEnabled] = useState(false);
 
     useEffect(() => {

@@ -1,12 +1,12 @@
 const crypto = require("crypto");
 const secret = process.env.AES_SECRET_KEY; // require('crypto').randomBytes(16).toString('hex')
 
-const encrypt = (password) => {
+const encrypt = (data) => {
   const iv = Buffer.from(crypto.randomBytes(16));
   const cipher = crypto.createCipheriv("aes-256-ctr", Buffer.from(secret), iv);
 
   const encryptedData = Buffer.concat([
-    cipher.update(password),
+    cipher.update(data),
     cipher.final(),
   ]);
 
@@ -16,15 +16,15 @@ const encrypt = (password) => {
   };
 };
 
-const decrypt = (encryption) => {
+const decrypt = (data) => {
   const decipher = crypto.createDecipheriv(
     "aes-256-ctr",
     Buffer.from(secret),
-    Buffer.from(encryption.iv, "hex")
+    Buffer.from(data.iv, "hex")
   );
 
   const decryptedData = Buffer.concat([
-    decipher.update(Buffer.from(encryption.data, "hex")),
+    decipher.update(Buffer.from(data.data, "hex")),
     decipher.final(),
   ]);
 

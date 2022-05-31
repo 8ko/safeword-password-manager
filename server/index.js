@@ -157,7 +157,6 @@ app.post("/auth", async (req, res) => {
             const accessToken = jwt.sign(
                 {
                     "id": foundUser.id,
-                    "email": foundUser.email,
                     "password": foundUser.password
                 },
                 process.env.ACCESS_TOKEN_SECRET,
@@ -187,7 +186,6 @@ app.post("/auth", async (req, res) => {
                 const refreshToken = jwt.sign(
                     {
                         "id": foundUser.id,
-                        "email": foundUser.email,
                         "password": foundUser.password
                     },
                     process.env.REFRESH_TOKEN_SECRET,
@@ -223,7 +221,6 @@ app.post("/tfa/verify", async (req, res) => {
         const refreshToken = jwt.sign(
             {
                 "id": foundUser.id,
-                "email": foundUser.email,
                 "password": foundUser.password
             },
             process.env.REFRESH_TOKEN_SECRET,
@@ -282,39 +279,43 @@ app.post("/addlogin", async (req, res) => {
         const { user, title, username, password, website, note, prompt } = req.body;
         const encrypted = encrypt(password);
         const data = encrypted.iv.concat(encrypted.data);
-        await query("INSERT INTO logins (title, username, password, website, note, prompt, user) VALUES (?,?,?,?,?,?,?)", [title, username, data, website, note, prompt, user]);
-        res.send("success");
+        const response = await query("INSERT INTO logins (title, username, password, website, note, prompt, user) VALUES (?,?,?,?,?,?,?)", [title, username, data, website, note, prompt, user]);
+        const logins = await query("SELECT * FROM logins WHERE id=?", response.insertId);
+        res.send(logins[0]);
     } catch (err) {
         res.sendStatus(500);
     }
 });
 
 app.post("/addcard", async (req, res) => {
-    const { user, title, name, number, month, year, cvv, note, prompt } = req.body;
     try {
-        await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user) VALUES (?,?,?,?,?,?,?,?,?)", [title, name, number, month, year, cvv, note, prompt, user]);
-        res.send("success");
+        const { user, title, name, number, month, year, cvv, note, prompt } = req.body;
+        const response = await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user) VALUES (?,?,?,?,?,?,?,?,?)", [title, name, number, month, year, cvv, note, prompt, user]);
+        const cards = await query("SELECT * FROM cards WHERE id=?", response.insertId);
+        res.send(cards[0]);
     } catch (err) {
         res.sendStatus(500);
     }
 });
 
 app.post("/addnote", async (req, res) => {
-    const { user, title, note, prompt } = req.body;
     try {
-        await query("INSERT INTO notes (title, note, prompt, user) VALUES (?,?,?,?)", [title, note, prompt, user]);
-        res.send("success");
+        const { user, title, note, prompt } = req.body;
+        const response = await query("INSERT INTO notes (title, note, prompt, user) VALUES (?,?,?,?)", [title, note, prompt, user]);
+        const notes = await query("SELECT * FROM notes WHERE id=?", response.insertId);
+        res.send(notes[0]);
     } catch (err) {
         res.sendStatus(500);
     }
 });
 
 app.post("/updatelogin/:id", async (req, res) => {
-    const id = req.params.id;
-    const { title, username, password, website, note, prompt } = req.body;
-    const hashedPassword = encrypt(password);
     try {
-        await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=?, iv=? WHERE id=?", [title, username, hashedPassword.password, website, note, prompt, hashedPassword.iv, id]);
+        const id = req.params.id;
+        const { title, username, password, website, note, prompt } = req.body;
+        const encrypted = encrypt(password);
+        const data = encrypted.iv.concat(encrypted.data);
+        await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=? WHERE id=?", [title, username, data, website, note, prompt, id]);
         const logins = await query("SELECT * FROM logins WHERE id=?", id);
         res.send(logins[0]);
     } catch (err) {
@@ -323,9 +324,9 @@ app.post("/updatelogin/:id", async (req, res) => {
 });
 
 app.post("/updatecard/:id", async (req, res) => {
-    const id = req.params.id;
-    const { title, name, number, month, year, cvv, note, prompt } = req.body;
     try {
+        const id = req.params.id;
+        const { title, name, number, month, year, cvv, note, prompt } = req.body;
         await query("UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=? WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id]);
         const cards = await query("SELECT * FROM cards WHERE id=?", id);
         res.send(cards[0]);
@@ -335,9 +336,9 @@ app.post("/updatecard/:id", async (req, res) => {
 });
 
 app.post("/updatenote/:id", async (req, res) => {
-    const id = req.params.id;
-    const { title, note, prompt } = req.body;
     try {
+        const id = req.params.id;
+        const { title, note, prompt } = req.body;
         await query("UPDATE notes SET title=?, note=?, prompt=? WHERE id=?", [title, note, prompt, id]);
         const notes = await query("SELECT * FROM notes WHERE id=?", id);
         res.send(notes[0]);
@@ -347,9 +348,8 @@ app.post("/updatenote/:id", async (req, res) => {
 });
 
 app.delete("/deletelogin/:id", async (req, res) => {
-    const id = req.params.id;
     try {
-        await query("DELETE FROM logins WHERE id=?", id);
+        await query("DELETE FROM logins WHERE id=?", req.params.id);
         res.send("success");
     } catch (err) {
         res.sendStatus(500);
@@ -357,9 +357,8 @@ app.delete("/deletelogin/:id", async (req, res) => {
 });
 
 app.delete("/deletecard/:id", async (req, res) => {
-    const id = req.params.id;
     try {
-        await query("DELETE FROM cards WHERE id=?", id);
+        await query("DELETE FROM cards WHERE id=?", req.params.id);
         res.send("success");
     } catch (err) {
         res.sendStatus(500);
@@ -367,9 +366,8 @@ app.delete("/deletecard/:id", async (req, res) => {
 });
 
 app.delete("/deletenote/:id", async (req, res) => {
-    const id = req.params.id;
     try {
-        await query("DELETE FROM notes WHERE id=?", id);
+        await query("DELETE FROM notes WHERE id=?", req.params.id);
         res.send("success");
     } catch (err) {
         res.sendStatus(500);

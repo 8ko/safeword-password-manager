@@ -53,16 +53,15 @@ function App() {
   });
   dark = responsiveFontSizes(dark);
 
-  const [isDark, setDark] = useState(localStorage.getItem('darkMode') === 'true' ? true : false);
+  const [isDark, setDark] = useState(Boolean(JSON.parse(localStorage.getItem('darkMode'))));
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        const darkMode = localStorage.getItem('darkMode') === 'true' ? false : true;
-        localStorage.setItem('darkMode', darkMode);
-        setDark(darkMode);
+        localStorage.setItem('darkMode', JSON.stringify(!isDark));
+        setDark(!isDark);
       },
     }),
-    []
+    [isDark]
   );
 
   return (
