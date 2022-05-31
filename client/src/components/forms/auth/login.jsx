@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from "../../../hooks/useAuth";
@@ -56,14 +55,11 @@ const Login = () => {
                 }
             );
             // console.log(response.data);
-            // const id = response?.data?.id;
-            // const hashedPassword = response?.data?.password;
             const accessToken = response?.data?.accessToken;
-            const tfa = response?.data?.tfa;
-            setEmail('');
-            setPwd('');
+            // setEmail('');
+            // setPwd('');
 
-            if (tfa === 'email' || tfa === 'sms') {
+            if (response?.data?.tfa) {
                 navigate('/verify2fa', { state: { email, accessToken }, replace:true})
             } else {
                 setAuth({ accessToken });
@@ -92,7 +88,7 @@ const Login = () => {
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center', mb: 1 }}>
-                        Unlock your vault
+                        Unlock Vault
                     </Typography>
                     <Grid container
                         alignItems="flex-start"

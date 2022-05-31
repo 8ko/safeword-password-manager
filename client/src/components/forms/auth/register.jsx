@@ -94,9 +94,6 @@ const Register = () => {
                     withCredentials: true
                 }
             );
-            // console.log(response?.data);
-            // console.log(response.accessToken);
-            // console.log(JSON.stringify(response));
             // clear input fields
             setEmail('');
             setPwd('');
@@ -126,22 +123,14 @@ const Register = () => {
     }
 
     function MyFormHelperText() {
-        const helperText = () => {
-            if (pwd && !validPwd) {
-                return (
-                    <FormHelperText error={!pwdFocus}>
-                        At least 12 characters, A-Z, a-z, 0-9, and !@#$%^*
-                    </FormHelperText>
-                )
-            } else {
-                return (
-                    <FormHelperText>
-                       
-                    </FormHelperText>
-                )
-            }
-        };
-        return helperText();
+        if (pwd && !validPwd) {
+            return (
+                <FormHelperText error={!pwdFocus}>
+                    At least 12 characters, A-Z, a-z, 0-9, and !@#$%^*
+                </FormHelperText>
+            )
+        }
+        return <FormHelperText />
     }
 
     return (
@@ -151,7 +140,7 @@ const Register = () => {
                 <form onSubmit={handleSubmit}>
                     <Typography variant="h4"
                         sx={{ textAlign: 'center', mb: 1 }}>
-                        Create an Account
+                        Create Account
                     </Typography>
 
                     <Grid container
@@ -221,12 +210,12 @@ const Register = () => {
                         </Grid>
                         <Grid item xs={10}>
                             <FormControl fullWidth variant="standard">
-                                <InputLabel htmlFor="standard-adornment-password">Confirm Password</InputLabel>
+                                <InputLabel htmlFor="standard-adornment-password">Re-type Master Password</InputLabel>
                                 <Input
                                     required
                                     id="confirm-password"
                                     autoComplete="off"
-                                    label="Confirm Password"
+                                    label="Re-type Master Password"
                                     placeholder="************"
                                     value={confirmPwd}
                                     type={showPassword ? 'text' : 'password'}
