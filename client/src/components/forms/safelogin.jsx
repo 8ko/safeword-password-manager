@@ -25,11 +25,11 @@ import validateSafeForm from './validateSafeForm';
 import useAuth from "../../hooks/useAuth";
 import useVault from '../../hooks/useVault';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import safeword from '../../safeword';
 
-const ADD_URL = '/addlogin';
-const UPDATE_URL = '/updatelogin';
-const DELETE_URL = '/deletelogin';
-const DECRYPT_URL = '/decrypt';
+const ADD_URL = '/add';
+const UPDATE_URL = '/update';
+const DELETE_URL = '/delete';
 
 const HIBP_ACC_URL = '/hibp/account';
 const HIBP_PWD_URL = '/hibp/password';
@@ -40,6 +40,7 @@ const SafeLogin = forwardRef((props, ref) => {
     const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
+    const vaultKey = localStorage.getItem('vaultKey');
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -50,8 +51,7 @@ const SafeLogin = forwardRef((props, ref) => {
         website: '',
         note: '',
         prompt: false,
-        showPassword: false,
-        decrypted: false
+        showPassword: false
     });
 
     const decoded = auth?.accessToken
@@ -137,24 +137,17 @@ const SafeLogin = forwardRef((props, ref) => {
 
     // invoked when selected item from sidebar or props updated
     useEffect(() => {
-        if (props.prop1 && props.prop1.password) {
-            // decrypt password upon render
-            axiosPrivate.post(DECRYPT_URL, {
-                data: props.prop1.password
-            }).then((res) => {
-                // update props with decrypted password
-                setValues({
-                    type: props.prop1.type || 0,
-                    id: props.prop1.id || 0,
-                    title: props.prop1.title || '',
-                    username: props.prop1.username || '',
-                    password: res.data,
-                    website: props.prop1.website || '',
-                    note: props.prop1.note || '',
-                    prompt: Boolean(props.prop1.prompt) || false,
-                    iv: props.prop1.iv || '',
-                    decrypted: true
-                });
+        if (props.prop1) {
+            setValues({
+                type: props.prop1.type || 0,
+                id: props.prop1.id || 0,
+                title: props.prop1.title || '',
+                username: props.prop1.username || '',
+                password: props.prop1.password || '',
+                website: props.prop1.website || '',
+                note: props.prop1.note || '',
+                prompt: Boolean(props.prop1.prompt) || false,
+                iv: props.prop1.iv || ''
             });
         }
     }, [props]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -173,14 +166,20 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
+            const encrypted = safeword.encrypt(
+                JSON.stringify({
+                    title: values.title,
+                    username: values.username,
+                    password: values.password,
+                    website: values.website,
+                    note: values.note,
+                    prompt: values.prompt,
+                    type: VaultItemTypes.Login
+                }), vaultKey);
+
             axiosPrivate.post(ADD_URL, {
+                data: encrypted,
                 user: user,
-                title: values.title,
-                username: values.username,
-                password: values.password,
-                website: values.website,
-                note: values.note,
-                prompt: values.prompt
             }).then(res => {
                 Swal.fire({
                     title: 'Success!',
@@ -191,7 +190,9 @@ const SafeLogin = forwardRef((props, ref) => {
                     showCloseButton: true,
                     closeButtonHtml: '&times;'
                 }).then((result) => {
-                    const data = { ...res.data, type: VaultItemTypes.Login };
+                    const blob = Buffer.from(res.data.data).toString();
+                    const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                    const data = { ...res.data, ...decrypted };
                     vault.logins.push(data);
                     navigate('/', { state: { data } });
                 });
@@ -211,13 +212,19 @@ const SafeLogin = forwardRef((props, ref) => {
                 });
             }
 
+            const encrypted = safeword.encrypt(
+                JSON.stringify({
+                    title: values.title,
+                    username: values.username,
+                    password: values.password,
+                    website: values.website,
+                    note: values.note,
+                    prompt: values.prompt,
+                    type: VaultItemTypes.Login
+                }), vaultKey);
+
             axiosPrivate.post(`${UPDATE_URL}/${values.id}`, {
-                title: values.title,
-                username: values.username,
-                password: values.password,
-                website: values.website,
-                note: values.note,
-                prompt: values.prompt
+                data: encrypted
             }).then(res => {
                 Swal.fire({
                     title: 'Success!',
@@ -228,8 +235,10 @@ const SafeLogin = forwardRef((props, ref) => {
                     showCloseButton: 'true',
                     closeButtonHtml: '&times;'
                 }).then(() => {
-                    const data = { ...res.data, type: VaultItemTypes.Login };
-                    setVault({...vault, logins: vault.logins.map((item) => (item.id === values.id ? res.data : item))});
+                    const blob = Buffer.from(res.data.data).toString();
+                    const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                    const data = { ...res.data, ...decrypted };
+                    setVault({...vault, logins: vault.logins.map((item) => (item.id === values.id ? data : item))});
                     navigate('/', { state: { data } });
                 });
             });
@@ -352,6 +361,7 @@ const SafeLogin = forwardRef((props, ref) => {
                 <OutlinedInput
                     id="outlined-website"
                     label="Website"
+                    autoComplete="off"
                     value={values.website}
                     onChange={handleChange('website')}
                     endAdornment={
@@ -392,7 +402,7 @@ const SafeLogin = forwardRef((props, ref) => {
                     sx={{ mb: 4 }}
                 >
                     <Typography variant="subtitle2" id="masterpassword-re">
-                        Master Password reprompt
+                        Master password re-prompt
                     </Typography>
                     <Checkbox
                         size="small"

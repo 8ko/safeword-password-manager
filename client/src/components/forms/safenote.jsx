@@ -19,10 +19,11 @@ import validateSafeForm from './validateSafeForm';
 import useAuth from '../../hooks/useAuth';
 import useVault from '../../hooks/useVault';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import safeword from '../../safeword';
 
-const ADD_URL = '/addnote';
-const UPDATE_URL = '/updatenote';
-const DELETE_URL = '/deletenote';
+const ADD_URL = '/add';
+const UPDATE_URL = '/update';
+const DELETE_URL = '/delete';
 
 const SafeNote = forwardRef((props, ref) => {
 
@@ -30,6 +31,7 @@ const SafeNote = forwardRef((props, ref) => {
     const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
+    const vaultKey = localStorage.getItem('vaultKey');
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -42,7 +44,6 @@ const SafeNote = forwardRef((props, ref) => {
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
-    
     const user = decoded?.id || 0;
 
     const handleChange = (props) => (event) => {
@@ -80,11 +81,17 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
+            const encrypted = safeword.encrypt(
+                JSON.stringify({
+                    title: values.title,
+                    note: values.note,
+                    prompt: values.prompt,
+                    type: VaultItemTypes.Note
+                }), vaultKey);
+
             axiosPrivate.post(ADD_URL, {
-                user: user,
-                title: values.title,
-                note: values.note,
-                prompt: values.prompt
+                data: encrypted,
+                user: user
             }).then(res => {
                 Swal.fire({
                     title: 'Success!',
@@ -95,7 +102,9 @@ const SafeNote = forwardRef((props, ref) => {
                     showCloseButton: true,
                     closeButtonHtml: '&times;'
                 }).then(() => {
-                    const data = { ...res.data, type: VaultItemTypes.Note };
+                    const blob = Buffer.from(res.data.data).toString();
+                    const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                    const data = { ...res.data, ...decrypted };
                     vault.notes.push(data);
                     navigate('/', { state: { data } });
                 });
@@ -115,10 +124,16 @@ const SafeNote = forwardRef((props, ref) => {
                 });
             }
 
+            const encrypted = safeword.encrypt(
+                JSON.stringify({
+                    title: values.title,
+                    note: values.note,
+                    prompt: values.prompt,
+                    type: VaultItemTypes.Note
+                }), vaultKey);
+
             axiosPrivate.post(`${UPDATE_URL}/${values.id}`, {
-                title: values.title,
-                note: values.note,
-                prompt: values.prompt
+                data: encrypted
             }).then((res) => {
                 Swal.fire({
                     title: 'Success!',
@@ -129,8 +144,10 @@ const SafeNote = forwardRef((props, ref) => {
                     showCloseButton: 'true',
                     closeButtonHtml: '&times;'
                 }).then(() => {
-                    const data = { ...res.data, type: VaultItemTypes.Note };
-                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? res.data : item))});
+                    const blob = Buffer.from(res.data.data).toString();
+                    const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                    const data = { ...res.data, ...decrypted };
+                    setVault({...vault, notes: vault.notes.map((item) => (item.id === values.id ? data : item))});
                     navigate('/', { state: { data } });
                 });
             });
@@ -209,7 +226,7 @@ const SafeNote = forwardRef((props, ref) => {
                     sx={{ mb: 4 }}
                 >
                     <Typography variant="subtitle2" id="masterpassword-re">
-                        Master Password reprompt
+                        Master password re-prompt
                     </Typography>
                     <Checkbox
                         size="small"

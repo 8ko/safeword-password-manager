@@ -19,6 +19,8 @@ import Grid from '@mui/material/Grid';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 
+import safeword from '../../../safeword';
+
 const LOGIN_URL = '/auth';
 
 const Login = () => {
@@ -46,9 +48,11 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            // const response = await axios.post(LOGIN_URL, { email, pwd });
+            const vaultKey = await safeword.hash(email + pwd);
+            const authPwd = await safeword.hash(vaultKey + pwd);
+            
             const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ email, pwd }),
+                JSON.stringify({ email, pwd: authPwd }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
@@ -56,12 +60,15 @@ const Login = () => {
             );
             // console.log(response.data);
             const accessToken = response?.data?.accessToken;
+
+            // clear input
             setEmail('');
             setPwd('');
 
             if (response?.data?.tfa) {
-                navigate('/verify2fa', { state: { email, accessToken }, replace:true})
+                navigate('/verify2fa', { state: { email, accessToken, vaultKey }, replace:true})
             } else {
+                localStorage.setItem('vaultKey', vaultKey);
                 setAuth({ accessToken });
                 navigate('/');
             }
@@ -144,9 +151,9 @@ const Login = () => {
                             </FormControl>
                         </Grid>
                     </Grid>
-                    <Typography variant="subtitle2" sx={{ textAlign: 'right', mr: 2 }}>
+                    {/* <Typography variant="subtitle2" sx={{ textAlign: 'right', mr: 2 }}>
                         <Link to="/forgotpassword" style={{ textDecoration: 'none' }}>Forgot password?</Link>
-                    </Typography>
+                    </Typography> */}
                     <Box sx={{ textAlign: 'center', mt: 3, }}>
                         <Button type="submit" color="primary" variant="outlined">
                             Login

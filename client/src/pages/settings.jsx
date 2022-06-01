@@ -16,6 +16,9 @@ import useLogout from '../hooks/useLogout';
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import jwt_decode from "jwt-decode";
+import safeword from '../safeword';
+import useVault from '../hooks/useVault';
+import { Divider } from '@mui/material';
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     width: 45,
@@ -69,6 +72,8 @@ export default function Settings() {
     const logout = useLogout();
     const axiosPrivate = useAxiosPrivate();
     const { auth } = useAuth();
+    const { vault } = useVault();
+    const vaultKey = localStorage.getItem('vaultKey');
 
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
@@ -80,12 +85,16 @@ export default function Settings() {
     const [tfaEnabled, set2FAEnabled] = useState(false);
 
     useEffect(() => {
-        axiosPrivate.get(`/tfa/${user}`).then(res => {
-            if (res.data === 'email' || res.data === 'phone') {
-                set2FAEnabled(true);
-            }
-        });
-    },[tfaEnabled,user,axiosPrivate])
+        let isMounted = true;
+        if (isMounted) {
+            axiosPrivate.get(`/tfa/${user}`).then(res => {
+                if (res.data) {
+                    set2FAEnabled(true);
+                }
+            });
+        }
+        return () => isMounted = false;
+    },[user,axiosPrivate])
 
     const setup2FA = () => {
         Swal.fire({
@@ -99,9 +108,10 @@ export default function Settings() {
             showCancelButton: true
         }).then(async (result) => {
             if (!result.isDismissed) {
+                const authPwd = await safeword.hash(vaultKey + result.value);
                 await axiosPrivate.post('/reprompt', {
                     user: user,
-                    pwd: result.value
+                    pwd: authPwd
                 }).then(res => {
                     navigate('/setup2fa');
                 }).catch(err => {
@@ -131,9 +141,10 @@ export default function Settings() {
             showCancelButton: true
         }).then(async (result) => {
             if (!result.isDismissed) {
-                await axiosPrivate.post('/tfa/disable', {
+                const authPwd = await safeword.hash(vaultKey + result.value);
+                await axiosPrivate.post('/reprompt', {
                     user: user,
-                    pwd: result.value
+                    pwd: authPwd
                 }).then(res => {
                     set2FAEnabled(false);
                 }).catch(err => {
@@ -153,7 +164,7 @@ export default function Settings() {
 
     const resetPwd = () => {
         Swal.fire({
-            title: 'Reset Master Password',
+            title: 'Change Master Password',
             input: 'password',
             inputPlaceholder: '************',
             text: 'Enter your master password to proceed:',
@@ -163,11 +174,12 @@ export default function Settings() {
             showCancelButton: true
         }).then(async (result) => {
             if (!result.isDismissed) {
+                const authPwd = await safeword.hash(vaultKey + result.value);
                 await axiosPrivate.post('/reprompt', {
                     user: user,
-                    pwd: result.value
+                    pwd: authPwd
                 }).then(res => {
-                    navigate('/reset');
+                    navigate('/reset', { state: { vault } });
                 }).catch(err => {
                     Swal.fire({
                         title: 'Error',
@@ -180,6 +192,16 @@ export default function Settings() {
                     });
                 });
             }
+        });
+    }
+
+    const handleAbout = () => {
+        Swal.fire({
+            title: 'SafeWord',
+            text: 'Version: 1.0.0',
+            icon: 'info',
+            confirmButtonColor: '#318ce7',
+            confirmButtonText: 'Okay'
         });
     }
 
@@ -203,7 +225,7 @@ export default function Settings() {
                 alignItems="center"
                 justifyContent="space-between"
                 spacing={2}
-                sx={{ mb: 4 }}
+                sx={{ mb: 1 }}
             >
                 <Typography id="input-slider">
                     Theme
@@ -213,9 +235,14 @@ export default function Settings() {
                     onChange={handleThemeChange}
                 />
             </Stack>
+            <Divider />
 
-            <Box sx={{ width: '100%', mb: 1.5 }}>
+            <Box sx={{ width: '100%', mt: 2 }}>
                 <Stack spacing={1}>
+                    <Typography variant="subtitle1">
+                        Account
+                    </Typography>
+                    <Divider />
                     {
                         tfaEnabled ? (
                         <Button variant="outlined" onClick={disable2FA}>
@@ -228,13 +255,20 @@ export default function Settings() {
                         )
                     }
                     <Button variant="outlined" onClick={resetPwd}>
-                        Reset Master Password
-                    </Button>
-                    <Button variant="outlined" onClick={() => navigate('/faq')}>
-                        FAQs
+                        Change Master Password
                     </Button>
                     <Button variant="outlined" onClick={signOut}>
                         Logout
+                    </Button>
+                    <Typography variant="subtitle1">
+                        Others
+                    </Typography>
+                    <Divider />
+                    <Button variant="outlined" onClick={handleAbout}>
+                        About
+                    </Button>
+                    <Button variant="outlined" onClick={() => navigate('/faq')}>
+                        FAQs
                     </Button>
                 </Stack>
             </Box>

@@ -17,12 +17,14 @@ import { VaultItemTypes } from '../constants';
 import useAuth from '../hooks/useAuth';
 import useVault from '../hooks/useVault';
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import safeword from '../safeword';
 
 const Sidebar = (width) => {
 
     const { auth } = useAuth();
     const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
+    const vaultKey = localStorage.getItem('vaultKey');
 
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
@@ -32,13 +34,31 @@ const Sidebar = (width) => {
     useEffect(() => {
         let isMounted = true;
         const getData = async () => {
-            if (isMounted) {
-                await axiosPrivate.get(`/vault/${user}`).then((res) => {
-                    setVault(res.data);
-                });
-            }
+            await axiosPrivate.get(`/${user}`).then((res) => {
+                const logins = [], cards = [], notes = [];
+                res.data.forEach((item) => {
+                    try {
+                        if (item.data) {
+                            const blob = Buffer.from(item.data).toString();
+                            const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                            const data = { ...item, ...decrypted };
+                            
+                            if (data.type === VaultItemTypes.Login) {
+                                logins.push(data);
+                            } else if (data.type === VaultItemTypes.Card) {
+                                cards.push(data);
+                            } else if (data.type === VaultItemTypes.Note) {
+                                notes.push(data);
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err);
+                    }
+                })
+                setVault({ logins, cards, notes });
+            });
         };
-        getData();
+        if (isMounted) getData();
         return () => isMounted = false;
     },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
