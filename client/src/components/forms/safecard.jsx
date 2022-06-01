@@ -25,10 +25,11 @@ import validateSafeForm from './validateSafeForm';
 import useAuth from '../../hooks/useAuth';
 import useVault from '../../hooks/useVault';
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import safeword from '../../safeword';
 
-const ADD_URL = '/addcard';
-const UPDATE_URL = '/updatecard';
-const DELETE_URL = '/deletecard';
+const ADD_URL = '/add';
+const UPDATE_URL = '/update';
+const DELETE_URL = '/delete';
 
 const SafeCard = forwardRef((props, ref) => {
 
@@ -36,6 +37,7 @@ const SafeCard = forwardRef((props, ref) => {
     const { vault, setVault } = useVault();
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
+    const vaultKey = localStorage.getItem('vaultKey');
 
     const [values, setValues] = React.useState({
         type: 0,
@@ -96,16 +98,22 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
+            const encrypted = safeword.encrypt(
+                JSON.stringify({
+                    title: values.title,
+                    name: values.name,
+                    number: values.number,
+                    month: values.month,
+                    year: values.year,
+                    cvv: values.cvv,
+                    note: values.note,
+                    prompt: values.prompt,
+                    type: VaultItemTypes.Card
+                }), vaultKey);
+
             axiosPrivate.post(ADD_URL, {
-                user: user,
-                title: values.title,
-                name: values.name,
-                number: values.number,
-                month: values.month,
-                year: values.year,
-                cvv: values.cvv,
-                note: values.note,
-                prompt: values.prompt
+                data: encrypted,
+                user: user
             }).then(res => {
                 Swal.fire({
                     title: 'Success!',
@@ -116,7 +124,9 @@ const SafeCard = forwardRef((props, ref) => {
                     showCloseButton: true,
                     closeButtonHtml: '&times;'
                 }).then((result) => {
-                    const data = { ...res.data, type: VaultItemTypes.Card };
+                    const blob = Buffer.from(res.data.data).toString();
+                    const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                    const data = { ...res.data, ...decrypted };
                     vault.cards.push(data);
                     navigate('/', { state: { data } });
                 });
@@ -136,15 +146,21 @@ const SafeCard = forwardRef((props, ref) => {
                 });
             }
 
+            const encrypted = safeword.encrypt(
+                JSON.stringify({
+                    title: values.title,
+                    name: values.name,
+                    number: values.number,
+                    month: values.month,
+                    year: values.year,
+                    cvv: values.cvv,
+                    note: values.note,
+                    prompt: values.prompt,
+                    type: VaultItemTypes.Card
+                }), vaultKey);
+
             axiosPrivate.post(`${UPDATE_URL}/${values.id}`, {
-                title: values.title,
-                name: values.name,
-                number: values.number,
-                month: values.month,
-                year: values.year,
-                cvv: values.cvv,
-                note: values.note,
-                prompt: values.prompt
+                data: encrypted
             }).then((res) => {
                 Swal.fire({
                     title: 'Success!',
@@ -155,8 +171,10 @@ const SafeCard = forwardRef((props, ref) => {
                     showCloseButton: 'true',
                     closeButtonHtml: '&times;'
                 }).then(() => {
-                    const data = { ...res.data, type: VaultItemTypes.Card };
-                    setVault({...vault, cards: vault.cards.map((item) => (item.id === values.id ? res.data : item))});
+                    const blob = Buffer.from(res.data.data).toString();
+                    const decrypted = JSON.parse(safeword.decrypt(blob, vaultKey));
+                    const data = { ...res.data, ...decrypted };
+                    setVault({...vault, cards: vault.cards.map((item) => (item.id === values.id ? data : item))});
                     navigate('/', { state: { data } });
                 });
             });
@@ -330,7 +348,7 @@ const SafeCard = forwardRef((props, ref) => {
                     sx={{ mb: 4 }}
                 >
                     <Typography variant="subtitle2" id="masterpassword-re">
-                        Master Password reprompt
+                        Master password re-prompt
                     </Typography>
                     <Checkbox
                         size="small"

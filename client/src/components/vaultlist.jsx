@@ -13,11 +13,13 @@ import Typography from '@mui/material/Typography';
 
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import safeword from '../safeword';
 
 const VaultList = ({ title, type, list, icon }) => {
     const navigate = useNavigate();
     const { auth } = useAuth();
     const axiosPrivate = useAxiosPrivate();
+    const vaultKey = localStorage.getItem('vaultKey');
 
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
@@ -37,9 +39,10 @@ const VaultList = ({ title, type, list, icon }) => {
                 showCancelButton: true,
             }).then(async (result) => {
                 if (!result.isDismissed) {
+                    const authPwd = await safeword.hash(vaultKey + result.value);
                     await axiosPrivate.post('/reprompt', {
                         user: user,
-                        pwd: result.value
+                        pwd: authPwd
                     }).then(res => {
                         navigate('/', { state: { data } });
                     }).catch(err => {

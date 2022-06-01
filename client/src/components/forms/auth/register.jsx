@@ -23,6 +23,8 @@ import IconButton from '@mui/material/IconButton';
 import Checkbox from '@mui/material/Checkbox';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
+import safeword from '../../../safeword';
+
 const REGISTER_URL = '/register';
 
 const Register = () => {
@@ -87,8 +89,11 @@ const Register = () => {
             return;
         }
         try {
+            const vaultKey = await safeword.hash(email + pwd);
+            const authPwd = await safeword.hash(vaultKey + pwd);
+            
             await axios.post(REGISTER_URL,
-                JSON.stringify({ email, pwd }),
+                JSON.stringify({ email, pwd: authPwd }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
@@ -112,6 +117,7 @@ const Register = () => {
                 navigate('/login');
             });
         } catch (err) {
+            console.log(err);
             if (!err?.response) {
                 setErrMsg('No server response');
             } else if (err.response?.status === 409) {

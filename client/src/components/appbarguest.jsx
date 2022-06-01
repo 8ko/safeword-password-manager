@@ -2,27 +2,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
-
-const pwet = [
-  "u is gay",
-  "i am gay",
-  "eat my ass",
-  "suck fat cock",
-  "eat my shit",
-  "i love booba",
-  "big pp",
-  "show bobs",
-  "show vegana",
-  "bata pa ko kol",
-  "sakit kaayo kol",
-  "kol bata pa ko kol",
-  "imong pante",
-  "antok na ko"
-];
 
 const AppbarGuest = () => {
   const navigate = useNavigate();
@@ -55,12 +37,10 @@ const AppbarGuest = () => {
               size="large"
               color="inherit"
               aria-label="menu"
+              onClick={() => navigate('/faq')}
             >
-              <Tooltip title={pwet[parseInt(Math.random() * pwet.length)]} placement="bottom">
-                <InfoIcon onClick={() => navigate('/faq')} />
-              </Tooltip>
+              <InfoIcon />
             </IconButton>
-
           </Stack>
         </AppBar>
       </Toolbar>

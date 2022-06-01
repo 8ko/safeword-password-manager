@@ -6,8 +6,6 @@ const util = require('util');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-
-const { encrypt, decrypt } = require('./EncryptionHandler');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -69,52 +67,6 @@ app.get('/confirmation/:token', (req, res) => {
     }
 });
 
-app.get('/reset/:token', async (req, res) => {
-    try {
-        jwt.verify(
-            req.params.token,
-            process.env.EMAIL_TOKEN_SECRET,
-            async (err, decoded) => {
-                const hashedPwd = await bcrypt.hash(decoded.password, saltRounds);
-                // reset password and remove refresh token to log out of all devices
-                await query("UPDATE users SET password=?, refresh_token='' WHERE id=?", [hashedPwd, decoded.user]);
-                res.send('Your password has been reset.');
-            }
-        );
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.post('/reset', async (req, res) => {
-    try {
-        const users = await query("SELECT * FROM users WHERE email=?", req.body.email);
-        if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
-        const foundUser = { ...users[0] };
-        if (!foundUser.email_verified_at) return res.sendStatus(403); // email not verified
-        
-        const emailToken = jwt.sign(
-            {
-                user: foundUser.id,
-                password: req.body.pwd
-            },
-            process.env.EMAIL_TOKEN_SECRET,
-            { expiresIn: '1d', }
-        );
-        const url = `${process.env.APP_URL}/reset/${emailToken}`;
-        transporter.sendMail({
-            from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_ADDRESS}>`,
-            to: foundUser.email,
-            subject: '[SafeWord] Reset Password',
-            html: `Please click this link to reset your password: <a href="${url}" target="_blank">${url}</a>`
-        });
-
-        res.send("success");
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
 app.post("/register", async (req, res) => {
     try {
         const { email, pwd } = req.body;
@@ -122,6 +74,7 @@ app.post("/register", async (req, res) => {
         const hashedPwd = await bcrypt.hash(pwd, saltRounds);
         const result = await query("INSERT INTO users (email, password) VALUES (?,?)", [email, hashedPwd]);
         
+        // send email for account confirmation
         const emailToken = jwt.sign(
             { user: result.insertId },
             process.env.EMAIL_TOKEN_SECRET,
@@ -145,7 +98,6 @@ app.post("/auth", async (req, res) => {
     try {
         const { email, pwd } = req.body;
         if (!email || !pwd) return res.sendStatus(400);
-            
         const users = await query("SELECT * FROM users WHERE email=?", email);
         if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
         const foundUser = { ...users[0] };
@@ -157,8 +109,7 @@ app.post("/auth", async (req, res) => {
             const accessToken = jwt.sign(
                 {
                     "id": foundUser.id,
-                    "email": foundUser.email,
-                    "password": foundUser.password
+                    "email": foundUser.email
                 },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '5m' }
@@ -187,8 +138,7 @@ app.post("/auth", async (req, res) => {
                 const refreshToken = jwt.sign(
                     {
                         "id": foundUser.id,
-                        "email": foundUser.email,
-                        "password": foundUser.password
+                        "email": foundUser.email
                     },
                     process.env.REFRESH_TOKEN_SECRET,
                     { expiresIn: '1d' }
@@ -216,15 +166,14 @@ app.post("/tfa/verify", async (req, res) => {
         if (!code) return res.sendStatus(400);
         const users = await query("SELECT * FROM users WHERE tfa_code=?", code);
         if (!(users.length > 0)) return res.sendStatus(401);
-        await query("UPDATE users SET tfa_code='' WHERE tfa_code=?", [code]);
+        await query("UPDATE users SET tfa_code=NULL WHERE tfa_code=?", [code]);
         const foundUser = { ...users[0] };
         if (!foundUser.email_verified_at) return res.sendStatus(403); // email not verified
 
         const refreshToken = jwt.sign(
             {
                 "id": foundUser.id,
-                "email": foundUser.email,
-                "password": foundUser.password
+                "email": foundUser.email
             },
             process.env.REFRESH_TOKEN_SECRET,
             { expiresIn: '1d' }
@@ -264,113 +213,42 @@ app.post("/hibp/password", async (req, res) => {
     });
 });
 
-app.get("/vault/:id", async (req, res) => {
+app.get("/:id", async (req, res) => {
     try {
         const user = req.params.id;
-        const logins = await query("SELECT * FROM logins WHERE user=?", user);
-        const cards = await query("SELECT * FROM cards WHERE user=?", user);
-        const notes = await query("SELECT * FROM notes WHERE user=?", user);
-        res.send({ logins, cards, notes });
+        const vault = await query("SELECT * FROM vault WHERE user=?", user);
+        res.send(vault);
     } catch (err) {
-        console.error(err);
         res.sendStatus(500);
     }
 });
 
-app.post("/addlogin", async (req, res) => {
+app.post("/add", async (req, res) => {
     try {
-        const { user, title, username, password, website, note, prompt } = req.body;
-        const encrypted = encrypt(password);
-        const data = encrypted.iv.concat(encrypted.data);
-        const response = await query("INSERT INTO logins (title, username, password, website, note, prompt, user) VALUES (?,?,?,?,?,?,?)", [title, username, data, website, note, prompt, user]);
-        const logins = await query("SELECT * FROM logins WHERE id=?", response.insertId);
-        res.send(logins[0]);
+        const { data, user } = req.body;
+        const response = await query("INSERT INTO vault (data, user) VALUES (?,?)", [data, user]);
+        const items = await query("SELECT * FROM vault WHERE id=?", response.insertId);
+        res.send(items[0]);
     } catch (err) {
         res.sendStatus(500);
     }
 });
 
-app.post("/addcard", async (req, res) => {
-    try {
-        const { user, title, name, number, month, year, cvv, note, prompt } = req.body;
-        const response = await query("INSERT INTO cards (title, name, number, month, year, cvv, note, prompt, user) VALUES (?,?,?,?,?,?,?,?,?)", [title, name, number, month, year, cvv, note, prompt, user]);
-        const cards = await query("SELECT * FROM cards WHERE id=?", response.insertId);
-        res.send(cards[0]);
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.post("/addnote", async (req, res) => {
-    try {
-        const { user, title, note, prompt } = req.body;
-        const response = await query("INSERT INTO notes (title, note, prompt, user) VALUES (?,?,?,?)", [title, note, prompt, user]);
-        const notes = await query("SELECT * FROM notes WHERE id=?", response.insertId);
-        res.send(notes[0]);
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.post("/updatelogin/:id", async (req, res) => {
+app.post("/update/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const { title, username, password, website, note, prompt } = req.body;
-        const encrypted = encrypt(password);
-        const data = encrypted.iv.concat(encrypted.data);
-        await query("UPDATE logins SET title=?, username=?, password=?, website=?, note=?, prompt=? WHERE id=?", [title, username, data, website, note, prompt, id]);
-        const logins = await query("SELECT * FROM logins WHERE id=?", id);
-        res.send(logins[0]);
+        const { data } = req.body;
+        const response = await query("UPDATE vault SET data=? WHERE id=?", [data, id]);
+        const items = await query("SELECT * FROM vault WHERE id=?", id);
+        res.send(items[0]);
     } catch (err) {
         res.sendStatus(500);
     }
 });
 
-app.post("/updatecard/:id", async (req, res) => {
+app.delete("/delete/:id", async (req, res) => {
     try {
-        const id = req.params.id;
-        const { title, name, number, month, year, cvv, note, prompt } = req.body;
-        await query("UPDATE cards SET title=?, name=?, number=?, month=?, year=?, cvv=?, note=?, prompt=? WHERE id=?", [title, name, number, month, year, cvv, note, prompt, id]);
-        const cards = await query("SELECT * FROM cards WHERE id=?", id);
-        res.send(cards[0]);
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.post("/updatenote/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        const { title, note, prompt } = req.body;
-        await query("UPDATE notes SET title=?, note=?, prompt=? WHERE id=?", [title, note, prompt, id]);
-        const notes = await query("SELECT * FROM notes WHERE id=?", id);
-        res.send(notes[0]);
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.delete("/deletelogin/:id", async (req, res) => {
-    try {
-        await query("DELETE FROM logins WHERE id=?", req.params.id);
-        res.send("success");
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.delete("/deletecard/:id", async (req, res) => {
-    try {
-        await query("DELETE FROM cards WHERE id=?", req.params.id);
-        res.send("success");
-    } catch (err) {
-        res.sendStatus(500);
-    }
-});
-
-app.delete("/deletenote/:id", async (req, res) => {
-    try {
-        await query("DELETE FROM notes WHERE id=?", req.params.id);
+        await query("DELETE FROM vault WHERE id=?", req.params.id);
         res.send("success");
     } catch (err) {
         res.sendStatus(500);
@@ -399,6 +277,7 @@ app.post("/tfa", async (req, res) => {
         const users = await query("SELECT * FROM users WHERE id=?", user);
         if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
         const foundUser = { ...users[0] };
+
         const code = parseInt(Math.random() * (999999 - 100000) + 100000).toString();
         await query("UPDATE users SET tfa=?, tfa_code=? WHERE id=?", [type, code, foundUser.id]);
 
@@ -446,7 +325,7 @@ app.post("/tfa/disable", async (req, res) => {
         const foundUser = { ...users[0] };
         const match = await bcrypt.compare(pwd, foundUser.password);
         if (!match) return res.sendStatus(401); // incorrect password
-        await query("UPDATE users SET tfa='' WHERE id=?", user);
+        await query("UPDATE users SET tfa=NULL WHERE id=?", user);
         res.send("success");
     } catch(err) {
         console.error(err);
@@ -454,10 +333,19 @@ app.post("/tfa/disable", async (req, res) => {
     }
 });
 
-app.post("/decrypt", (req, res) => {
-    const data = req.body.data;
-    const encrypted = { iv: data.slice(0, 32), data: data.slice(32) };
-    res.send(decrypt(encrypted));
+app.post('/reset', async (req, res) => {
+    try {
+        const users = await query("SELECT * FROM users WHERE email=?", req.body.email);
+        if (!(users.length > 0)) return res.sendStatus(401); // user does not exist
+        const foundUser = { ...users[0] };
+        if (!foundUser.email_verified_at) return res.sendStatus(403); // email not verified
+        const hashedPwd = await bcrypt.hash(req.body.pwd, saltRounds);
+        // reset password and remove refresh token to log out of all devices
+        await query("UPDATE users SET password=?, refresh_token='' WHERE id=?", [hashedPwd, foundUser.id]);
+        res.send('success');
+    } catch (err) {
+        res.sendStatus(500);
+    }
 });
 
 app.listen(process.env.APP_PORT, () => {

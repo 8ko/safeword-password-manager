@@ -16,6 +16,7 @@ import useVault from '../hooks/useVault';
 import { VaultItemTypes } from '../constants';
 import useAuth from '../hooks/useAuth';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import safeword from '../safeword';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -32,6 +33,7 @@ const Appbar = () => {
   const { vault } = useVault();
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
+  const vaultKey = localStorage.getItem('vaultKey');
 
   const decoded = auth?.accessToken
       ? jwt_decode(auth.accessToken)
@@ -80,9 +82,10 @@ const Appbar = () => {
       showCancelButton: true,
     }).then(async (result) => {
       if (!result.isDismissed) {
+        const authPwd = await safeword.hash(vaultKey + result.value);
         await axiosPrivate.post('/reprompt', {
-          user: user,
-          pwd: result.value
+            user: user,
+            pwd: authPwd
         }).then(res => {
           navigate('/', { state: { data:item } });
         }).catch(err => {

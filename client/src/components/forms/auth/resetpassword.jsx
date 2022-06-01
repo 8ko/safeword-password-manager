@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from 'react-router-dom';
-import { PwdRegex } from "../../../constants";
-import axios from "../../../api/axios";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { PwdRegex, VaultItemTypes } from "../../../constants";
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import useAuth from "../../../hooks/useAuth";
 import jwt_decode from "jwt-decode";
+import safeword from '../../../safeword';
 
-import Box from "@mui/material/Box";
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -16,8 +16,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Tooltip, Typography } from '@mui/material';
+import { Grid, Tooltip, Typography } from '@mui/material';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 import Stack from '@mui/material/Stack';
 import { grey } from '@mui/material/colors';
@@ -27,20 +28,26 @@ const RESET_URL = '/reset';
 const ResetPassword = () => {
 
     const { auth } = useAuth();
+    const axiosPrivate = useAxiosPrivate();
     const userRef = useRef();
     const errRef = useRef();
     const navigate = useNavigate();
+    const location = useLocation();
+    const vault = location?.state?.vault || {};
 
     const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined;
-    
     const email = decoded?.email || '';
 
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
     const [pwdFocus, setPwdFocus] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const [confirmPwd, setConfirmPwd] = useState(location.state?.confirmPwd || '');
+    const [matchPwd, setMatchPwd] = useState(false);
+    const [confirmPwdFocus, setConfirmPwdFocus] = useState(false);
 
     const [errMsg, setErrMsg] = useState('');
 
@@ -53,8 +60,12 @@ const ResetPassword = () => {
     }, [pwd]);
 
     useEffect(() => {
+        setMatchPwd(pwd === confirmPwd);
+    }, [pwd, confirmPwd]);
+
+    useEffect(() => {
         setErrMsg('');
-    }, [pwd]);
+    }, [pwd, confirmPwd]);
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -78,26 +89,78 @@ const ResetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        await axios.post(RESET_URL,
-            JSON.stringify({ email, pwd }),
-            {
-                headers: { 'Content-Type': 'application/json' },
-                withCredentials: true
-            }
-        );
+        try {
+            const vaultKey = await safeword.hash(email + pwd);
+            const authPwd = await safeword.hash(vaultKey + pwd);
 
-        Swal.fire({
-            title: 'A password reset link has been sent to your email.',
-            text: 'Please click on the link that has been sent to your email.',
-            icon: 'success',
-            showConfirmButton: true,
-            confirmButtonColor: '#318ce7',
-            confirmButtonText: 'Okay',
-            showCloseButton: true,
-            closeButtonHtml: '&times;'
-        }).then((result) => {
-            navigate('/settings');
-        });
+            await axiosPrivate.post(RESET_URL, {
+                email, pwd: authPwd
+            }).then(() => {
+                // apply new key to vault
+                vault.logins.forEach(item => {
+                    const encrypted = safeword.encrypt(
+                        JSON.stringify({
+                            title: item.title,
+                            username: item.username,
+                            password: item.password,
+                            website: item.website,
+                            note: item.note,
+                            prompt: item.prompt,
+                            type: VaultItemTypes.Login
+                        }), vaultKey);
+
+                    axiosPrivate.post(`update/${item.id}`, {
+                        data: encrypted
+                    })
+                });
+                vault.cards.forEach(item => {
+                    const encrypted = safeword.encrypt(
+                        JSON.stringify({
+                            title: item.title,
+                            name: item.name,
+                            number: item.number,
+                            month: item.month,
+                            year: item.year,
+                            cvv: item.cvv,
+                            note: item.note,
+                            prompt: item.prompt,
+                            type: VaultItemTypes.Card
+                        }), vaultKey);
+
+                    axiosPrivate.post(`update/${item.id}`, {
+                        data: encrypted
+                    })
+                });
+                vault.notes.forEach(item => {
+                    const encrypted = safeword.encrypt(
+                        JSON.stringify({
+                            title: item.title,
+                            note: item.note,
+                            prompt: item.prompt,
+                            type: VaultItemTypes.Note
+                        }), vaultKey);
+
+                    axiosPrivate.post(`update/${item.id}`, {
+                        data: encrypted
+                    })
+                });
+
+                Swal.fire({
+                    title: 'Master Password Changed',
+                    text: 'You will now be logged out of all devices.',
+                    icon: 'success',
+                    showConfirmButton: true,
+                    confirmButtonColor: '#318ce7',
+                    confirmButtonText: 'Okay',
+                    showCloseButton: true,
+                    closeButtonHtml: '&times;'
+                }).then((result) => {
+                    window.location.reload();
+                });
+            });
+        } catch (err) {
+            // console.error(err);
+        }
     }
 
     return (
@@ -106,42 +169,91 @@ const ResetPassword = () => {
             <form onSubmit={handleSubmit}>
                 <Typography variant="h4"
                     sx={{ textAlign: 'center' }}>
-                    Reset Master Password
+                    Change Master Password
                 </Typography>
 
-                <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center' }}>
-                    <KeyRoundedIcon sx={{ color: 'action.active', mr: 2, mb: 3.4 }} />
-                    <FormControl fullWidth variant="standard">
-                        <InputLabel htmlFor="standard-adornment-password">New Password</InputLabel>
-                        <Input
-                            required
-                            id="password"
-                            ref={userRef}
-                            autoComplete="off"
-                            label="New Password"
-                            placeholder="************"
-                            type={showPassword ? 'text' : 'password'}
-                            onChange={(e) => setPwd(e.target.value)}
-                            onFocus={() => setPwdFocus(true)}
-                            onBlur={() => setPwdFocus(false)}
-                            error={!pwdFocus && pwd && !validPwd ? true : false}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <Tooltip title="Toggle Visibility">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </Tooltip>
-                                </InputAdornment>
+                <Grid container
+                    alignItems="flex-start"
+                    justifyContent="center"
+                    columnSpacing={5}
+                    rowSpacing={0.5}
+                    >
+                    <Grid item xs={1}>
+                        <KeyRoundedIcon sx={{ color: 'action.active', mt: 2.8 }} />
+                    </Grid>
+                    <Grid item xs={10}>
+                        <FormControl fullWidth variant="standard">
+                            <InputLabel htmlFor="standard-adornment-password">Master Password</InputLabel>
+                            <Input
+                                required
+                                id="password"
+                                ref={userRef}
+                                autoComplete="off"
+                                label="Master Password"
+                                placeholder="************"
+                                value={pwd}
+                                type={showPassword ? 'text' : 'password'}
+                                onChange={(e) => setPwd(e.target.value)}
+                                onFocus={() => setPwdFocus(true)}
+                                onBlur={() => setPwdFocus(false)}
+                                error={!pwdFocus && pwd && !validPwd ? true : false}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Tooltip title="Toggle Visibility">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                }
+                            />
+                            <MyFormHelperText />
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <CheckRoundedIcon sx={{ color: 'action.active', mt: 2.8 }} />
+                    </Grid>
+                    <Grid item xs={10}>
+                        <FormControl fullWidth variant="standard">
+                            <InputLabel htmlFor="standard-adornment-password">Re-type Master Password</InputLabel>
+                            <Input
+                                required
+                                id="confirm-password"
+                                autoComplete="off"
+                                label="Re-type Master Password"
+                                placeholder="************"
+                                value={confirmPwd}
+                                type={showPassword ? 'text' : 'password'}
+                                onChange={(e) => setConfirmPwd(e.target.value)}
+                                onFocus={() => setConfirmPwdFocus(true)}
+                                onBlur={() => setConfirmPwdFocus(false)}
+                                error={!confirmPwdFocus && confirmPwd && !matchPwd ? true : false}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <Tooltip title="Toggle Visibility">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                }
+                            />
+                            {
+                                (!confirmPwdFocus && confirmPwd && !matchPwd &&
+                                    <FormHelperText component={'span'} error={true}>
+                                        Password does not match
+                                    </FormHelperText>
+                                )
                             }
-                        />
-                        <MyFormHelperText />
-                    </FormControl>
-                </Box>
-
+                        </FormControl>
+                    </Grid>
+                </Grid>
 
                 <Stack
                     direction="row"
@@ -149,15 +261,15 @@ const ResetPassword = () => {
                     justifyContent="center"
                     sx={{
                         textAlign: 'center',
-                        mt: 2
+                        mt: 3
                     }}>
                     <Button
                         type="submit"
                         color="primary"
                         variant="outlined"
-                        disabled={!validPwd ? true : false}
+                        disabled={!validPwd || !matchPwd ? true : false}
                     >
-                        Reset
+                        Change
                     </Button>
                     <Button
                         variant="outlined"

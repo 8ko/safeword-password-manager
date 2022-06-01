@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import SentimentVeryDissatisfiedRoundedIcon from '@mui/icons-material/SentimentVeryDissatisfiedRounded';
 
@@ -14,10 +14,9 @@ const EmptyVault = () => {
                     YOUR VAULT IS EMPTY
                 </Typography>
                 <Typography variant="overline">
-                    Click + to add an item
+                    Click + to <Link to="/additem" style={{ textDecoration: 'none' }}>add an item</Link>
                 </Typography>
             </div>
-
         </>
     );
 };

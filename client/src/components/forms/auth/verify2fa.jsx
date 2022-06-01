@@ -16,10 +16,13 @@ const Verify2FA = () => {
     const errRef = useRef();
     const navigate = useNavigate();
     const axiosPrivate = useAxiosPrivate();
-    const { setAuth } = useAuth();
     const location = useLocation();
+
+    const { setAuth } = useAuth();
+
     const email = location?.state?.email;
     const accessToken = location?.state?.accessToken;
+    const vaultKey = location?.state?.vaultKey;
 
     const [code, setCode] = useState('');
     const [errMsg, setErrMsg] = useState('');
@@ -33,7 +36,8 @@ const Verify2FA = () => {
 
         await axiosPrivate.post('/tfa/verify', {code}
         ).then(res => {
-            if (email && accessToken) {
+            if (email && accessToken && vaultKey) {
+                localStorage.setItem('vaultKey', vaultKey);
                 setAuth({ accessToken });
                 navigate('/');
             } else {
