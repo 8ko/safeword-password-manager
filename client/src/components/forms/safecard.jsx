@@ -49,7 +49,7 @@ const SafeCard = forwardRef((props, ref) => {
         year: 0,
         cvv: '',
         note: '',
-        prompt: false
+        prompt: true
     });
 
     const decoded = auth?.accessToken

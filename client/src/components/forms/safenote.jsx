@@ -38,7 +38,7 @@ const SafeNote = forwardRef((props, ref) => {
         id: 0,
         title: '',
         note: '',
-        prompt: false
+        prompt: true
     });
 
     const decoded = auth?.accessToken
