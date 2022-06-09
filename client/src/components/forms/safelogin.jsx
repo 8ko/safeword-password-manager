@@ -50,7 +50,7 @@ const SafeLogin = forwardRef((props, ref) => {
         password: '',
         website: '',
         note: '',
-        prompt: false,
+        prompt: true,
         showPassword: false
     });
 
